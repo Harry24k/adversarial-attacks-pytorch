@@ -49,5 +49,5 @@ All methods in this repository are provided as *CLASS*, but methods in each Repo
 * **Adversarial Attack with Imagenet** [code](https://github.com/HarryK24/adversairal-attacks-pytorch/demos/Adversarial Attack with Imagenet.ipynb): 
 This demo make adversarial examples with the Imagenet data to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, whole Imagenet data is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'. But users are free to add other images in the Imagenet data. Also this code also contains 'Save & Load' example.
 
-* **Adversarial Training with MNIST** [code](https://github.com/HarryK24/adversairal-attacks-pytorch/demos/Adversairal Training with MNIST.ipynb): 
+* **Adversarial Training with MNIST** [code](https://github.com/HarryK24/adversairal-attacks-pytorch/demos/Adversairal%20Training%20with%20MNIST.ipynb): 
 This demo shows how to do adversarial training with this repository. MNIST and custom model are used in this code. The adversarial training is progressed with PGD Attack, and FGSM Attack is applied to test the model.
