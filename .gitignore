@@ -4,3 +4,6 @@ dist/*
 torchattacks.egg-info/*
 demos/data/MNIST/*
 */.*
+MENIFEST.in
+setup.cfg
+setup.py
