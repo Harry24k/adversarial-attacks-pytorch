@@ -28,20 +28,20 @@ The papers and the methods that suggested in each article with a brief summary a
 All methods in this repository are provided as *CLASS*, but methods in each Repo are *NOT CLASS*.
 
 * **Explaining and harnessing adversarial examples** : [Paper](https://arxiv.org/abs/1412.6572), [Repo](https://github.com/HarryK24/FGSM-pytorch)
-- FGSM
+  - FGSM
 
 * **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533), [Repo](https://github.com/HarryK24/AEPW-pytorch)
-- IFGSM
-- IterLL
+  - IFGSM
+  - IterLL
 
 * **Ensemble Adversarial Traning : Attacks and Defences** : [Paper](https://arxiv.org/abs/1705.07204), [Repo](https://github.com/HarryK24/RFGSM-pytorch)
-- RFGSM
+  - RFGSM
 
 * **Towards Evaluating the Robustness of Neural Networks** : [Paper](https://arxiv.org/abs/1608.04644), [Repo](https://github.com/HarryK24/CW-pytorch)
-- CW(L2)
+  - CW(L2)
 
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083), [Repo](https://github.com/HarryK24/PGD-pytorch)
-- PGD
+  - PGD
 
 
 ### Demos
