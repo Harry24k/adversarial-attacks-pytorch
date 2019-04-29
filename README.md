@@ -46,8 +46,11 @@ All methods in this repository are provided as *CLASS*, but methods in each Repo
 
 ### Demos
 
-* **Adversarial Attack with Imagenet** ([code](demos/Adversarial%20Attack%20with%20Imagenet.ipynb)): 
-This demo make adversarial examples with the Imagenet data to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, whole Imagenet data is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'. But users are free to add other images in the Imagenet data. Also this code also contains 'Save & Load' example.
+* **White Box Attack with Imagenet** ([code](demos/Adversarial%20Attack%20with%20Imagenet.ipynb)): 
+This demo make adversarial examples with the Imagenet data to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, whole Imagenet data is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'. But users are free to add other images in the Imagenet data. 
 
-* **Adversarial Training with MNIST** ([code](demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
-This demo shows how to do adversarial training with this repository. MNIST and custom model are used in this code. The adversarial training is progressed with PGD Attack, and FGSM Attack is applied to test the model.
+* **Black Box Attack with CIFAR10** ([code](demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
+In this demo, there is a black box attack example with two different models. First, make adversarial datasets from a holdout model with CIFAR10. Second, use the datasets to attack a target model. An accuracy dropped from 77.77% to 5.1%. Also this code also contains 'Save & Load' example.
+
+* **Adversairal Training with MNIST** ([code](demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
+This demo shows how to do adversarial training with this repository. MNIST and custom model are used in this code. The adversarial training is progressed with PGD Attack, and FGSM Attack is applied to test the model. An accuracy of normal images is 96.37% and an accuracy of FGSM attack is 96.11% .

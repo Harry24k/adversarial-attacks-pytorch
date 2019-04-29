@@ -3,6 +3,7 @@ _*/
 dist/*
 torchattacks.egg-info/*
 demos/data/MNIST/*
+demos/data/cifar*
 */.*
 MENIFEST.in
 setup.cfg
