@@ -46,7 +46,7 @@ All methods in this repository are provided as *CLASS*, but methods in each Repo
 
 ### Demos
 
-* **White Box Attack with Imagenet** ([code](demos/Adversarial%20Attack%20with%20Imagenet.ipynb)): 
+* **White Box Attack with Imagenet** ([code](demos/White%20Box%20Attack%20with%20Imagenet.ipynb)): 
 This demo make adversarial examples with the Imagenet data to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, whole Imagenet data is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'. But users are free to add other images in the Imagenet data. 
 
 * **Black Box Attack with CIFAR10** ([code](demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
