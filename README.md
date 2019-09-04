@@ -66,12 +66,13 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 ## Update Records
 
 ### ~ Version 0.3
-
 * FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD added.
 * Demos uploaded.
 
 ### Version 0.4
+* Do not USE
 
+### Version 0.5
 * package name 'attacks' changed to 'torchattacks'.
 * APGD attack added.
 * update_model method added.
