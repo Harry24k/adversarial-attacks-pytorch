@@ -8,7 +8,7 @@ The aim is to provide use adversarial images wihout bothering.
 
 ### Dependencies
 
-- torch 1.0.0
+- torch 1.2.0
 - python 3.6
 
 ### Installation
@@ -17,10 +17,15 @@ The aim is to provide use adversarial images wihout bothering.
 - `git clone https://github.com/HarryK24/adversairal-attacks-pytorch`
 
 ```python
-import attacks
-pgd_attack = attacks.PGD(model, eps = 4/255, alpha = 8/255)
+import torchattacks
+pgd_attack = torchattacks.PGD(model, eps = 4/255, alpha = 8/255)
 adversarial_images = pgd_attack(images, labels)
 ```
+
+### Precautions
+
+WARNING :: All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.
+WARNING :: All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.
 
 ### Attacks and Papers
 
@@ -43,6 +48,8 @@ All methods in this repository are provided as *CLASS*, but methods in each Repo
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083), [Repo](https://github.com/HarryK24/PGD-pytorch)
   - PGD
 
+* **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
+  - APGD
 
 ### Demos
 
@@ -54,3 +61,17 @@ In this demo, there is a black box attack example with two different models. Fir
 
 * **Adversairal Training with MNIST** ([code](demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
 This demo shows how to do adversarial training with this repository. MNIST and custom model are used in this code. The adversarial training is progressed with PGD Attack, and FGSM Attack is applied to test the model. An accuracy of normal images is 96.37% and an accuracy of FGSM attack is 96.11% .
+
+
+## Update Records
+
+### ~ Version 0.3
+
+* FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD added.
+* Demos uploaded.
+
+### Version 0.4
+
+* package name 'attacks' changed to 'torchattacks'.
+* APGD attack added.
+* update_model method added.
