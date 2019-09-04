@@ -24,8 +24,8 @@ adversarial_images = pgd_attack(images, labels)
 
 ### Precautions
 
-> **WARNING** :: All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.
-> **WARNING** :: All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.
+* **WARNING** :: All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.
+* **WARNING** :: All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.
 
 ### Attacks and Papers
 
