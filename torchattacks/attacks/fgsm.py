@@ -17,7 +17,7 @@ class FGSM(Attack):
         super(FGSM, self).__init__("FGSM", model)
         self.eps = eps
     
-    def __call__(self, images, labels):
+    def forward(self, images, labels):
         images = images.to(self.device)
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()

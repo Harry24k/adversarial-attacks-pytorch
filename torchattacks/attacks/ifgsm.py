@@ -25,7 +25,7 @@ class IFGSM(Attack):
         else :
             self.iters = iters
         
-    def __call__(self, images, labels):
+    def forward(self, images, labels):
         images = images.to(self.device)
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()

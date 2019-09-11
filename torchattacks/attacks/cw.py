@@ -35,7 +35,7 @@ class CW(Attack):
         self.iters = iters
         self.lr = lr
                 
-    def __call__(self, images, labels):
+    def forward(self, images, labels):
         images = images.to(self.device)
         labels = labels.to(self.device)
         

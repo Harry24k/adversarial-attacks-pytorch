@@ -13,24 +13,65 @@ class Attack(object):
     """
     def __init__(self, name, model):
         self.attack = name
-        self.model = model.eval()
+        self.mode = 'float'
+        
+        self.model = model
+        self.training = model.training
         self.model_name = str(model).split("(")[0]
         self.device = torch.device("cuda" if next(model.parameters()).is_cuda else "cpu")
                 
-    # Whole structure of the model will be NOT displayed for pretty print.        
+    # Whole structure of the model will be NOT displayed for print pretty.        
     def __str__(self):
         info = self.__dict__.copy()
         del info['model']
         del info['attack']
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
     
-    def update_model(self, model) :
-        self.model = model.eval()
+    def __call__(self, *input, **kwargs):
+        self.model.eval()
+        images = self.forward(*input, **kwargs)
+        self._switch_model()
+        
+        if self.mode == 'int' :
+            images = self._to_uint(images)
+            
+        return images
     
-    # Save image data as torch tensor from data_loader
-    # If you want to reduce the space of dataset, set 'to_unit8' as True
-    # If you don't want to know about accuaracy of the model, set accuracy as False
+    def _to_uint(self, images):
+        return (images*255).type(torch.uint8)
+    
+    # It changes model to the original eval/train.
+    def _switch_model(self):
+        if self.training :
+            self.model.train()
+        else :
+            self.model.eval()
+    
+    # It Defines the computation performed at every call.
+    # Should be overridden by all subclasses.
+    def forward(self, *input):
+        raise NotImplementedError
+    
+    # Determine return all adversarial images as 'int' OR 'float'.
+    def set_mode(self, mode):
+        if mode == 'float' :
+            self.mode = 'float'
+        elif mode == 'int' :
+            self.mode = 'int'
+        else :
+            raise ValueError(mode + " is not valid")
+    
+    def update_model(self, model) :
+        self.model = model
+        self.training = model.training
+    
+    # Save image data as torch tensor from data_loader.
+    # If you want to reduce the space of dataset, set 'to_unit8' as True.
+    # If you don't want to know about accuaracy of the model, set accuracy as False.
     def save(self, file_name, data_loader, to_uint8 = True, accuracy = True):
+        
+        self.model.eval()
+        
         image_list = []
         label_list = []
         
@@ -40,24 +81,17 @@ class Attack(object):
         total_batch = len(data_loader)
         
         for step, (images, labels) in enumerate(data_loader) :
-            
             adv_images = self.__call__(images, labels)
+          
+            image_list.append(adv_images.cpu())
+            label_list.append(labels.cpu())
             
             if accuracy :
-                outputs = self.model(adv_images)
-
+                outputs = self.model(adv_images.float())
                 _, predicted = torch.max(outputs.data, 1)
-
                 total += labels.size(0)
                 correct += (predicted == labels.to(self.device)).sum()
 
-            if to_uint8 :
-                image_list.append((adv_images*255).type(torch.uint8).cpu())
-            else :
-                image_list.append(adv_images.cpu())
-                
-            label_list.append(labels)
-        
             print('- Save Progress : %2.2f %%        ' %((step+1)/total_batch*100), end='\r')
         
         if accuracy :
@@ -66,10 +100,10 @@ class Attack(object):
         
         x = torch.cat(image_list, 0)
         y = torch.cat(label_list, 0)
-        
         torch.save((x, y), file_name)
-        
         print('\n- Save Complete!')
+        
+        self._switch_model()
         
     # Load image data as torch dataset
     # When scale=True it automatically tansforms images to [0, 1]

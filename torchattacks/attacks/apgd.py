@@ -23,7 +23,7 @@ class APGD(Attack):
         self.iters = iters
         self.sampling = sampling
     
-    def __call__(self, images, labels):
+    def forward(self, images, labels):
         images = images.to(self.device)
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
