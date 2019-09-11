@@ -66,13 +66,23 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 ## Update Records
 
 ### ~ Version 0.3
-* FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD added.
-* Demos uploaded.
+* **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD added.
+* **Demos** uploaded.
 
 ### Version 0.4
-* DO NOT USE (init.py is Omitted)
+* **DO NOT USE** : 'init.py' is Omitted
 
 ### Version 0.5
-* package name 'attacks' changed to 'torchattacks'.
-* APGD attack added.
-* update_model method added.
+* **Package name changed** : 'attacks' changed to 'torchattacks'.
+* **New Attacks** : APGD added.
+* **attack.py** : 'update_model' method added.
+
+### Version 0.6
+* **Error Solved** : 
+    * Before this version, even after getting an adversarial image, the model remains evaluation mode.
+    * To solve this, below methods are modified.
+        * '_switch_model' method is added into **attack.py**. It will automatically change model mode to the previous mode after getting adversarial images. When getting adversarial images, model is switched to evaluation mode.
+        * '__call__' methods in all attack changed to forward. Instead of this, '__call__' method is added into 'attack.py'
+* **attack.py** : To provide ease of changing images to uint8 from float, 'set_mode' and '_to_uint' is added.
+    * 'set_mode' determines return all outputs as 'int' OR 'flaot' through 'to_uint'.
+    * '_to_uint' changes all outputs to uint8.
