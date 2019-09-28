@@ -26,19 +26,19 @@ class PGD(Attack):
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
 
-        ori_images = images.data
+        ori_images = images.clone().detach()
         
         for i in range(self.iters) :    
             images.requires_grad = True
             outputs = self.model(images)
-
-            self.model.zero_grad()
             cost = loss(outputs, labels).to(self.device)
-            cost.backward()
+            
+            grad = torch.autograd.grad(cost, images, 
+                                       retain_graph=False, create_graph=False)[0]
 
-            adv_images = images + self.alpha*images.grad.sign()
+            adv_images = images + self.alpha*grad.sign()
             eta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
-            images = torch.clamp(ori_images + eta, min=0, max=1).detach_()
+            images = torch.clamp(ori_images + eta, min=0, max=1).detach()
 
         adv_images = images
         

@@ -84,5 +84,10 @@ This demo shows how to do adversarial training with this repository. MNIST and c
         * '_switch_model' method is added into **attack.py**. It will automatically change model mode to the previous mode after getting adversarial images. When getting adversarial images, model is switched to evaluation mode.
         * '__call__' methods in all attack changed to forward. Instead of this, '__call__' method is added into 'attack.py'
 * **attack.py** : To provide ease of changing images to uint8 from float, 'set_mode' and '_to_uint' is added.
-    * 'set_mode' determines return all outputs as 'int' OR 'flaot' through 'to_uint'.
+    * 'set_mode' determines return all outputs as 'int' OR 'flaot' through '_to_uint'.
     * '_to_uint' changes all outputs to uint8.
+    
+### Version 0.7
+* **.clone().detach() is used instead of .data**
+* ** torch.autograd.grad is used instead of .backward() and .grad ** :
+    * It shows improvement in a 2% computation time reduction.

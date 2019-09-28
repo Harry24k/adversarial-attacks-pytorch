@@ -41,7 +41,6 @@ class CW(Attack):
         
         # f-function in the paper
         def f(x) :
-
             outputs = self.model(x)
             one_hot_labels = torch.eye(len(outputs[0]))[labels].to(self.device)
 
@@ -85,6 +84,6 @@ class CW(Attack):
             
             print('- CW Attack Progress : %2.2f %%        ' %((step+1)/self.iters*100), end='\r')
             
-        adv_images = (1/2*(nn.Tanh()(w) + 1)).detach_()
+        adv_images = (1/2*(nn.Tanh()(w) + 1)).detach()
 
         return adv_images

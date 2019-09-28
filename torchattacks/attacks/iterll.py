@@ -37,17 +37,17 @@ class IterLL(Attack):
         for i in range(self.iters) :    
             images.requires_grad = True
             outputs = self.model(images)
-
-            self.model.zero_grad()
             cost = loss(outputs, labels).to(self.device)
-            cost.backward()
+            
+            grad = torch.autograd.grad(cost, images,
+                                       retain_graph=False, create_graph=False)[0]
 
-            adv_images = images - self.alpha*images.grad.sign()
+            adv_images = images - self.alpha*grad.sign()
             
             a = torch.clamp(images - self.eps, min=0)
             b = (adv_images>=a).float()*adv_images + (a>adv_images).float()*a
             c = (b > images+self.eps).float()*(images+self.eps) + (images+self.eps >= b).float()*b
-            images = torch.clamp(c, max=1).detach_()
+            images = torch.clamp(c, max=1).detach()
 
         adv_images = images
 

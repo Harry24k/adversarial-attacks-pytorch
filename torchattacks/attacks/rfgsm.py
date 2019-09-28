@@ -31,12 +31,12 @@ class RFGSM(Attack):
         for i in range(self.iters) :
             images.requires_grad = True
             outputs = self.model(images)
-
-            self.model.zero_grad()
             cost = loss(outputs, labels).to(self.device)
-            cost.backward()
 
-            adv_images = images + (self.eps-self.alpha)*images.grad.sign()
+            grad = torch.autograd.grad(cost, images, 
+                                       retain_graph=False, create_graph=False)[0]
+                
+            adv_images = images + (self.eps-self.alpha)*grad.sign()
             images = torch.clamp(adv_images, min=0, max=1).detach_()
 
         adv_images = images
