@@ -70,7 +70,7 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 * **Demos** uploaded.
 
 ### Version 0.4
-* **DO NOT USE** : 'init.py' is Omitted
+* **DO NOT USE** : 'init.py' is Omitted.
 
 ### Version 0.5
 * **Package name changed** : 'attacks' changed to 'torchattacks'.
@@ -86,8 +86,8 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 * **attack.py** : To provide ease of changing images to uint8 from float, 'set_mode' and '_to_uint' is added.
     * 'set_mode' determines return all outputs as 'int' OR 'flaot' through '_to_uint'.
     * '_to_uint' changes all outputs to uint8.
-    
+
 ### Version 0.7
 * **.clone().detach() is used instead of .data**
-* ** torch.autograd.grad is used instead of .backward() and .grad ** :
-    * It shows improvement in a 2% computation time reduction.
+* **torch.autograd.grad is used instead of .backward() and .grad** :
+    * It has improved performance by 2% computation time reduction.
