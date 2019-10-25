@@ -5,4 +5,3 @@ from .attacks.rfgsm import RFGSM
 from .attacks.cw import CW
 from .attacks.pgd import PGD
 from .attacks.apgd import APGD
-from .attacks.rpgd import RPGD

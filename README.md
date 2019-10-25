@@ -66,16 +66,16 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 ## Update Records
 
 ### ~ Version 0.3
-* **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD are added.
+* **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD added.
 * **Demos** uploaded.
 
 ### Version 0.4
-* **DO NOT USE** : 'init.py' is omitted.
+* **DO NOT USE** : 'init.py' is Omitted.
 
 ### Version 0.5
-* **Package name changed** : 'attacks' is changed to 'torchattacks'.
-* **New Attacks** : APGD is added.
-* **attack.py** : 'update_model' method is added.
+* **Package name changed** : 'attacks' changed to 'torchattacks'.
+* **New Attacks** : APGD added.
+* **attack.py** : 'update_model' method added.
 
 ### Version 0.6
 * **Error Solved** : 
@@ -84,16 +84,10 @@ This demo shows how to do adversarial training with this repository. MNIST and c
         * '_switch_model' method is added into **attack.py**. It will automatically change model mode to the previous mode after getting adversarial images. When getting adversarial images, model is switched to evaluation mode.
         * '__call__' methods in all attack changed to forward. Instead of this, '__call__' method is added into 'attack.py'
 * **attack.py** : To provide ease of changing images to uint8 from float, 'set_mode' and '_to_uint' is added.
-    * 'set_mode' determines returning all outputs as 'int' OR 'flaot' through '_to_uint'.
-    * '_to_uint' changes all outputs into uint8.
+    * 'set_mode' determines return all outputs as 'int' OR 'flaot' through '_to_uint'.
+    * '_to_uint' changes all outputs to uint8.
 
 ### Version 0.7
-* **All attacks are modified**
-    * clone().detach() is used instead of .data
-    * torch.autograd.grad is used instead of .backward() and .grad :
-        * It showed 2% computation time reduction.
-    
-### Version 0.8
-* **New Attacks** : RPGD is added.
-* **attack.py** : 'update_model' method is depreciated.
-    * **cw.py** : In the process of cw attack, masked_select use a mask with dtype torch.bool instead of a mask with dtype torch.uint8.
+* **.clone().detach() is used instead of .data**
+* **torch.autograd.grad is used instead of .backward() and .grad** :
+    * It has improved performance by 2% computation time reduction.

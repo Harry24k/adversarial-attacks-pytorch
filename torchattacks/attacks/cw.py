@@ -45,7 +45,7 @@ class CW(Attack):
             one_hot_labels = torch.eye(len(outputs[0]))[labels].to(self.device)
 
             i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
-            j = torch.masked_select(outputs, one_hot_labels.bool())
+            j = torch.masked_select(outputs, one_hot_labels.byte())
 
             # If targeted, optimize for making the other class most likely 
             if self.targeted :
