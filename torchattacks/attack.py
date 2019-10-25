@@ -13,12 +13,12 @@ class Attack(object):
     """
     def __init__(self, name, model):
         self.attack = name
-        self.mode = 'float'
         
         self.model = model
-        self.training = model.training
         self.model_name = str(model).split("(")[0]
+        self.training = model.training
         self.device = torch.device("cuda" if next(model.parameters()).is_cuda else "cpu")
+        self.mode = 'float'
                 
     # Whole structure of the model will be NOT displayed for print pretty.        
     def __str__(self):
@@ -61,14 +61,17 @@ class Attack(object):
         else :
             raise ValueError(mode + " is not valid")
     
+    # DEPRECIATED : update model is not necessary because torch model is called by reference.
+    '''
+    # Update the model to be used
     def update_model(self, model) :
         self.model = model
         self.training = model.training
-    
+    '''
+        
     # Save image data as torch tensor from data_loader.
-    # If you want to reduce the space of dataset, set 'to_unit8' as True.
     # If you don't want to know about accuaracy of the model, set accuracy as False.
-    def save(self, file_name, data_loader, to_uint8 = True, accuracy = True):
+    def save(self, file_name, data_loader, accuracy=True):
         
         self.model.eval()
         
@@ -105,8 +108,8 @@ class Attack(object):
         
         self._switch_model()
         
-    # Load image data as torch dataset
-    # When scale=True it automatically tansforms images to [0, 1]
+    # Load image data as torch dataset.
+    # When scale=True it automatically tansforms images to [0, 1].
     def load(self, file_name, scale = True) :
         adv_images, adv_labels = torch.load(file_name)
         
@@ -117,7 +120,7 @@ class Attack(object):
             
         return adv_data
     
-    # DEPRECIATED 
+    # DEPRECIATED : eval is merged to save.
     '''
     # Evaluate accuaracy of a model
     # With default 'model = None', it will return accuracy of white box attack
