@@ -1,8 +1,7 @@
 # Adversarial-Attacks-Pytorch
 
 This is a lightweight repository of adversarial attacks for Pytorch.
-There are frequently used attacks methods and some utils.
-The aim is to provide use adversarial images wihout bothering.
+There are popular attacks methods and some utils.
 
 ## Usage
 
@@ -29,8 +28,9 @@ adversarial_images = pgd_attack(images, labels)
 
 ### Attacks and Papers
 
-The papers and the methods that suggested in each article with a brief summary and example.
-All methods in this repository are provided as *CLASS*, but methods in each Repo are *NOT CLASS*.
+The papers and the methods with a brief summary and example.
+All attacks in this repository are provided as *CLASS*.
+If you want to get attacks built in *Function*, please refer below repositories.
 
 * **Explaining and harnessing adversarial examples** : [Paper](https://arxiv.org/abs/1412.6572), [Repo](https://github.com/Harry24k/FGSM-pytorch)
   - FGSM
@@ -54,20 +54,20 @@ All methods in this repository are provided as *CLASS*, but methods in each Repo
 ### Demos
 
 * **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb)): 
-This demo make adversarial examples with the Imagenet data to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, whole Imagenet data is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'. But users are free to add other images in the Imagenet data. 
+To make adversarial examples with the Imagenet dataset to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, the Imagenet dataset is too large so in this demo, so it uses only '[Giant Panda](http://www.image-net.org/)'.
 
 * **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
-In this demo, there is a black box attack example with two different models. First, make adversarial datasets from a holdout model with CIFAR10. Second, use the datasets to attack a target model. An accuracy dropped from 77.77% to 5.1%. Also this code also contains 'Save & Load' example.
+This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as a torch dataset. Second, use the adversarial datasets to attack a target model.
 
 * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
-This demo shows how to do adversarial training with this repository. MNIST and custom model are used in this code. The adversarial training is progressed with PGD Attack, and FGSM Attack is applied to test the model. An accuracy of normal images is 96.37% and an accuracy of FGSM attack is 96.11% .
+This demo shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD and FGSM is applied to test the model.
 
 
 ## Update Records
 
 ### ~ Version 0.3
 * **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD are added.
-* **Demos** uploaded.
+* **Demos** are uploaded.
 
 ### Version 0.4
 * **DO NOT USE** : 'init.py' is omitted.
@@ -91,9 +91,9 @@ This demo shows how to do adversarial training with this repository. MNIST and c
 * **All attacks are modified**
     * clone().detach() is used instead of .data
     * torch.autograd.grad is used instead of .backward() and .grad :
-        * It showed 2% computation time reduction.
+        * It showed 2% reduction of computation time.
     
 ### Version 0.8
 * **New Attacks** : RPGD is added.
-* **attack.py** : 'update_model' method is depreciated.
-    * **cw.py** : In the process of cw attack, masked_select use a mask with dtype torch.bool instead of a mask with dtype torch.uint8.
+* **attack.py** : 'update_model' method is depreciated. Because torch models are passed by call-by-reference, we don't need to update models.
+    * **cw.py** : In the process of cw attack, now masked_select uses a mask with dtype torch.bool instead of a mask with dtype torch.uint8.
