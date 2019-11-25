@@ -1,7 +1,8 @@
 # Adversarial-Attacks-Pytorch
 
 This is a lightweight repository of adversarial attacks for Pytorch.
-There are popular attacks methods and some utils.
+
+There are popular attack methods and some utils.
 
 ## Usage
 
