@@ -5,8 +5,10 @@ from ..attack import Attack
 
 class RPGD(Attack):
     """
-    PGD attack with starting at a uniformly random point in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
+    'Towards Deep Learning Models Resistant to Adversarial Attacks'
     [https://arxiv.org/abs/1706.06083]
+    
+    RPGD = PGD + Random Noise Start
 
     Arguments:
         model (nn.Module): a model to attack.

@@ -5,7 +5,7 @@ from ..attack import Attack
 
 class FGSM(Attack):
     """
-    FGSM attack in the paper 'Explaining and harnessing adversarial examples'
+    FGSM in the paper 'Explaining and harnessing adversarial examples'
     [https://arxiv.org/abs/1412.6572]
 
     Arguments:

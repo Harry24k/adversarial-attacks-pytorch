@@ -5,8 +5,10 @@ from ..attack import Attack
 
 class RFGSM(Attack):
     """
-    R+FGSM attack in the paper 'Ensemble Adversarial Training : Attacks and Defences'
+    'Ensemble Adversarial Training : Attacks and Defences'
     [https://arxiv.org/abs/1705.07204]
+
+    RFGSM = FGSM + Random Noise Start
 
     Arguments:
         model (nn.Module): a model to attack.

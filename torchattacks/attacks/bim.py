@@ -3,9 +3,9 @@ import torch.nn as nn
 
 from ..attack import Attack
 
-class IterLL(Attack):
+class BIM(Attack):
     """
-    iterative least-likely class attack in the paper 'Adversarial Examples in the Physical World'
+    BIM in the paper 'Adversarial Examples in the Physical World'
     [https://arxiv.org/abs/1607.02533]
 
     Arguments:
@@ -14,10 +14,10 @@ class IterLL(Attack):
         alpha (float): alpha in the paper. (DEFALUT : 1/255)
         iters (int): max iterations. (DEFALUT : 0)
     
-    .. note:: With 0 iters, iters will be automatically decided with the formula in the paper.
+    NOTE:: If iters set to 0, iters will be automatically decided following the paper.
     """
     def __init__(self, model, eps=4/255, alpha=1/255, iters=0):
-        super(IterLL, self).__init__("IterLL", model)
+        super(BIM, self).__init__("BIM", model)
         self.eps = eps
         self.alpha = alpha
         if iters == 0 :
@@ -27,11 +27,7 @@ class IterLL(Attack):
         
     def forward(self, images, labels):
         images = images.to(self.device)
-        
-        outputs = self.model(images)
-        _, labels = torch.min(outputs.data, 1)
-        labels = labels.detach_()
-        
+        labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
         
         for i in range(self.iters) :    
@@ -41,8 +37,8 @@ class IterLL(Attack):
             
             grad = torch.autograd.grad(cost, images,
                                        retain_graph=False, create_graph=False)[0]
-
-            adv_images = images - self.alpha*grad.sign()
+            
+            adv_images = images + self.alpha*grad.sign()
             
             a = torch.clamp(images - self.eps, min=0)
             b = (adv_images>=a).float()*adv_images + (a>adv_images).float()*a

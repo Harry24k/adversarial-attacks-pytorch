@@ -10,10 +10,10 @@ class APGD(Attack):
 
     Arguments:
         model (nn.Module): a model to attack.
-        eps (float): epsilon in the PGD paper. (DEFALUT : 0.3)
-        alpha (float): alpha in the PGD paper. (DEFALUT : 2/255)
+        eps (float): epsilon in the paper. (DEFALUT : 0.3)
+        alpha (float): alpha in the paper. (DEFALUT : 2/255)
         iters (int): max iterations. (DEFALUT : 40)
-        sampling (int) : the number of sampling models. (DEFALUT : 100)
+        sampling (int) : the number of models to sample. (DEFALUT : 100)
         
     """
     def __init__(self, model, eps=0.3, alpha=2/255, iters=40, sampling=10):

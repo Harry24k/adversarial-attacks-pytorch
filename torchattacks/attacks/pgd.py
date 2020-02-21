@@ -5,7 +5,7 @@ from ..attack import Attack
 
 class PGD(Attack):
     """
-    PGD attack in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
+    'Towards Deep Learning Models Resistant to Adversarial Attacks'
     [https://arxiv.org/abs/1706.06083]
 
     Arguments:

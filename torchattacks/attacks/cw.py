@@ -23,7 +23,7 @@ class CW(Attack):
     .. note:: There are serveral NOT IMPLEMENTED part of the paper/other codes.
     (1) Binary search method for c : It costs too many times.
     (2) Optimization on tanh space : Not in the paper, but in the other codes.
-    (3) Choosing method best l2 adversaries : It will be implemented soon.
+    (3) Choosing method best l2 adversaries : It costs too many times.
     
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
     """

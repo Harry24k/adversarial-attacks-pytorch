@@ -36,18 +36,22 @@ If you want to get attacks built in *Function*, please refer below repositories.
 * **Explaining and harnessing adversarial examples** : [Paper](https://arxiv.org/abs/1412.6572), [Repo](https://github.com/Harry24k/FGSM-pytorch)
   - FGSM
 
-* **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533), [Repo](https://github.com/Harry24k/AEPW-pytorch)
-  - IFGSM
-  - IterLL
+* **DeepFool: a simple and accurate method to fool deep neural networks** : [Paper](https://arxiv.org/abs/1511.04599)
+  - DeepFool
 
-* **Ensemble Adversarial Traning : Attacks and Defences** : [Paper](https://arxiv.org/abs/1705.07204), [Repo](https://github.com/Harry24k/RFGSM-pytorch)
-  - RFGSM
+* **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533), [Repo](https://github.com/Harry24k/AEPW-pytorch)
+  - BIM
+  - StepLL
 
 * **Towards Evaluating the Robustness of Neural Networks** : [Paper](https://arxiv.org/abs/1608.04644), [Repo](https://github.com/Harry24k/CW-pytorch)
   - CW(L2)
 
+* **Ensemble Adversarial Traning : Attacks and Defences** : [Paper](https://arxiv.org/abs/1705.07204), [Repo](https://github.com/Harry24k/RFGSM-pytorch)
+  - RFGSM
+
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083), [Repo](https://github.com/Harry24k/PGD-pytorch)
   - PGD
+  - RPGD
 
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
   - APGD
@@ -75,7 +79,7 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 
 ### Version 0.5
 * **Package name changed** : 'attacks' is changed to 'torchattacks'.
-* **New Attacks** : APGD is added.
+* **New Attack** : APGD is added.
 * **attack.py** : 'update_model' method is added.
 
 ### Version 0.6
@@ -95,6 +99,12 @@ This demo shows how to do adversarial training with this repository. The MNIST d
         * It showed 2% reduction of computation time.
     
 ### Version 0.8
-* **New Attacks** : RPGD is added.
+* **New Attack** : RPGD is added.
 * **attack.py** : 'update_model' method is depreciated. Because torch models are passed by call-by-reference, we don't need to update models.
     * **cw.py** : In the process of cw attack, now masked_select uses a mask with dtype torch.bool instead of a mask with dtype torch.uint8.
+
+### Version 0.9
+* **New Attack** : DeepFool is added.
+* **Some attacks have benn renamed** :
+    * I-FGSM -> BIM
+    * IterLL -> StepLL
