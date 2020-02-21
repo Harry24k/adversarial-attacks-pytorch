@@ -105,6 +105,6 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 
 ### Version 0.9
 * **New Attack** : DeepFool is added.
-* **Some attacks have benn renamed** :
+* **Some attacks are renamed** :
     * I-FGSM -> BIM
     * IterLL -> StepLL
