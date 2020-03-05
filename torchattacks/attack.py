@@ -89,8 +89,11 @@ class Attack(object):
             image_list.append(adv_images.cpu())
             label_list.append(labels.cpu())
             
+            if self.mode == 'int' :
+                adv_images = adv_images.float()/255
+            
             if accuracy :
-                outputs = self.model(adv_images.float())
+                outputs = self.model(adv_images)
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels.to(self.device)).sum()
@@ -99,7 +102,7 @@ class Attack(object):
         
         if accuracy :
             acc = 100 * float(correct) / total
-            print('\n- Accuracy of the model : %f %%' % (acc), end='')
+            print('\n- Accuracy of the model : %2.2f %%' % (acc), end='')
         
         x = torch.cat(image_list, 0)
         y = torch.cat(label_list, 0)
@@ -108,6 +111,8 @@ class Attack(object):
         
         self._switch_model()
         
+    # DEPRECIATED  
+    '''
     # Load image data as torch dataset.
     # When scale=True it automatically tansforms images to [0, 1].
     def load(self, file_name, scale = True) :
@@ -119,7 +124,8 @@ class Attack(object):
             adv_data = torch.utils.data.TensorDataset(adv_images.float(), adv_labels)
             
         return adv_data
-    
+    '''
+        
     # DEPRECIATED : eval is merged to save.
     '''
     # Evaluate accuaracy of a model

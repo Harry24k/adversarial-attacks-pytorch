@@ -56,6 +56,25 @@ If you want to get attacks built in *Function*, please refer below repositories.
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
   - APGD
 
+Attack | Clean | Adversarial
+--- | --- | ---
+FGSM | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/fgsm.png "FGSM")
+BIM | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/bim.png "BIM")
+StepLL | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/stepll.png "StepLL")
+RFGSM | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/rfgsm.png "RFGSM")
+CW | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/cw.png "CW")
+PGD | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png "PGD")
+RPGD | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/rpgd.png "RPGD")
+DeepFool | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png "Clean")
+ | ![alt text](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/deepfool.png "DeepFool")
+
 ### Demos
 
 * **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb)): 
@@ -71,7 +90,7 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 ## Update Records
 
 ### ~ Version 0.3
-* **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(LW), PGD are added.
+* **New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(L2), PGD are added.
 * **Demos** are uploaded.
 
 ### Version 0.4
@@ -108,3 +127,8 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 * **Some attacks are renamed** :
     * I-FGSM -> BIM
     * IterLL -> StepLL
+
+### Version 1.0
+* **attack.py** :
+    * **load** : Load is depreciated. Instead, use TensorDataset and DataLoader.
+    * **save** : The problem of calculating invalid accuracy when the mode of the attack set to 'int' is solved.

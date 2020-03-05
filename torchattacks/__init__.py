@@ -7,3 +7,5 @@ from .attacks.pgd import PGD
 from .attacks.apgd import APGD
 from .attacks.rpgd import RPGD
 from .attacks.deepfool import DeepFool
+
+__version__ = 1.0
