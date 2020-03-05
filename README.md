@@ -4,6 +4,12 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 
 There are popular attack methods and some utils.
 
+* **Table of Contents**
+1. [Usage](#Usage)
+2. [Attacks and Papers](#Attacks and Papers)
+3. [Demos](#Demos)
+4. [Update Records](#Update Records)
+
 ## Usage
 
 ### Dependencies
