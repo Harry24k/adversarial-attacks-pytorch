@@ -130,3 +130,7 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 * **attack.py** :
     * **load** : Load is depreciated. Instead, use TensorDataset and DataLoader.
     * **save** : The problem of calculating invalid accuracy when the mode of the attack set to 'int' is solved.
+
+### Version 1.1
+* **DeepFool** :
+    * [**Error solved**](https://github.com/Harry24k/adversairal-attacks-pytorch/issues/2).

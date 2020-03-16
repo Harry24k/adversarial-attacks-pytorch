@@ -8,3 +8,4 @@ demos/data/cifar*
 MENIFEST.in
 setup.cfg
 setup.py
+data/

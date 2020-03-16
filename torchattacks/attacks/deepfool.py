@@ -40,8 +40,9 @@ class DeepFool(Attack):
                 image.requires_grad = True
                 output = self.model(image)[0]
                 _, pre = torch.max(output, 0)
-
+            
                 if pre != pre_0 :
+                    image = torch.clamp(image, min=0, max=1).detach()
                     break
 
                 r = None
