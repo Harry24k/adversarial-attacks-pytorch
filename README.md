@@ -46,7 +46,7 @@ If you want to get attacks built in *Function*, please refer below repositories.
   - DeepFool
 
 * **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533), [Repo](https://github.com/Harry24k/AEPW-pytorch)
-  - BIM
+  - BIM or iterative-FSGM
   - StepLL
 
 * **Towards Evaluating the Robustness of Neural Networks** : [Paper](https://arxiv.org/abs/1608.04644), [Repo](https://github.com/Harry24k/CW-pytorch)
@@ -56,11 +56,10 @@ If you want to get attacks built in *Function*, please refer below repositories.
   - RFGSM
 
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083), [Repo](https://github.com/Harry24k/PGD-pytorch)
-  - PGD
-  - RPGD
+  - PGD(Linf)
 
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
-  - APGD
+  - APGD(EOT + PGD)
 
 Attack | Clean | Adversarial
 :---: | :---: | :---:
@@ -69,8 +68,8 @@ BIM | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/mas
 StepLL | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/stepll.png" width="300" height="300">
 RFGSM | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/rfgsm.png" width="300" height="300">
 CW | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/cw.png" width="300" height="300">
-PGD | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300">
-RPGD | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/rpgd.png" width="300" height="300">
+PGD(w/o random starts) | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300">
+PGD(w/ random starts) | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/rpgd.png" width="300" height="300">
 DeepFool | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/deepfool.png" width="300" height="300">
 
 ## Demos
@@ -134,3 +133,10 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 ### Version 1.1
 * **DeepFool** :
     * [**Error solved**](https://github.com/Harry24k/adversairal-attacks-pytorch/issues/2).
+    
+### Version 1.2
+* **Description has been added for each module.**
+* **Sphinx Document uploaded** 
+* **attack.py** : 'device' will be decided by [next(model.parameters()).device](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/3#issue-602571865).
+* **Two attacks are merged** :
+    * RPGD, PGD -> PGD

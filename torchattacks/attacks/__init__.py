@@ -5,5 +5,4 @@ from .rfgsm import RFGSM
 from .cw import CW
 from .pgd import PGD
 from .apgd import APGD
-from .rpgd import RPGD
 from .deepfool import DeepFool

@@ -1,10 +1,10 @@
 build/*
-_*/
 dist/*
 torchattacks.egg-info/*
 demos/data/MNIST/*
 demos/data/cifar*
 */.*
+__*
 MENIFEST.in
 setup.cfg
 setup.py

@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Attacks &mdash; torchattacks 1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'1.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Attack" href="attack.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> torchattacks
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Attack</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Attacks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.fgsm">FGSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.deepfool">DeepFool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.bim">BIM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.stepll">Step-LL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.cw">CW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.rfgsm">R+FGSM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.pgd">PGD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchattacks.attacks.apgd">APGD (EOT + PGD)</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">torchattacks</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Attacks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/attacks.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-torchattacks">
+<span id="attacks"></span><h1>Attacks<a class="headerlink" href="#module-torchattacks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-torchattacks.attacks.fgsm">
+<span id="fgsm"></span><h2>FGSM<a class="headerlink" href="#module-torchattacks.attacks.fgsm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.fgsm.FGSM">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.fgsm.</code><code class="descname">FGSM</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.007</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/fgsm.html#FGSM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.fgsm.FGSM" title="Permalink to this definition">¶</a></dt>
+<dd><p>FGSM in the paper ‘Explaining and harnessing adversarial examples’
+[<a class="reference external" href="https://arxiv.org/abs/1412.6572">https://arxiv.org/abs/1412.6572</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 0.007)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">FGSM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.007</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.fgsm.FGSM.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/fgsm.html#FGSM.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.fgsm.FGSM.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.deepfool">
+<span id="deepfool"></span><h2>DeepFool<a class="headerlink" href="#module-torchattacks.attacks.deepfool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.deepfool.DeepFool">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.deepfool.</code><code class="descname">DeepFool</code><span class="sig-paren">(</span><em>model</em>, <em>iters=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/deepfool.html#DeepFool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.deepfool.DeepFool" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘DeepFool: A Simple and Accurate Method to Fool Deep Neural Networks’
+[<a class="reference external" href="https://arxiv.org/abs/1511.04599">https://arxiv.org/abs/1511.04599</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 3)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">DeepFool</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.deepfool.DeepFool.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/deepfool.html#DeepFool.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.deepfool.DeepFool.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.bim">
+<span id="bim"></span><h2>BIM<a class="headerlink" href="#module-torchattacks.attacks.bim" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.bim.BIM">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.bim.</code><code class="descname">BIM</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.01568627450980392</em>, <em>alpha=0.00392156862745098</em>, <em>iters=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/bim.html#BIM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.bim.BIM" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIM or iterative-FGSM in the paper ‘Adversarial Examples in the Physical World’
+[<a class="reference external" href="https://arxiv.org/abs/1607.02533">https://arxiv.org/abs/1607.02533</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 4/255)</li>
+<li><strong>alpha</strong> (<em>float</em>) – step size. (DEFALUT : 1/255)</li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 0)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If iters set to 0, iters will be automatically decided following the paper.</p>
+</div>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">BIM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mi">4</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.bim.BIM.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/bim.html#BIM.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.bim.BIM.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.stepll">
+<span id="step-ll"></span><h2>Step-LL<a class="headerlink" href="#module-torchattacks.attacks.stepll" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.stepll.StepLL">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.stepll.</code><code class="descname">StepLL</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.01568627450980392</em>, <em>alpha=0.00392156862745098</em>, <em>iters=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/stepll.html#StepLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.stepll.StepLL" title="Permalink to this definition">¶</a></dt>
+<dd><p>iterative least-likely class attack in the paper ‘Adversarial Examples in the Physical World’
+[<a class="reference external" href="https://arxiv.org/abs/1607.02533">https://arxiv.org/abs/1607.02533</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 4/255)</li>
+<li><strong>alpha</strong> (<em>float</em>) – step size. (DEFALUT : 1/255)</li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 0)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If iters set to 0, iters will be automatically decided following the paper.</p>
+</div>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">StepLL</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mi">4</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Step-ll dosen’t need any labels. However, for compatibility with other attacks, <cite>labels</cite> exists as input parameter in <cite>forward</cite> method. It is set to None by Default.</p>
+</div>
+<dl class="method">
+<dt id="torchattacks.attacks.stepll.StepLL.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/stepll.html#StepLL.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.stepll.StepLL.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.cw">
+<span id="cw"></span><h2>CW<a class="headerlink" href="#module-torchattacks.attacks.cw" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.cw.CW">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.cw.</code><code class="descname">CW</code><span class="sig-paren">(</span><em>model</em>, <em>targeted=False</em>, <em>c=0.0001</em>, <em>kappa=0</em>, <em>iters=1000</em>, <em>lr=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/cw.html#CW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.cw.CW" title="Permalink to this definition">¶</a></dt>
+<dd><p>CW(L2) attack in the paper ‘Towards Evaluating the Robustness of Neural Networks’
+[<a class="reference external" href="https://arxiv.org/abs/1608.04644">https://arxiv.org/abs/1608.04644</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>targeted</strong> (<em>bool</em>) – True - change image closer to a given label. False  - change image away from a given label. (DEFALUT : False)</li>
+<li><strong>c</strong> (<em>float</em>) – c in the paper. parameter for box-constraint. (DEFALUT : 1e-4)
+<span class="math notranslate nohighlight">\(minimize \Vert\frac{1}{2}(tanh(w)+1)-x\Vert^2_2+c\cdot f(\frac{1}{2}(tanh(w)+1))\)</span></li>
+<li><strong>kappa</strong> (<em>float</em>) – kappa (also written as ‘confidence’) in the paper. (DEFALUT : 0)
+<span class="math notranslate nohighlight">\(f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)\)</span></li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 1000)</li>
+<li><strong>lr</strong> (<em>float</em>) – learning rate of the Adam optimizer. (DEFALUT : 0.01)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">With default c, you can’t easily get adversarial images. Set higher c like 1.</p>
+</div>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">CW</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">targeted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>There are serveral NOT IMPLEMENTED part of the paper/other codes as follows :</p>
+<ol class="last arabic simple">
+<li>Binary search method for c : It costs too many times.</li>
+<li>Optimization on tanh space : Not in the paper, but in the other codes.</li>
+<li>Choosing method best l2 adversaries : It costs too many times.</li>
+</ol>
+</div>
+<dl class="method">
+<dt id="torchattacks.attacks.cw.CW.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/cw.html#CW.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.cw.CW.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.rfgsm">
+<span id="r-fgsm"></span><h2>R+FGSM<a class="headerlink" href="#module-torchattacks.attacks.rfgsm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.rfgsm.RFGSM">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.rfgsm.</code><code class="descname">RFGSM</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.06274509803921569</em>, <em>alpha=0.03137254901960784</em>, <em>iters=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/rfgsm.html#RFGSM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.rfgsm.RFGSM" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘Ensemble Adversarial Training : Attacks and Defences’
+[<a class="reference external" href="https://arxiv.org/abs/1705.07204">https://arxiv.org/abs/1705.07204</a>]</p>
+<p>RFGSM = Random Noise Start + FGSM</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 16/255)</li>
+<li><strong>alpha</strong> (<em>float</em>) – step size. (DEFALUT : 8/255)</li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 1)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">RFGSM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mi">16</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">8</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.rfgsm.RFGSM.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/rfgsm.html#RFGSM.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.rfgsm.RFGSM.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.pgd">
+<span id="pgd"></span><h2>PGD<a class="headerlink" href="#module-torchattacks.attacks.pgd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.pgd.PGD">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.pgd.</code><code class="descname">PGD</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.3</em>, <em>alpha=0.00784313725490196</em>, <em>iters=40</em>, <em>random_start=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/pgd.html#PGD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.pgd.PGD" title="Permalink to this definition">¶</a></dt>
+<dd><p>PGD(Linf) attack in the paper ‘Towards Deep Learning Models Resistant to Adversarial Attacks’
+[<a class="reference external" href="https://arxiv.org/abs/1706.06083">https://arxiv.org/abs/1706.06083</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 0.3)</li>
+<li><strong>alpha</strong> (<em>float</em>) – alpha in the paper. (DEFALUT : 2/255)</li>
+<li><strong>iters</strong> (<em>int</em>) – step size. (DEFALUT : 40)</li>
+<li><strong>random_start</strong> (<em>bool</em>) – using random initialization of delta. (DEFAULT : False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">PGD</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">random_start</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.pgd.PGD.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/pgd.html#PGD.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.pgd.PGD.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchattacks.attacks.apgd">
+<span id="apgd-eot-pgd"></span><h2>APGD (EOT + PGD)<a class="headerlink" href="#module-torchattacks.attacks.apgd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchattacks.attacks.apgd.APGD">
+<em class="property">class </em><code class="descclassname">torchattacks.attacks.apgd.</code><code class="descname">APGD</code><span class="sig-paren">(</span><em>model</em>, <em>eps=0.3</em>, <em>alpha=0.00784313725490196</em>, <em>iters=40</em>, <em>sampling=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/apgd.html#APGD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.apgd.APGD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comment on “Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network”
+[<a class="reference external" href="https://arxiv.org/abs/1907.00895">https://arxiv.org/abs/1907.00895</a>]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>nn.Module</em>) – model to attack.</li>
+<li><strong>eps</strong> (<em>float</em>) – strength of the attack or maximum perturbation. (DEFALUT : 0.3)</li>
+<li><strong>alpha</strong> (<em>float</em>) – step size. (DEFALUT : 2/255)</li>
+<li><strong>iters</strong> (<em>int</em>) – max iterations. (DEFALUT : 40)</li>
+<li><strong>sampling</strong> (<em>int</em>) – the number of models to sample. (DEFALUT : 100)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Shape:</dt>
+<dd><ul class="first last simple">
+<li>images: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span> where <cite>N = number of batches</cite>, <cite>C = number of channels</cite>,        <cite>H = height</cite> and <cite>W = width</cite>. It must have a range [0, 1].</li>
+<li>labels: <span class="math notranslate nohighlight">\((N)\)</span> where each value <span class="math notranslate nohighlight">\(y_i\)</span> is <span class="math notranslate nohighlight">\(0 \leq y_i \leq\)</span> <cite>number of labels</cite>.</li>
+<li>output: <span class="math notranslate nohighlight">\((N, C, H, W)\)</span>.</li>
+</ul>
+</dd>
+<dt>Examples::</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attack</span> <span class="o">=</span> <span class="n">torchattacks</span><span class="o">.</span><span class="n">APGD</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adv_images</span> <span class="o">=</span> <span class="n">attack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="torchattacks.attacks.apgd.APGD.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>images</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attacks/apgd.html#APGD.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attacks.apgd.APGD.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overridden.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="attack.html" class="btn btn-neutral float-left" title="Attack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, harrykim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

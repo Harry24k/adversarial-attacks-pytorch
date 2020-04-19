@@ -4,17 +4,26 @@ import torch.nn as nn
 from ..attack import Attack
 
 class BIM(Attack):
-    """
-    BIM in the paper 'Adversarial Examples in the Physical World'
+    r"""
+    BIM or iterative-FGSM in the paper 'Adversarial Examples in the Physical World'
     [https://arxiv.org/abs/1607.02533]
 
     Arguments:
-        model (nn.Module): a model to attack.
-        eps (float): epsilon in the paper. (DEFALUT : 4/255)
-        alpha (float): alpha in the paper. (DEFALUT : 1/255)
+        model (nn.Module): model to attack.
+        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 4/255)
+        alpha (float): step size. (DEFALUT : 1/255)
         iters (int): max iterations. (DEFALUT : 0)
     
-    NOTE:: If iters set to 0, iters will be automatically decided following the paper.
+    .. note:: If iters set to 0, iters will be automatically decided following the paper.
+    
+    Shape:
+        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
+        - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
+        - output: :math:`(N, C, H, W)`.
+          
+    Examples::
+        >>> attack = torchattacks.BIM(model, eps=4/255, alpha=1/255, iters=0)
+        >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, eps=4/255, alpha=1/255, iters=0):
         super(BIM, self).__init__("BIM", model)
@@ -26,6 +35,9 @@ class BIM(Attack):
             self.iters = iters
         
     def forward(self, images, labels):
+        r"""
+        Overridden.
+        """
         images = images.to(self.device)
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()

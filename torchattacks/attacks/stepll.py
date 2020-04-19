@@ -4,17 +4,28 @@ import torch.nn as nn
 from ..attack import Attack
 
 class StepLL(Attack):
-    """
+    r"""
     iterative least-likely class attack in the paper 'Adversarial Examples in the Physical World'
     [https://arxiv.org/abs/1607.02533]
 
     Arguments:
-        model (nn.Module): a model to attack.
-        eps (float): epsilon in the paper. (DEFALUT : 4/255)
-        alpha (float): alpha in the paper. (DEFALUT : 1/255)
+        model (nn.Module): model to attack.
+        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 4/255)
+        alpha (float): step size. (DEFALUT : 1/255)
         iters (int): max iterations. (DEFALUT : 0)
     
-    NOTE:: If iters set to 0, iters will be automatically decided following the paper.
+    .. note:: If iters set to 0, iters will be automatically decided following the paper.
+    
+    Shape:
+        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
+        - output: :math:`(N, C, H, W)`.
+          
+    Examples::
+        >>> attack = torchattacks.StepLL(model, eps=4/255, alpha=1/255, iters=0)
+        >>> adv_images = attack(images, labels)
+        
+    .. note:: Step-ll dosen't need any labels. However, for compatibility with other attacks, `labels` exists as input parameter in `forward` method. It is set to None by Default.
+        
     """
     def __init__(self, model, eps=4/255, alpha=1/255, iters=0):
         super(StepLL, self).__init__("StepLL", model)
@@ -25,7 +36,10 @@ class StepLL(Attack):
         else :
             self.iters = iters
         
-    def forward(self, images, labels):
+    def forward(self, images, labels=None):
+        r"""
+        Overridden.
+        """
         images = images.to(self.device)
         
         outputs = self.model(images)

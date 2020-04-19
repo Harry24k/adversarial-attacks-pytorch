@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Attack &mdash; torchattacks 1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'1.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Attacks" href="attacks.html" />
+    <link rel="prev" title="torchattacks v1.2" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> torchattacks
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attacks.html">Attacks</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">torchattacks</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Attack</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/attack.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-torchattacks">
+<span id="attack"></span><h1>Attack<a class="headerlink" href="#module-torchattacks" title="Permalink to this headline">¶</a></h1>
+<p>Modules</p>
+<hr class="docutils" />
+<span class="target" id="module-torchattacks.attack"></span><dl class="class">
+<dt id="torchattacks.attack.Attack">
+<em class="property">class </em><code class="descclassname">torchattacks.attack.</code><code class="descname">Attack</code><span class="sig-paren">(</span><em>name</em>, <em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attack.html#Attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attack.Attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all attacks.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It will automatically set device to the device where given model is.
+Also, it will only change the original model’s <cite>training mode</cite> to <cite>test</cite> with <cite>.eval()</cite> when attacking, and will return to the original <cite>training mode</cite> after attack is over.</p>
+</div>
+<dl class="method">
+<dt id="torchattacks.attack.Attack.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attack.html#Attack.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attack.Attack.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>It defines the computation performed at every call.
+Should be overridden by all subclasses.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchattacks.attack.Attack.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em>, <em>data_loader</em>, <em>accuracy=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attack.html#Attack.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attack.Attack.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save adversarial images as torch.tensor from data_loader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>str</em>) – save path.</li>
+<li><strong>data_loader</strong> (<em>torch.utils.data.DataLoader</em>) – original images and labels.</li>
+<li><strong>accuracy</strong> (<em>bool</em>) – If you don’t want to know about accuaracy of the model during save process, set accuracy as False. (DEFAULT : True)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchattacks.attack.Attack.set_mode">
+<code class="descname">set_mode</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchattacks/attack.html#Attack.set_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchattacks.attack.Attack.set_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether the attack return adversarial images as <cite>int</cite> or <cite>float</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> (<em>str</em>) – ‘float’ or ‘int’. (DEFAULT : ‘float’)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="attacks.html" class="btn btn-neutral float-right" title="Attacks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="torchattacks v1.2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, harrykim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

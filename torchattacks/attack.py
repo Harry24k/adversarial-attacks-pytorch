@@ -1,25 +1,106 @@
 import torch
 
 class Attack(object):
-    """
-    An abstract class representing attacks.
-
-    Arguments:
-        name (string): name of the attack.
-        model (nn.Module): a model to attack.
-
-    .. note:: device("cpu" or "cuda") will be automatically determined by a given model.
+    r"""
+    Base class for all attacks.
     
+    .. note::
+        It will automatically set device to the device where given model is.
+        Also, it will only change the original model's `training mode` to `test` with `.eval()` when attacking, and will return to the original `training mode` after attack is over.
     """
     def __init__(self, name, model):
-        self.attack = name
+        r"""
+        Initializes internal Attack state.
         
+        Arguments:
+            name (str) : name of attack.
+            model (nn.Module): model to attack.
+        """
+        
+        self.attack = name
         self.model = model
         self.model_name = str(model).split("(")[0]
+        
         self.training = model.training
-        self.device = torch.device("cuda" if next(model.parameters()).is_cuda else "cpu")
+        self.device = next(model.parameters()).device
+        
         self.mode = 'float'
                 
+    # It defines the computation performed at every call.
+    # Should be overridden by all subclasses.
+    def forward(self, *input):
+        r"""
+        It defines the computation performed at every call.
+        Should be overridden by all subclasses.
+        """
+        raise NotImplementedError
+    
+    # Determine return all adversarial images as 'int' OR 'float'.
+    def set_mode(self, mode):
+        r"""
+        Determine whether the attack return adversarial images as `int` or `float`.
+        
+        Arguments:
+            mode (str) : 'float' or 'int'. (DEFAULT : 'float')
+            
+        """
+        if mode == 'float' :
+            self.mode = 'float'
+        elif mode == 'int' :
+            self.mode = 'int'
+        else :
+            raise ValueError(mode + " is not valid")
+    
+    # Save image data as torch tensor from data_loader.
+    # If you don't want to know about accuaracy of the model, set accuracy as False.
+    def save(self, file_name, data_loader, accuracy=True):
+        r"""
+        Save adversarial images as torch.tensor from data_loader.
+        
+        Arguments:
+            file_name (str) : save path.
+            data_loader (torch.utils.data.DataLoader) : original images and labels.
+            accuracy (bool) : If you don't want to know about accuaracy of the model during save process, set accuracy as False. (DEFAULT : True)
+            
+        """
+        self.model.eval()
+        
+        image_list = []
+        label_list = []
+        
+        correct = 0
+        total = 0
+        
+        total_batch = len(data_loader)
+        
+        for step, (images, labels) in enumerate(data_loader) :
+            adv_images = self.__call__(images, labels)
+          
+            image_list.append(adv_images.cpu())
+            label_list.append(labels.cpu())
+            
+            if self.mode == 'int' :
+                adv_images = adv_images.float()/255
+            
+            if accuracy :
+                outputs = self.model(adv_images)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels.to(self.device)).sum()
+       
+                acc = 100 * float(correct) / total
+                print('- Save Progress : %2.2f %% / Accuracy : %2.2f %%' % ((step+1)/total_batch*100, acc), end='\r')
+            else :
+                print('- Save Progress : %2.2f %%        ' %((step+1)/total_batch*100), end='\r')
+            
+        
+        x = torch.cat(image_list, 0)
+        y = torch.cat(label_list, 0)
+        torch.save((x, y), file_name)
+        print('\n- Save Complete!')
+        
+        self._switch_model()
+        
     # Whole structure of the model will be NOT displayed for print pretty.        
     def __str__(self):
         info = self.__dict__.copy()
@@ -47,20 +128,6 @@ class Attack(object):
         else :
             self.model.eval()
     
-    # It Defines the computation performed at every call.
-    # Should be overridden by all subclasses.
-    def forward(self, *input):
-        raise NotImplementedError
-    
-    # Determine return all adversarial images as 'int' OR 'float'.
-    def set_mode(self, mode):
-        if mode == 'float' :
-            self.mode = 'float'
-        elif mode == 'int' :
-            self.mode = 'int'
-        else :
-            raise ValueError(mode + " is not valid")
-    
     # DEPRECIATED : update model is not necessary because torch model is called by reference.
     '''
     # Update the model to be used
@@ -68,48 +135,6 @@ class Attack(object):
         self.model = model
         self.training = model.training
     '''
-        
-    # Save image data as torch tensor from data_loader.
-    # If you don't want to know about accuaracy of the model, set accuracy as False.
-    def save(self, file_name, data_loader, accuracy=True):
-        
-        self.model.eval()
-        
-        image_list = []
-        label_list = []
-        
-        correct = 0
-        total = 0
-        
-        total_batch = len(data_loader)
-        
-        for step, (images, labels) in enumerate(data_loader) :
-            adv_images = self.__call__(images, labels)
-          
-            image_list.append(adv_images.cpu())
-            label_list.append(labels.cpu())
-            
-            if self.mode == 'int' :
-                adv_images = adv_images.float()/255
-            
-            if accuracy :
-                outputs = self.model(adv_images)
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels.to(self.device)).sum()
-
-            print('- Save Progress : %2.2f %%        ' %((step+1)/total_batch*100), end='\r')
-        
-        if accuracy :
-            acc = 100 * float(correct) / total
-            print('\n- Accuracy of the model : %2.2f %%' % (acc), end='')
-        
-        x = torch.cat(image_list, 0)
-        y = torch.cat(label_list, 0)
-        torch.save((x, y), file_name)
-        print('\n- Save Complete!')
-        
-        self._switch_model()
         
     # DEPRECIATED  
     '''
