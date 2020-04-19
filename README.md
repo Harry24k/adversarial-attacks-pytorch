@@ -4,6 +4,8 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 
 There are popular attack methods and some utils.
 
+Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) for this package.
+
 ## Table of Contents
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
