@@ -142,3 +142,6 @@ This demo shows how to do adversarial training with this repository. The MNIST d
 * **attack.py** : 'device' will be decided by [next(model.parameters()).device](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/3#issue-602571865).
 * **Two attacks are merged** :
     * RPGD, PGD -> PGD
+
+### Version 1.3 (Stable)
+* **Package Re-uploaded**

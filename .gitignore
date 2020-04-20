@@ -5,6 +5,7 @@ demos/data/MNIST/*
 demos/data/cifar*
 */.*
 __*
+_*
 MENIFEST.in
 setup.cfg
 setup.py

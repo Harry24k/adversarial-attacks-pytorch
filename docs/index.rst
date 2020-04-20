@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-torchattacks v1.2
+torchattacks v1.3
 ========================================
 
 .. toctree::
