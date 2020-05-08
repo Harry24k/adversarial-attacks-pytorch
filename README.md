@@ -81,7 +81,7 @@ DeepFool | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blo
 * **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb)): 
 To make adversarial examples with the Imagenet dataset to fool [Inception v3](https://arxiv.org/abs/1512.00567). However, the Imagenet dataset is too large, so only '[Giant Panda](http://www.image-net.org/)' is used.
 
-* **Targeted PGD with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
+* **Targeted PGD with Imagenet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Targeted%20PGD%20with%20Imagenet.ipynb)): 
 It shows we can perturb images to be classified into the labels we want with targeted PGD.
 
 * **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
