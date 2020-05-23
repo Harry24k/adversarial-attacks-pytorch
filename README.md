@@ -97,7 +97,7 @@ This code shows how to do adversarial training with this repository. The MNIST d
 
 * **I want to use image normalization.** : In this case, you have to put normalize layer in the model. Please refer to [DEMO:White Box Attack with Imagenet](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb).
 
-* **There is no randomize process in my model, but attacks returns different results.** : [Some operations are non-deterministic with float tensors on GPU](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run ["torch.backends.cudnn.deterministic = True".](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch)
+* **There is no randomize process in my model, but attacks return different results.** : [Some operations are non-deterministic with float tensors on GPU](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run ["torch.backends.cudnn.deterministic = True".](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch)
 
 ## Update Records
 
