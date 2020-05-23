@@ -37,6 +37,13 @@ adversarial_images = pgd_attack(images, labels)
 * **WARNING** :: All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.
 * **WARNING** :: All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.
 
+
+### Frequently asked questions
+
+* **I want to use image normalization.** : In this case, you have to put normalize layer in the model. Please refer to [DEMO:White Box Attack with Imagenet](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb).
+
+* **There is no randomize process in my model, but attacks outputs different results.** : [Some operations are non-deterministic with float tensors on GPU](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run ["torch.backends.cudnn.deterministic = True".](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch)
+
 ## Attacks and Papers
 
 The papers and the methods with a brief summary and example.
