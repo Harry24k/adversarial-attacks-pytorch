@@ -12,7 +12,8 @@ Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
 3. [Demos](#Demos)
-4. [Update Records](#Update-Records)
+4. [Frequently Asked Questions](#Frequently-Asked-Questions)
+5. [Update Records](#Update-Records)
 
 ## Usage
 
@@ -37,12 +38,6 @@ adversarial_images = pgd_attack(images, labels)
 * **WARNING** :: All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.
 * **WARNING** :: All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.
 
-
-### Frequently asked questions
-
-* **I want to use image normalization.** : In this case, you have to put normalize layer in the model. Please refer to [DEMO:White Box Attack with Imagenet](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb).
-
-* **There is no randomize process in my model, but attacks outputs different results.** : [Some operations are non-deterministic with float tensors on GPU](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run ["torch.backends.cudnn.deterministic = True".](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch)
 
 ## Attacks and Papers
 
@@ -97,6 +92,12 @@ This demo provides an example of black box attack with two different models. Fir
 * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20with%20MNIST.ipynb)): 
 This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to test the model.
 
+
+## Frequently Asked Questions
+
+* **I want to use image normalization.** : In this case, you have to put normalize layer in the model. Please refer to [DEMO:White Box Attack with Imagenet](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20with%20Imagenet.ipynb).
+
+* **There is no randomize process in my model, but attacks outputs different results.** : [Some operations are non-deterministic with float tensors on GPU](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run ["torch.backends.cudnn.deterministic = True".](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch)
 
 ## Update Records
 
