@@ -14,6 +14,7 @@ Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/
 3. [Demos](#Demos)
 4. [Frequently Asked Questions](#Frequently-Asked-Questions)
 5. [Update Records](#Update-Records)
+6. [Other Recommended Sites and Packages](#Other-Recommended-Sites-and-Packages)
 
 ## Usage
 
@@ -110,3 +111,17 @@ This code shows how to do adversarial training with this repository. The MNIST d
 ### Version 1.4 (Stable)
 * **PGD** :
     * Now it supports targeted mode.
+    
+    
+## Other Recommended Sites and Packages
+
+* **Adversarial Defense Leaderboard : **
+    * [https://www.robust-ml.org/](https://www.robust-ml.org/)
+    * [https://robust.vision/benchmark/leaderboard/](https://robust.vision/benchmark/leaderboard/)
+    * [https://github.com/MadryLab/mnist_challenge](https://github.com/MadryLab/mnist_challenge)
+    * [https://github.com/MadryLab/cifar10_challenge](https://github.com/MadryLab/cifar10_challenge)
+
+* **Adversarial Attack Packages :**
+    * [https://github.com/IBM/adversarial-robustness-toolbox](https://github.com/IBM/adversarial-robustness-toolbox) : Adversarial attack + defense package made by IBM. **TensorFlow, Keras, Pyotrch available.**
+    * [https://github.com/bethgelab/foolbox](https://github.com/bethgelab/foolbox) : Adversarial attack package made by [Bethge Lab](http://bethgelab.org/). **TensorFlow, Pyotrch available.**
+    * [https://github.com/tensorflow/cleverhans](https://github.com/tensorflow/cleverhans) : Adversarial attack package made by Google Brain. **TensorFlow available.**
