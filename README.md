@@ -115,7 +115,7 @@ This code shows how to do adversarial training with this repository. The MNIST d
     
 ## Other Recommended Sites and Packages
 
-* **Adversarial Defense Leaderboard : **
+* **Adversarial Defense Leaderboard :**
     * [https://www.robust-ml.org/](https://www.robust-ml.org/)
     * [https://robust.vision/benchmark/leaderboard/](https://robust.vision/benchmark/leaderboard/)
     * [https://github.com/MadryLab/mnist_challenge](https://github.com/MadryLab/mnist_challenge)
