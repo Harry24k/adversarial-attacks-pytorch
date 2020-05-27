@@ -103,10 +103,10 @@ This code shows how to do adversarial training with this repository. The MNIST d
 ## Update Records
 
 ### ~Version 1.2 (Unstable : DON'T USE)
-* **Pip packages were corrupted by accumulating previous versions**
+* **Pip packages were corrupted by accumulating previous versions.**
 
 ### Version 1.3 (Stable)
-* **Pip Package Re-uploaded**
+* **Pip Package Re-uploaded.**
 
 ### Version 1.4 (Stable)
 * **PGD** :
