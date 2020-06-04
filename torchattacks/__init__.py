@@ -6,5 +6,6 @@ from .attacks.cw import CW
 from .attacks.pgd import PGD
 from .attacks.apgd import APGD
 from .attacks.deepfool import DeepFool
+from .attacks.multiattack import MultiAttack
 
-__version__ = 1.4
+__version__ = 1.5

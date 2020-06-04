@@ -43,7 +43,7 @@ class PGD(Attack):
         loss = nn.CrossEntropyLoss()
         if self.targeted :
             loss = lambda x,y : -nn.CrossEntropyLoss()(x,y)
-
+            
         ori_images = images.clone().detach()
                 
         if self.random_start :

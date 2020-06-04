@@ -50,7 +50,7 @@ class Attack(object):
             self.mode = 'int'
         else :
             raise ValueError(mode + " is not valid")
-    
+            
     # Save image data as torch tensor from data_loader.
     # If you don't want to know about accuaracy of the model, set accuracy as False.
     def save(self, file_name, data_loader, accuracy=True):

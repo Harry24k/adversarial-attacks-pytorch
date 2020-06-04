@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import warnings
+
 import torch.optim as optim
 
 from ..attack import Attack
@@ -93,8 +95,8 @@ class CW(Attack):
             # Early Stop when loss does not converge.
             if step % (self.iters//10) == 0 :
                 if cost > prev :
-                    print('CW Attack is stopped due to CONVERGENCE....')
-                    return a
+                    warnings.warn("\n * Early Stopped cause loss does not converge", Warning)
+                    return (1/2*(nn.Tanh()(w) + 1)).detach()
                 prev = cost
             
             print('- CW Attack Progress : %2.2f %%        ' %((step+1)/self.iters*100), end='\r')
