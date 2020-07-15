@@ -11,7 +11,7 @@ class TPGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 8/2553)
+        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 8/255)
         alpha (float): alpha in the paper. (DEFALUT : 2/255)
         iters (int): step size. (DEFALUT : 7)
         
@@ -20,8 +20,8 @@ class TPGD(Attack):
         - output: :math:`(N, C, H, W)`.
           
     Examples::
-        >>> attack = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=7)
-        >>> adv_images = attack(images, labels)
+        >>> attack = torchattacks.TPGD(model, eps=8/255, alpha=2/255, iters=7)
+        >>> adv_images = attack(images)
         
     """
     def __init__(self, model, eps=8/255, alpha=2/255, iters=7):
