@@ -41,13 +41,13 @@ class FFGSM(Attack):
         outputs = self.model(images)
         cost = loss(outputs, labels).to(self.device)
 
-        delta = torch.rand_like(images).uniform_(-eps, eps)
+        delta = torch.rand_like(images).uniform_(-self.eps, self.eps)
 
         grad = torch.autograd.grad(cost, images, 
                                    retain_graph=False, create_graph=False)[0]
 
-        delta = delta + alpha*grad.sign()
-        delta = torch.clamp(delta, min=-eps, max=eps)
+        delta = delta + self.alpha*grad.sign()
+        delta = torch.clamp(delta, min=-self.eps, max=self.eps)
         
         adv_images = images.detach() + delta
         

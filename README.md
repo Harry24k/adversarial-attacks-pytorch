@@ -67,7 +67,13 @@ If you want to get attacks built in *Function*, please refer below repositories.
 
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
   - APGD(EOT + PGD)
-
+  
+* **Fast is better than free: Revisiting adversarial training"** : [Paper](https://arxiv.org/abs/2001.03994)
+  - FFGSM(Fast's FGSM)
+  
+* **Theoretically Principled Trade-off between Robustness and Accuracy"** : [Paper](https://arxiv.org/abs/1901.08573)
+  - TPGD(TRADES' PGD)
+  
 Attack | Clean | Adversarial
 :---: | :---: | :---:
 FGSM | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/fgsm.png" width="300" height="300">
@@ -120,9 +126,12 @@ This code shows an example of PGD with N-random-restarts.
     * MultiAttack added.
     * With it, you can use PGD with N-random-restarts or stronger attacks with different methods.
     
-### Version 1.6 (Stable)
+### Version 2.0 (Stable)
 * **FFGSM** :
     * New FGSM proposed by [Eric Wong et al.](https://arxiv.org/abs/2001.03994) added.
+   
+* **TPGD** :
+    * PGD(Linf) based on KL-Divergence loss proposed by [Hongyang Zhang et al.](https://arxiv.org/abs/1901.08573) added.
     
 ## Recommended Sites and Packages
 
