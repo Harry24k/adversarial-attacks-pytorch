@@ -7,3 +7,4 @@ from .pgd import PGD
 from .apgd import APGD
 from .deepfool import DeepFool
 from .multiattack import MultiAttack
+from .ffgsm import FFGSM

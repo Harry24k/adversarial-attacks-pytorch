@@ -7,5 +7,6 @@ from .attacks.pgd import PGD
 from .attacks.apgd import APGD
 from .attacks.deepfool import DeepFool
 from .attacks.multiattack import MultiAttack
+from .ffgsm import FFGSM
 
-__version__ = 1.5
+__version__ = 1.6

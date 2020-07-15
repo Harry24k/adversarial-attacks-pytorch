@@ -115,10 +115,14 @@ This code shows an example of PGD with N-random-restarts.
 * **PGD** :
     * Now it supports targeted mode.
     
-### Version 1.5 (Stable)
+### Version 1.5
 * **MultiAttack** :
     * MultiAttack added.
     * With it, you can use PGD with N-random-restarts or stronger attacks with different methods.
+    
+### Version 1.6 (Stable)
+* **FFGSM** :
+    * New FGSM proposed by [Eric Wong et al.](https://arxiv.org/abs/2001.03994) added.
     
 ## Recommended Sites and Packages
 
