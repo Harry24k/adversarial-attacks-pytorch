@@ -50,3 +50,13 @@ Attacks
    ~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgd
     :members:
+    
+   FFGSM (Fast's FGSM)
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.ffgsm
+    :members:
+    
+   TPGD (TRADES' PGD)
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.tpgd
+    :members:
