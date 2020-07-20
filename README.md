@@ -141,20 +141,16 @@ This code shows an example of PGD with N-random-restarts.
     * MultiAttack added.
     * With it, you can use PGD with N-random-restarts or stronger attacks with different methods.
     
-### Version 2.0
+### Version 2.3 (Stable)
+* **steps instead of iters** :
+    * For compatibility reasons, all iters are changed to steps.
+    
 * **FFGSM** :
     * New FGSM proposed by [Eric Wong et al.](https://arxiv.org/abs/2001.03994) added.
    
 * **TPGD** :
     * PGD(Linf) based on KL-Divergence loss proposed by [Hongyang Zhang et al.](https://arxiv.org/abs/1901.08573) added.
     
-### Version 2.1
-* **steps instead of iters** :
-    * For compatibility reasons, all iters are changed to steps.
-    
-### Version 2.2 (Stable)
-* **FFGSM** :
-    * Error solved.
 
 ## Recommended Sites and Packages
 

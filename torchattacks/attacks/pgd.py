@@ -45,26 +45,24 @@ class PGD(Attack):
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
 
-        ori_images = images.clone().detach()
+        adv_images = images.clone().detach()
 
         if self.random_start:
             # Starting at a uniformly random point
-            images = images + torch.empty_like(images).uniform_(-self.eps, self.eps)
-            images = torch.clamp(images, min=0, max=1)
+            adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
+            adv_images = torch.clamp(adv_images, min=0, max=1)
 
         for i in range(self.steps):
-            images.requires_grad = True
-            outputs = self.model(images)
+            adv_images.requires_grad = True
+            outputs = self.model(adv_images)
 
             cost = self.sign*loss(outputs, labels).to(self.device)
 
-            grad = torch.autograd.grad(cost, images,
+            grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
 
-            adv_images = images + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
-            images = torch.clamp(ori_images + delta, min=0, max=1).detach()
-
-        adv_images = images
+            adv_images = adv_images.detach() + self.alpha*grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

@@ -36,6 +36,7 @@ class TPGD(Attack):
         Overridden.
         """
         images = images.to(self.device)
+        
         adv_images = images.clone().detach() + 0.001*torch.randn_like(images).to(self.device).detach()
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
@@ -53,7 +54,7 @@ class TPGD(Attack):
                                        retain_graph=False, create_graph=False)[0]
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            eta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
-            adv_images = torch.clamp(adv_images + eta, min=0, max=1).detach()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

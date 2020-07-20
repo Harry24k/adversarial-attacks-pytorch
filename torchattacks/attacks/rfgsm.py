@@ -40,20 +40,18 @@ class RFGSM(Attack):
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
 
-        images = images + self.alpha*torch.randn_like(images).sign()
-        images = torch.clamp(images, min=0, max=1).detach()
+        adv_images = images.clone().detach() + self.alpha*torch.randn_like(images).sign()
+        adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for i in range(self.steps):
-            images.requires_grad = True
-            outputs = self.model(images)
+            adv_images.requires_grad = True
+            outputs = self.model(adv_images)
             cost = loss(outputs, labels).to(self.device)
 
-            grad = torch.autograd.grad(cost, images,
+            grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
 
-            adv_images = images + (self.eps-self.alpha)*grad.sign()
-            images = torch.clamp(adv_images, min=0, max=1).detach()
-
-        adv_images = images
+            adv_images = adv_images + (self.eps-self.alpha)*grad.sign()
+            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         return adv_images
