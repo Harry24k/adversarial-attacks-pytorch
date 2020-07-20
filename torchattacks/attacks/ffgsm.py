@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from ..attack import Attack
 
+
 class FFGSM(Attack):
     r"""
     'Fast is better than free: Revisiting adversarial training'
@@ -28,7 +29,7 @@ class FFGSM(Attack):
         super(FFGSM, self).__init__("FFGSM", model)
         self.eps = eps
         self.alpha = alpha
-    
+
     def forward(self, images, labels):
         r"""
         Overridden.
@@ -37,18 +38,19 @@ class FFGSM(Attack):
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
 
+        ori_images = images.clone().detach()
+        images = images + self.alpha*torch.randn_like(images).uniform_(-self.eps, self.eps)
+        images = torch.clamp(images, min=0, max=1).detach()
         images.requires_grad = True
+
         outputs = self.model(images)
         cost = loss(outputs, labels).to(self.device)
 
-        delta = torch.rand_like(images).uniform_(-self.eps, self.eps)
-
-        grad = torch.autograd.grad(cost, images, 
+        grad = torch.autograd.grad(cost, images,
                                    retain_graph=False, create_graph=False)[0]
 
-        delta = delta + self.alpha*grad.sign()
-        delta = torch.clamp(delta, min=-self.eps, max=self.eps)
-        
-        adv_images = images.detach() + delta
-        
+        adv_images = images + self.alpha*grad.sign()
+        delta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
+        adv_images = torch.clamp(ori_images + delta, min=0, max=1).detach()
+
         return adv_images
