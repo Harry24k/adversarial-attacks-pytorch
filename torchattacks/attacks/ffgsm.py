@@ -38,19 +38,19 @@ class FFGSM(Attack):
         labels = labels.to(self.device)
         loss = nn.CrossEntropyLoss()
 
-        ori_images = images.clone().detach()
-        images = images + self.alpha*torch.randn_like(images).uniform_(-self.eps, self.eps)
-        images = torch.clamp(images, min=0, max=1).detach()
-        images.requires_grad = True
+        adv_images = images.clone().detach()
+        adv_images = adv_images + torch.randn_like(images).uniform_(-self.eps, self.eps)
+        adv_images = torch.clamp(adv_images, min=0, max=1).detach()
+        adv_images.requires_grad = True
 
-        outputs = self.model(images)
+        outputs = self.model(adv_images)
         cost = loss(outputs, labels).to(self.device)
 
-        grad = torch.autograd.grad(cost, images,
+        grad = torch.autograd.grad(cost, adv_images,
                                    retain_graph=False, create_graph=False)[0]
 
-        adv_images = images + self.alpha*grad.sign()
-        delta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
-        adv_images = torch.clamp(ori_images + delta, min=0, max=1).detach()
+        adv_images = adv_images + self.alpha*grad.sign()
+        delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+        adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

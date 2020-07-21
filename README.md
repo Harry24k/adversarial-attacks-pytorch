@@ -141,7 +141,7 @@ This code shows an example of PGD with N-random-restarts.
     * MultiAttack added.
     * With it, you can use PGD with N-random-restarts or stronger attacks with different methods.
     
-### Version 2.3 (Stable)
+### Version 2.4 (Stable)
 * **steps instead of iters** :
     * For compatibility reasons, all iters are changed to steps.
     
