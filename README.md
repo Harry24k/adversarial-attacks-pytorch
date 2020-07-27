@@ -54,11 +54,11 @@ If you want to get attacks built in *Function*, please refer below repositories.
 
 * **Explaining and harnessing adversarial examples** : [Paper](https://arxiv.org/abs/1412.6572), [Repo](https://github.com/Harry24k/FGSM-pytorch)
   
-- FGSM
+  - FGSM
   
 * **DeepFool: a simple and accurate method to fool deep neural networks** : [Paper](https://arxiv.org/abs/1511.04599)
   
-- DeepFool
+  - DeepFool
   
 * **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533), [Repo](https://github.com/Harry24k/AEPW-pytorch)
   - BIM or iterative-FSGM
@@ -66,15 +66,15 @@ If you want to get attacks built in *Function*, please refer below repositories.
 
 * **Towards Evaluating the Robustness of Neural Networks** : [Paper](https://arxiv.org/abs/1608.04644), [Repo](https://github.com/Harry24k/CW-pytorch)
   
-- CW(L2)
+  - CW(L2)
   
 * **Ensemble Adversarial Traning : Attacks and Defences** : [Paper](https://arxiv.org/abs/1705.07204), [Repo](https://github.com/Harry24k/RFGSM-pytorch)
   
-- RFGSM
+  - RFGSM
   
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083), [Repo](https://github.com/Harry24k/PGD-pytorch)
   
-- PGD(Linf)
+  - PGD(Linf)
   
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
   
