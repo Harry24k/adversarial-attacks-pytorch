@@ -1,17 +1,17 @@
 
-### ~~v0.3~~~~
+### ~~v0.3~~
 * ~~**New Attacks** : FGSM, IFGSM, IterLL, RFGSM, CW(L2), PGD are added.~~
 * ~~**Demos** are uploaded.~~
 
-### ~~v0.4~~~~
+### ~~v0.4~~
 * ~~**DO NOT USE** : 'init.py' is omitted.~~
 
-### ~~v0.5~~~~
+### ~~v0.5~~
 * ~~**Package name changed** : 'attacks' is changed to 'torchattacks'.~~
 * ~~**New Attack** : APGD is added.~~
 * ~~**attack.py** : 'update_model' method is added.~~
 
-### ~~v0.6~~~~
+### ~~v0.6~~
 * ~~**Error Solved** :~~ 
     * ~~Before this version, even after getting an adversarial image, the model remains evaluation mode.~~
     * ~~To solve this, below methods are modified.~~
