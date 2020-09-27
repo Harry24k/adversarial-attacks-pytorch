@@ -53,32 +53,32 @@ Implemented adversarial attacks in the papers.
 
 The distance measure in parentheses.
 
-* **Explaining and harnessing adversarial examples** : [Paper](https://arxiv.org/abs/1412.6572)
+* **Explaining and harnessing adversarial examples**: [Paper](https://arxiv.org/abs/1412.6572)
   
   - FGSM (Linf)
-* **DeepFool: a simple and accurate method to fool deep neural networks** : [Paper](https://arxiv.org/abs/1511.04599)
+* **DeepFool: a simple and accurate method to fool deep neural networks**: [Paper](https://arxiv.org/abs/1511.04599)
   
   - DeepFool (L2)
-* **Adversarial Examples in the Physical World** : [Paper](https://arxiv.org/abs/1607.02533)
+* **Adversarial Examples in the Physical World**: [Paper](https://arxiv.org/abs/1607.02533)
   
   - BIM or iterative-FSGM (Linf)
-* **Towards Evaluating the Robustness of Neural Networks** : [Paper](https://arxiv.org/abs/1608.04644)
+* **Towards Evaluating the Robustness of Neural Networks**: [Paper](https://arxiv.org/abs/1608.04644)
   
   - CW (L2)
-* **Ensemble Adversarial Traning : Attacks and Defences** : [Paper](https://arxiv.org/abs/1705.07204)
+* **Ensemble Adversarial Traning: Attacks and Defences**: [Paper](https://arxiv.org/abs/1705.07204)
   
   - RFGSM (Linf)
-* **Towards Deep Learning Models Resistant to Adversarial Attacks** : [Paper](https://arxiv.org/abs/1706.06083)
+* **Towards Deep Learning Models Resistant to Adversarial Attacks**: [Paper](https://arxiv.org/abs/1706.06083)
   
   - PGD (Linf)
-* **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"** : [Paper](https://arxiv.org/abs/1907.00895)
+* **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"**: [Paper](https://arxiv.org/abs/1907.00895)
   
   - APGD or EOT + PGD  (Linf)
-* **Theoretically Principled Trade-off between Robustness and Accuracy"** : [Paper](https://arxiv.org/abs/1901.08573)
+* **Theoretically Principled Trade-off between Robustness and Accuracy"**: [Paper](https://arxiv.org/abs/1901.08573)
 
   - TPGD  (Linf)
 
-* **Fast is better than free: Revisiting adversarial training"** : [Paper](https://arxiv.org/abs/2001.03994)
+* **Fast is better than free: Revisiting adversarial training"**: [Paper](https://arxiv.org/abs/2001.03994)
   
   - FFGSM  (Linf)
   
@@ -119,17 +119,17 @@ Update records can be found in [here](https://github.com/Harry24k/adversairal-at
 
 ##  Recommended Sites and Packages
 
-* **Adversarial Attack Packages :**
+* **Adversarial Attack Packages:**
   
-    * [https://github.com/IBM/adversarial-robustness-toolbox](https://github.com/IBM/adversarial-robustness-toolbox) : Adversarial attack and defense package made by IBM. **TensorFlow, Keras, Pyotrch available.**
-    * [https://github.com/bethgelab/foolbox](https://github.com/bethgelab/foolbox) : Adversarial attack package made by [Bethge Lab](http://bethgelab.org/). **TensorFlow, Pyotrch available.**
-    * [https://github.com/tensorflow/cleverhans](https://github.com/tensorflow/cleverhans) : Adversarial attack package made by Google Brain. **TensorFlow available.**
-    * [https://github.com/BorealisAI/advertorch](https://github.com/BorealisAI/advertorch) : Adversarial attack package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
-    * [https://github.com/DSE-MSU/DeepRobust](https://github.com/DSE-MSU/DeepRobust) : Adversarial attack (especially on GNN) package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
+    * [https://github.com/IBM/adversarial-robustness-toolbox](https://github.com/IBM/adversarial-robustness-toolbox): Adversarial attack and defense package made by IBM. **TensorFlow, Keras, Pyotrch available.**
+    * [https://github.com/bethgelab/foolbox](https://github.com/bethgelab/foolbox): Adversarial attack package made by [Bethge Lab](http://bethgelab.org/). **TensorFlow, Pyotrch available.**
+    * [https://github.com/tensorflow/cleverhans](https://github.com/tensorflow/cleverhans): Adversarial attack package made by Google Brain. **TensorFlow available.**
+    * [https://github.com/BorealisAI/advertorch](https://github.com/BorealisAI/advertorch): Adversarial attack package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
+    * [https://github.com/DSE-MSU/DeepRobust](https://github.com/DSE-MSU/DeepRobust): Adversarial attack (especially on GNN) package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
     
     
     
-* **Adversarial Defense Leaderboard :**
+* **Adversarial Defense Leaderboard:**
   
     * [https://github.com/MadryLab/mnist_challenge](https://github.com/MadryLab/mnist_challenge)
     * [https://github.com/MadryLab/cifar10_challenge](https://github.com/MadryLab/cifar10_challenge)
@@ -140,5 +140,5 @@ Update records can be found in [here](https://github.com/Harry24k/adversairal-at
     
 * **Adversarial Attack and Defense Papers:**
   
-    * https://nicholas.carlini.com/writing/2019/all-adversarial-example-papers.html : A Complete List of All (arXiv) Adversarial Example Papers made by Nicholas Carlini.
-    * https://github.com/chawins/Adversarial-Examples-Reading-List : Adversarial Examples Reading List made by Chawin Sitawarin.
+    * https://nicholas.carlini.com/writing/2019/all-adversarial-example-papers.html: A Complete List of All (arXiv) Adversarial Example Papers made by Nicholas Carlini.
+    * https://github.com/chawins/Adversarial-Examples-Reading-List: Adversarial Examples Reading List made by Chawin Sitawarin.
