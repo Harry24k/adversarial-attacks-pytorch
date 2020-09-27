@@ -6,7 +6,7 @@ Torchattacksis a PyTorch library that contains adversarial attacks to generate a
 
 
 
-## :page_with_curl: Table of Contents
+## Table of Contents
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
 3. [Documentation](#Documentation)
