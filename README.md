@@ -2,7 +2,7 @@
 
 This is a lightweight repository of adversarial attacks for Pytorch.
 
-Torchattacksis a PyTorch library that contains adversarial attacks to generateadversarial examples and to verify the robustness of deep learning models.
+Torchattacksis a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
 
 
 
@@ -14,7 +14,7 @@ Torchattacksis a PyTorch library that contains adversarial attacks to generatead
 
 
 
-## :pencil2: Usage
+## Usage
 
 ### :clipboard: Dependencies
 
@@ -47,7 +47,7 @@ adversarial_images = atk(images, labels)
 
 
 
-## :notebook_with_decorative_cover: Attacks and Papers
+## Attacks and Papers
 
 Implemented adversarial attacks in the papers.
 
@@ -89,7 +89,7 @@ Clean | Adversarial
 
 
 
-## :books: Documentation
+## Documentation
 
 ### :book: ReadTheDocs
 
@@ -111,13 +111,13 @@ BibTex is under *preparation*.
 
 
 
-### :watch: Update Records
+### :anchor: Update Records
 
 Update records can be found in [here](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/Update Records.md).
 
 
 
-## :anchor: Recommended Sites and Packages
+##  Recommended Sites and Packages
 
 * **Adversarial Attack Packages :**
   
