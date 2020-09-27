@@ -6,10 +6,10 @@ from ..attack import Attack
 
 class RFGSM(Attack):
     r"""
-    'Ensemble Adversarial Training : Attacks and Defences'
+    R+FGSM in the paper 'Ensemble Adversarial Training : Attacks and Defences'
     [https://arxiv.org/abs/1705.07204]
-
-    RFGSM = Random Noise Start + FGSM
+    
+    Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
@@ -38,6 +38,7 @@ class RFGSM(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
         adv_images = images.clone().detach() + self.alpha*torch.randn_like(images).sign()
@@ -46,7 +47,7 @@ class RFGSM(Attack):
         for i in range(self.steps):
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
-            cost = loss(outputs, labels).to(self.device)
+            cost = self._targeted*loss(outputs, labels).to(self.device)
 
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]

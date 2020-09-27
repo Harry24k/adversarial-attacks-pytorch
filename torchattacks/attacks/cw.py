@@ -9,14 +9,13 @@ from ..attack import Attack
 
 class CW(Attack):
     r"""
-    CW(L2) attack in the paper 'Towards Evaluating the Robustness of Neural Networks'
+    CW in the paper 'Towards Evaluating the Robustness of Neural Networks'
     [https://arxiv.org/abs/1608.04644]
 
+    Distance Measure : L2
         
     Arguments:
         model (nn.Module): model to attack.
-        targeted (bool): True - change image closer to a given label.
-                         False  - change image away from a given label. (DEFALUT : False)
         c (float): c in the paper. parameter for box-constraint. (DEFALUT : 1e-4)    
             :math:`minimize \Vert\frac{1}{2}(tanh(w)+1)-x\Vert^2_2+c\cdot f(\frac{1}{2}(tanh(w)+1))`    
         kappa (float): kappa (also written as 'confidence') in the paper. (DEFALUT : 0)
@@ -35,17 +34,14 @@ class CW(Attack):
         >>> attack = torchattacks.CW(model, targeted=False, c=1e-4, kappa=0, steps=1000, lr=0.01)
         >>> adv_images = attack(images, labels)
         
-    .. note:: There are serveral NOT IMPLEMENTED part of the paper/other codes as follows :
+    .. note:: NOT IMPLEMENTED methods in the paper due to time consuming.
     
-        (1) Binary search method for c : It costs too many times.
+        (1) Binary search for c.
         
-        (2) Optimization on tanh space : Not in the paper, but in the other codes.
-        
-        (3) Choosing method best l2 adversaries : It costs too many times.
+        (2) Choosing best L2 adversaries.
     """
-    def __init__(self, model, targeted=False, c=1e-4, kappa=0, steps=1000, lr=0.01):
+    def __init__(self, model, c=1e-4, kappa=0, steps=1000, lr=0.01):
         super(CW, self).__init__("CW", model)
-        self.targeted = targeted
         self.c = c
         self.kappa = kappa
         self.steps = steps
@@ -57,6 +53,7 @@ class CW(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
 
         # f-function in the paper
         def f(x):
@@ -66,13 +63,7 @@ class CW(Attack):
             i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
             j = torch.masked_select(outputs, one_hot_labels.bool())
 
-            # If targeted, optimize for making the other class most likely
-            if self.targeted:
-                return torch.clamp(i-j, min=-self.kappa)
-
-            # If untargeted, optimize for making the other class most likely
-            else:
-                return torch.clamp(j-i, min=-self.kappa)
+            return torch.clamp(self._targeted*(j-i), min=-self.kappa)
 
         w = torch.zeros_like(images).to(self.device)
         w.detach_()
@@ -97,7 +88,7 @@ class CW(Attack):
             # Early Stop when loss does not converge.
             if step % (self.steps//10) == 0:
                 if cost > prev:
-                    warnings.warn("Early Stopped cause the loss did not converged.")
+                    warnings.warn("Early stopped because the loss is not converged.")
                     return (1/2*(nn.Tanh()(w) + 1)).detach()
                 prev = cost
 

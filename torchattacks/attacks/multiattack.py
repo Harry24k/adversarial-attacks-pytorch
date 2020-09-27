@@ -23,6 +23,7 @@ class MultiAttack(Attack):
     def __init__(self, model, attacks):
         super(MultiAttack, self).__init__("MultiAttack", model)
         self.attacks = attacks
+        self._attack_mode = 'only_original'
 
         # Check validity
         ids = []
@@ -30,7 +31,7 @@ class MultiAttack(Attack):
             ids.append(id(attack.model))
 
         if len(set(ids)) != 1:
-            warnings.warn("At least one of attacks have different model.")
+            raise ValueError("At least one of attacks is referencing a different model.")
 
     def forward(self, images, labels):
         r"""
@@ -46,16 +47,19 @@ class MultiAttack(Attack):
 
             outputs = self.model(adv_images)
             _, pre = torch.max(outputs.data, 1)
+            
+            corrects = (pre == labels[fails])
+            wrongs = ~corrects
 
-            succeeds = torch.masked_select(fails, pre != labels[fails])
-            succeeds_of_fails = torch.masked_select(torch.arange(fails.shape[0]).to(self.device), pre != labels[fails])
+            succeeds = torch.masked_select(fails, wrongs)
+            succeeds_of_fails = torch.masked_select(torch.arange(fails.shape[0]).to(self.device), wrongs)
 
             final_images[succeeds] = adv_images[succeeds_of_fails]
 
-            fails = torch.masked_select(fails, pre == labels[fails])
+            fails = torch.masked_select(fails, corrects)
 
             if len(fails) == 0:
-                warnings.warn("Ealry Stopped cause all images are successfully perturbed.")
+                warnings.warn("Ealry stopped because all images are successfully perturbed.")
                 break
 
         return final_images

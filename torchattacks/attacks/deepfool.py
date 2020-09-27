@@ -8,6 +8,8 @@ class DeepFool(Attack):
     'DeepFool: A Simple and Accurate Method to Fool Deep Neural Networks'
     [https://arxiv.org/abs/1511.04599]
 
+    Distance Measure : L2
+    
     Arguments:
         model (nn.Module): model to attack.
         steps (int): number of steps. (DEFALUT : 3)
@@ -25,6 +27,7 @@ class DeepFool(Attack):
     def __init__(self, model, steps=3):
         super(DeepFool, self).__init__("DeepFool", model)
         self.steps = steps
+        self._attack_mode = 'only_original'
 
     def forward(self, images, labels=None):
         r"""

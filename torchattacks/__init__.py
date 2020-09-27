@@ -10,4 +10,4 @@ from .attacks.multiattack import MultiAttack
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
 
-__version__ = 2.4
+__version__ = 2.5

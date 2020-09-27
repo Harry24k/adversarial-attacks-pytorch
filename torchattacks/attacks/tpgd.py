@@ -7,8 +7,10 @@ from ..attack import Attack
 
 class TPGD(Attack):
     r"""
-    PGD(Linf) based on KL-Divergence loss in the paper 'Theoretically Principled Trade-off between Robustness and Accuracy'
+    PGD based on KL-Divergence loss in the paper 'Theoretically Principled Trade-off between Robustness and Accuracy'
     [https://arxiv.org/abs/1901.08573]
+    
+    Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
@@ -30,6 +32,7 @@ class TPGD(Attack):
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
+        self._attack_mode = 'only_original'
 
     def forward(self, images, labels=None):
         r"""

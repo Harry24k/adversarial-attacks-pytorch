@@ -6,14 +6,14 @@ from ..attack import Attack
 
 class FFGSM(Attack):
     r"""
-    'Fast is better than free: Revisiting adversarial training'
+    New FGSM proposed in 'Fast is better than free: Revisiting adversarial training'
     [https://arxiv.org/abs/2001.03994]
-
-    FFGSM = Random Noise Start + Large Alpha + FGSM
+    
+    Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 8/255)
+        eps (float): maximum perturbation. (DEFALUT : 8/255)
         alpha (float): step size. (DEFALUT : 10/255)
     
     Shape:
@@ -36,6 +36,7 @@ class FFGSM(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
         adv_images = images.clone().detach()
@@ -44,7 +45,7 @@ class FFGSM(Attack):
         adv_images.requires_grad = True
 
         outputs = self.model(adv_images)
-        cost = loss(outputs, labels).to(self.device)
+        cost = self._targeted*loss(outputs, labels).to(self.device)
 
         grad = torch.autograd.grad(cost, adv_images,
                                    retain_graph=False, create_graph=False)[0]

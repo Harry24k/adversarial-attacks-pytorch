@@ -9,9 +9,11 @@ class BIM(Attack):
     BIM or iterative-FGSM in the paper 'Adversarial Examples in the Physical World'
     [https://arxiv.org/abs/1607.02533]
 
+    Distance Measure : Linf
+    
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 4/255)
+        eps (float): maximum perturbation. (DEFALUT : 4/255)
         alpha (float): step size. (DEFALUT : 1/255)
         steps (int): number of steps. (DEFALUT : 0)
     
@@ -41,12 +43,13 @@ class BIM(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
         for i in range(self.steps):
             images.requires_grad = True
             outputs = self.model(images)
-            cost = loss(outputs, labels).to(self.device)
+            cost = self._targeted*loss(outputs, labels).to(self.device)
 
             grad = torch.autograd.grad(cost, images,
                                        retain_graph=False,

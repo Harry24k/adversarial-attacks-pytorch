@@ -8,16 +8,18 @@ class APGD(Attack):
     r"""
     Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"
     [https://arxiv.org/abs/1907.00895]
+    
+    Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 0.3)
+        eps (float): maximum perturbation. (DEFALUT : 0.3)
         alpha (float): step size. (DEFALUT : 2/255)
         steps (int): number of steps. (DEFALUT : 40)
-        sampling (int) : the number of models to sample. (DEFALUT : 100)
+        sampling (int) : number of models to estimate the mean gradient. (DEFALUT : 100)
 
     Shape:
-        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
+        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
 
@@ -39,6 +41,7 @@ class APGD(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
         ori_images = images.clone().detach()
@@ -51,7 +54,7 @@ class APGD(Attack):
             for j in range(self.sampling):
 
                 outputs = self.model(images)
-                cost = loss(outputs, labels).to(self.device)
+                cost = self._targeted*loss(outputs, labels).to(self.device)
 
                 grad += torch.autograd.grad(cost, images,
                                             retain_graph=False,

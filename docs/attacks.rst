@@ -26,11 +26,6 @@ Attacks
    .. automodule:: torchattacks.attacks.bim
     :members:
     
-   Step-LL
-   ~~~~~~~~~
-   .. automodule:: torchattacks.attacks.stepll
-    :members:
-    
    CW
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.cw
@@ -51,12 +46,12 @@ Attacks
    .. automodule:: torchattacks.attacks.apgd
     :members:
     
-   FFGSM (Fast's FGSM)
-   ~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.ffgsm
-    :members:
-    
    TPGD (TRADES' PGD)
    ~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.tpgd
+    :members:
+
+   FFGSM (Fast's FGSM)
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.ffgsm
     :members:

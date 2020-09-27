@@ -6,16 +6,17 @@ from ..attack import Attack
 
 class PGD(Attack):
     r"""
-    PGD(Linf) attack in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
+    PGD in the paper 'Towards Deep Learning Models Resistant to Adversarial Attacks'
     [https://arxiv.org/abs/1706.06083]
+    
+    Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 0.3)
+        eps (float): maximum perturbation. (DEFALUT : 0.3)
         alpha (float): step size. (DEFALUT : 2/255)
         steps (int): number of steps. (DEFALUT : 40)
         random_start (bool): using random initialization of delta. (DEFAULT : False)
-        targeted (bool): using targeted attack with input labels as targeted labels. (DEFAULT : False)
         
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -23,19 +24,16 @@ class PGD(Attack):
         - output: :math:`(N, C, H, W)`.
           
     Examples::
-        >>> attack = torchattacks.PGD(model, eps = 4/255, alpha = 8/255, steps=40, random_start=False)
+        >>> attack = torchattacks.PGD(model, eps = 8/255, alpha = 1/255, steps=40, random_start=False)
         >>> adv_images = attack(images, labels)
         
     """
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40, random_start=False, targeted=False):
+    def __init__(self, model, eps=0.3, alpha=2/255, steps=40, random_start=False):
         super(PGD, self).__init__("PGD", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.random_start = random_start
-        self.sign = 1
-        if targeted:
-            self.sign = -1
 
     def forward(self, images, labels):
         r"""
@@ -43,6 +41,7 @@ class PGD(Attack):
         """
         images = images.to(self.device)
         labels = labels.to(self.device)
+        labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
         adv_images = images.clone().detach()
@@ -56,7 +55,7 @@ class PGD(Attack):
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
 
-            cost = self.sign*loss(outputs, labels).to(self.device)
+            cost = self._targeted*loss(outputs, labels).to(self.device)
 
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
