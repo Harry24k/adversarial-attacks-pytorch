@@ -74,11 +74,11 @@ The distance measure in parentheses.
 * **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"**: [Paper](https://arxiv.org/abs/1907.00895)
   
   - APGD or EOT + PGD  (Linf)
-* **Theoretically Principled Trade-off between Robustness and Accuracy"**: [Paper](https://arxiv.org/abs/1901.08573)
+* **Theoretically Principled Trade-off between Robustness and Accuracy**: [Paper](https://arxiv.org/abs/1901.08573)
 
   - TPGD  (Linf)
 
-* **Fast is better than free: Revisiting adversarial training"**: [Paper](https://arxiv.org/abs/2001.03994)
+* **Fast is better than free: Revisiting adversarial training**: [Paper](https://arxiv.org/abs/2001.03994)
   
   - FFGSM  (Linf)
   
