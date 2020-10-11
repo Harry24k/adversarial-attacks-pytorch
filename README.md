@@ -99,7 +99,16 @@ Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/
 
 ### :bell: ​Citation
 
-BibTex is under *preparation*.
+If you want to cite this package, please use the following BibTex:
+
+```
+@article{kim2020torchattacks,
+  title={Torchattacks: A Pytorch Repository for Adversarial Attacks},
+  author={Kim, Hoki},
+  journal={arXiv preprint arXiv:2010.01950},
+  year={2020}
+}
+```
 
 
 
