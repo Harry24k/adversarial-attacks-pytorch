@@ -2,7 +2,7 @@
 
 This is a lightweight repository of adversarial attacks for Pytorch.
 
-Torchattacksis a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
+Torchattacks is a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
 
 
 
