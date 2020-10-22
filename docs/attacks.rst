@@ -55,3 +55,8 @@ Attacks
    ~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.ffgsm
     :members:
+
+   MIFGSM
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.mifgsm
+    :members:
