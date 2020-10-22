@@ -67,6 +67,6 @@ class MIFGSM(Attack):
             ).float() * b
             images = torch.clamp(c, max=1).detach()
 
-        adv_images = images
+        adv_images = torch.clamp(images, min=0.0, max=1.0)
 
         return adv_images
