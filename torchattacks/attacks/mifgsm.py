@@ -23,12 +23,12 @@ class MIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.MIFGSM(model, eps=8/255, decay=1.0, steps=5)
+        >>> attack = torchattacks.MIFGSM(model, eps=8/255, steps=5, decay=1.0)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8 / 255, decay=1.0, steps=5):
+    def __init__(self, model, eps=8/255, steps=5, decay=1.0):
         super(MIFGSM, self).__init__("MIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -49,24 +49,23 @@ class MIFGSM(Attack):
             images.requires_grad = True
             outputs = self.model(images)
 
-            cost = self._targeted * loss(outputs, labels).to(self.device)
-            grad = torch.autograd.grad(
-                cost, images, retain_graph=False, create_graph=False
-            )[0]
+            cost = self._targeted*loss(outputs, labels).to(self.device)
+            grad = torch.autograd.grad(cost, images, 
+                                       retain_graph=False, create_graph=False)[0]
             grad_norm = torch.norm(grad, p=1)
             grad /= grad_norm
-            grad += momentum * self.decay
+            grad += momentum*self.decay
             momentum = grad
 
-            adv_images = images + self.alpha * grad.sign()
+            adv_images = images + self.alpha*grad.sign()
 
             a = torch.clamp(images - self.eps, min=0)
-            b = (adv_images >= a).float() * adv_images + (a > adv_images).float() * a
+            b = (adv_images >= a).float()*adv_images + (a > adv_images).float()*a
             c = (b > images + self.eps).float() * (images + self.eps) + (
                 images + self.eps >= b
             ).float() * b
             images = torch.clamp(c, max=1).detach()
 
-        adv_images = torch.clamp(images, min=0.0, max=1.0)
+        adv_images = torch.clamp(images, min=0, max=1).detach()
 
         return adv_images

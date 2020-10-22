@@ -59,9 +59,11 @@ class BIM(Attack):
 
             a = torch.clamp(images - self.eps, min=0)
             b = (adv_images >= a).float()*adv_images + (a > adv_images).float()*a
-            c = (b > images+self.eps).float()*(images+self.eps) + (images+self.eps >= b).float()*b
+            c = (b > images+self.eps).float()*(images+self.eps) + (
+                images + self.eps >= b
+            ).float()*b
             images = torch.clamp(c, max=1).detach()
 
-        adv_images = images
+        adv_images = torch.clamp(images, min=0, max=1).detach()
 
         return adv_images

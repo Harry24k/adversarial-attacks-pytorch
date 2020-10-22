@@ -10,7 +10,8 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
 3. [Documentation](#Documentation)
-6. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
+4. [Contribution](#Contribution)
+5. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
 
 
 
@@ -53,36 +54,30 @@ Implemented adversarial attacks in the papers.
 
 The distance measure in parentheses.
 
-* **Explaining and harnessing adversarial examples**: [Paper](https://arxiv.org/abs/1412.6572)
-  
+* **Explaining and harnessing adversarial examples (Dec 2014)**: [Paper](https://arxiv.org/abs/1412.6572)
   - FGSM (Linf)
-* **DeepFool: a simple and accurate method to fool deep neural networks**: [Paper](https://arxiv.org/abs/1511.04599)
-  
+* **DeepFool: a simple and accurate method to fool deep neural networks (Nov 2015)**: [Paper](https://arxiv.org/abs/1511.04599)
   - DeepFool (L2)
-* **Adversarial Examples in the Physical World**: [Paper](https://arxiv.org/abs/1607.02533)
-  
+* **Adversarial Examples in the Physical World (Jul 2016)**: [Paper](https://arxiv.org/abs/1607.02533)
   - BIM or iterative-FSGM (Linf)
-* **Towards Evaluating the Robustness of Neural Networks**: [Paper](https://arxiv.org/abs/1608.04644)
-  
+* **Towards Evaluating the Robustness of Neural Networks (Aug 2016)**: [Paper](https://arxiv.org/abs/1608.04644)
   - CW (L2)
-* **Ensemble Adversarial Traning: Attacks and Defences**: [Paper](https://arxiv.org/abs/1705.07204)
-  
+* **Ensemble Adversarial Traning: Attacks and Defences (May 2017)**: [Paper](https://arxiv.org/abs/1705.07204)
   - RFGSM (Linf)
-* **Towards Deep Learning Models Resistant to Adversarial Attacks**: [Paper](https://arxiv.org/abs/1706.06083)
-  
+* **Towards Deep Learning Models Resistant to Adversarial Attacks (Jun 2017)**: [Paper](https://arxiv.org/abs/1706.06083)
   - PGD (Linf)
-* **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"**: [Paper](https://arxiv.org/abs/1907.00895)
+* **Boosting Adversarial Attacks with Momentum (Oct 2017)**: [Paper](https://arxiv.org/abs/1710.06081)
+  * MIFGSM (Linf) - :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926)
+* **Theoretically Principled Trade-off between Robustness and Accuracy (Jan 2019)**: [Paper](https://arxiv.org/abs/1901.08573)
+  - TPGD (Linf)
+* **Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network" (Jul 2019)**: [Paper](https://arxiv.org/abs/1907.00895)
+  - APGD or [EOT](https://arxiv.org/abs/1707.07397) + PGD (Linf)
+* **Fast is better than free: Revisiting adversarial training (Jan 2020)**: [Paper](https://arxiv.org/abs/2001.03994)
+  - FFGSM (Linf)
   
-  - APGD or EOT + PGD  (Linf)
-* **Theoretically Principled Trade-off between Robustness and Accuracy**: [Paper](https://arxiv.org/abs/1901.08573)
 
-  - TPGD  (Linf)
 
-* **Fast is better than free: Revisiting adversarial training**: [Paper](https://arxiv.org/abs/2001.03994)
-  
-  - FFGSM  (Linf)
-  
-  
+
 Clean | Adversarial
 :---: | :---:
 <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300">
@@ -114,15 +109,21 @@ If you want to cite this package, please use the following BibTex:
 
 ### :rocket: Demos
 
-- **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(Imagenet).ipynb)):  Using _torchattacks_ to make adversarial examples with the [Imagenet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
-- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
-- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
+- **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(Imagenet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28Imagenet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with the [Imagenet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
+- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
+- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
 
 
 ### :anchor: Update Records
 
 Update records can be found in [here](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/Update%20Records.md).
+
+
+
+## Contribution
+
+Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/adversarial-attacks-pytorch/pulls) :blush:
 
 
 
