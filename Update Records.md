@@ -58,14 +58,20 @@
 
   * **Pip packages were corrupted by accumulating previous versions.**
 
+
+
 ### v1.3
 
   * **Pip Package Re-uploaded.**
+
+
 
 ### v1.4
 
   * `PGD`:
     * Now PGD supports targeted mode.
+
+
 
 ### v1.5
 
@@ -73,14 +79,18 @@
     * MultiAttack is added.
     * With it, you can use PGD with N-random-restarts or stronger attacks with different methods.
 
+
+
 ### v2.4
 
   * **`steps` instead of `iters`**:
     * For compatibility reasons, all `iters` are changed to `steps`.
-  * `TPGD` :
+  * `TPGD`:
     * PGD (Linf) based on KL-Divergence loss proposed by [Hongyang Zhang et al.](https://arxiv.org/abs/1901.08573) is added.
-  * `FFGSM` :
+  * `FFGSM`:
     * New FGSM proposed by [Eric Wong et al.](https://arxiv.org/abs/2001.03994) is added.
+
+
 
 ### v2.5
 
@@ -89,3 +99,10 @@
       * `StepLL` is merged to `BIM`. Please use `set_attack_mode(mode='least_likely')`.
       * However, there are several methods that can not be changed by `set_attack_mode` such as `Deepfool`
     * `set_return_type`: Instead of `set_mode`, now `set_return_type` will be the method to change the return type of adversarial images.
+
+
+
+### v2.6
+
+  * ``MIFGSM``:
+    * https://github.com/Harry24k/adversarial-attacks-pytorch/pull/10
