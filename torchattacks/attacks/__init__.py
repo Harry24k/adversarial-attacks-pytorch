@@ -9,3 +9,4 @@ from .deepfool import DeepFool
 from .multiattack import MultiAttack
 from .ffgsm import FFGSM
 from .tpgd import TPGD
+from .mifgsm import MIFGSM

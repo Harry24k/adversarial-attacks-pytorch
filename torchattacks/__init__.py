@@ -9,5 +9,6 @@ from .attacks.deepfool import DeepFool
 from .attacks.multiattack import MultiAttack
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
+from .attacks.mifgsm import MIFGSM
 
 __version__ = 2.5
