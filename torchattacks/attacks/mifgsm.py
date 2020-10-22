@@ -43,25 +43,22 @@ class MIFGSM(Attack):
         labels = labels.to(self.device)
         labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
-        momentum = 0.0
+        momentum = torch.zeros_like(images).to(self.device)
 
         for i in range(self.steps):
             images.requires_grad = True
             outputs = self.model(images)
 
-            cost = loss(outputs, labels).to(self.device)
+            cost = self._targeted * loss(outputs, labels).to(self.device)
             grad = torch.autograd.grad(
                 cost, images, retain_graph=False, create_graph=False
             )[0]
             grad_norm = torch.norm(grad, p=1)
-            if self._targeted > 0:
-                grad /= grad_norm
-            else:
-                grad = cost / grad_norm
+            grad /= grad_norm
             grad += momentum * self.decay
             momentum = grad
 
-            adv_images = images + self._targeted * self.alpha * grad.sign()
+            adv_images = images + self.alpha * grad.sign()
 
             a = torch.clamp(images - self.eps, min=0)
             b = (adv_images >= a).float() * adv_images + (a > adv_images).float() * a
