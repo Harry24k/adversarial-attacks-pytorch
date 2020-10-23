@@ -147,6 +147,7 @@ Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/
     * [https://github.com/tensorflow/cleverhans](https://github.com/tensorflow/cleverhans): Adversarial attack package made by Google Brain. **TensorFlow available.**
     * [https://github.com/BorealisAI/advertorch](https://github.com/BorealisAI/advertorch): Adversarial attack package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
     * [https://github.com/DSE-MSU/DeepRobust](https://github.com/DSE-MSU/DeepRobust): Adversarial attack (especially on GNN) package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
+    * https://github.com/fra31/auto-attack: An attack that is believed to be the strongest in existence. **TensorFlow, Pyotrch available.**
     
     
     
@@ -156,6 +157,7 @@ Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/
     * [https://github.com/MadryLab/cifar10_challenge](https://github.com/MadryLab/cifar10_challenge)
     * [https://www.robust-ml.org/](https://www.robust-ml.org/)
     * [https://robust.vision/benchmark/leaderboard/](https://robust.vision/benchmark/leaderboard/)
+    * https://github.com/fra31/auto-attack
     
     
     
