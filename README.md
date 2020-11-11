@@ -1,7 +1,6 @@
 # Adversarial-Attacks-Pytorch
 
 [![License](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch)](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch)
-[![Version](https://img.shields.io/github/v/release/Harry24k/adversarial-attacks-pytorch.svg)](https://img.shields.io/github/v/release/Harry24k/adversarial-attacks-pytorch.svg)
 [![Pypi](https://img.shields.io/pypi/v/torchattacks.svg)](https://img.shields.io/pypi/v/torchattacks)
 [![Documentation Status](https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest)](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/)
 
