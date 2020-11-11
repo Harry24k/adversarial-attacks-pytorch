@@ -1,5 +1,10 @@
 # Adversarial-Attacks-Pytorch
 
+[![License](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?style=plastic)](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?style=plastic)
+[![Version](https://img.shields.io/github/v/release/Harry24k/adversarial-attacks-pytorch.svg)](https://img.shields.io/github/v/release/Harry24k/adversarial-attacks-pytorch.svg)
+[![Pypi](https://img.shields.io/pypi/v/torchattacks.svg)](https://img.shields.io/pypi/v/torchattacks)
+[![Documentation Status](https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest)](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/)
+
 This is a lightweight repository of adversarial attacks for Pytorch.
 
 [Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
