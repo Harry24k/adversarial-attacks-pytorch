@@ -12,7 +12,7 @@ class DeepFool(Attack):
     
     Arguments:
         model (nn.Module): model to attack.
-        steps (int): number of steps. (DEFALUT : 3)
+        steps (int): number of steps. (DEFALUT: 3)
         
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -27,7 +27,7 @@ class DeepFool(Attack):
     def __init__(self, model, steps=3):
         super(DeepFool, self).__init__("DeepFool", model)
         self.steps = steps
-        self._attack_mode = 'only_original'
+        self._attack_mode = 'only_default'
 
     def forward(self, images, labels=None):
         r"""

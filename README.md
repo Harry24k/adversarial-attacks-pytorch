@@ -122,7 +122,7 @@ If you want to cite this package, please use the following BibTex:
 
 ### :rocket: Demos
 
-- **White Box Attack with Imagenet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(Imagenet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28Imagenet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with the [Imagenet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
+- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
 
 - **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
 

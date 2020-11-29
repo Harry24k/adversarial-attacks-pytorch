@@ -14,9 +14,9 @@ class TPGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 8/255)
-        alpha (float): step size. (DEFALUT : 2/255)
-        steps (int): number of steps. (DEFALUT : 7)
+        eps (float): strength of the attack or maximum perturbation. (DEFALUT: 8/255)
+        alpha (float): step size. (DEFALUT: 2/255)
+        steps (int): number of steps. (DEFALUT: 7)
         
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -32,7 +32,7 @@ class TPGD(Attack):
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
-        self._attack_mode = 'only_original'
+        self._attack_mode = 'only_default'
 
     def forward(self, images, labels=None):
         r"""

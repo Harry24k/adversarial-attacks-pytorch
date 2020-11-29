@@ -13,10 +13,10 @@ class APGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT : 0.3)
-        alpha (float): step size. (DEFALUT : 2/255)
-        steps (int): number of steps. (DEFALUT : 40)
-        sampling (int) : number of models to estimate the mean gradient. (DEFALUT : 100)
+        eps (float): maximum perturbation. (DEFALUT: 0.3)
+        alpha (float): step size. (DEFALUT: 2/255)
+        steps (int): number of steps. (DEFALUT: 40)
+        sampling (int) : number of models to estimate the mean gradient. (DEFALUT: 100)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -24,7 +24,7 @@ class APGD(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.APGD(model, eps = 4/255, alpha = 8/255, steps=40, sampling=100)
+        >>> attack = torchattacks.APGD(model, eps=4/255, alpha=8/255, steps=40, sampling=100)
         >>> adv_images = attack(images, labels)
 
     """

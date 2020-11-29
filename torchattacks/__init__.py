@@ -9,5 +9,6 @@ from .attacks.multiattack import MultiAttack
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
 from .attacks.mifgsm import MIFGSM
+from .attacks.vanila import VANILA
 
-__version__ = 2.6
+__version__ = 2.7

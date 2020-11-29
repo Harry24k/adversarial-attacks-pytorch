@@ -7,7 +7,7 @@ class Attack(object):
 
     .. note::
         It automatically set device to the device where given model is.
-        It temporarily changes the original model's training mode to `test`
+        It temporarily changes the model's training mode to `test`
         by `.eval()` only during an attack process.
     """
     def __init__(self, name, model):
@@ -27,8 +27,9 @@ class Attack(object):
         self.device = next(model.parameters()).device
         
         self._targeted = 1
-        self._attack_mode = 'original'
+        self._attack_mode = 'default'
         self._return_type = 'float'
+        self._target_map_function = lambda images, labels:labels
 
     def forward(self, *input):
         r"""
@@ -37,33 +38,39 @@ class Attack(object):
         """
         raise NotImplementedError
         
-    def set_attack_mode(self, mode):
+    def set_attack_mode(self, mode, target_map_function=None):
         r"""
         Set the attack mode.
   
         Arguments:
-            mode (str) : 'original' (DEFAULT)
+            mode (str) : 'default' (DEFAULT)
                          'targeted' - Use input labels as targeted labels.
                          'least_likely' - Use least likely labels as targeted labels.
+                         
+            target_map_function (function) :
 
         """
-        if self._attack_mode is 'only_original':
+        if self._attack_mode is 'only_default':
             raise ValueError("Changing attack mode is not supported in this attack method.")
             
-        if mode=="original":
-            self._attack_mode = "original"
+        if (mode is 'targeted') and (target_map_function is None):
+            raise ValueError("Please give a target_map_function, e.g., lambda images, labels:(labels+1)%10.")
+            
+        if mode=="default":
+            self._attack_mode = "default"
             self._targeted = 1
             self._transform_label = self._get_label
         elif mode=="targeted":
             self._attack_mode = "targeted"
             self._targeted = -1
-            self._transform_label = self._get_label
+            self._target_map_function = target_map_function
+            self._transform_label = self._get_target_label
         elif mode=="least_likely":
             self._attack_mode = "least_likely"
             self._targeted = -1
             self._transform_label = self._get_least_likely_label
         else:
-            raise ValueError(mode + " is not a valid mode. [Options : original, targeted, least_likely]")
+            raise ValueError(mode + " is not a valid mode. [Options : default, targeted, least_likely]")
             
     def set_return_type(self, type):
         r"""
@@ -138,6 +145,13 @@ class Attack(object):
         """
         return labels
     
+    def _get_target_label(self, images, labels):
+        r"""
+        Function for changing the attack mode.
+        Return input labels.
+        """
+        return self._target_map_function(images, labels)
+    
     def _get_least_likely_label(self, images, labels):
         r"""
         Function for changing the attack mode.
@@ -177,8 +191,8 @@ class Attack(object):
             del info[key]
         
         info['attack_mode'] = self._attack_mode
-        if info['attack_mode'] == 'only_original' :
-            info['attack_mode'] = 'original'
+        if info['attack_mode'] == 'only_default' :
+            info['attack_mode'] = 'default'
             
         info['return_type'] = self._return_type
         

@@ -106,3 +106,16 @@
 
   * ``MIFGSM``:
     * https://github.com/Harry24k/adversarial-attacks-pytorch/pull/10
+
+
+
+
+### v2.7
+
+  * ``VANILA``:
+    * Vanila version of torch.Attack
+  * **set_attack_mode**:
+    * For the targeted mode, target_map_function is required.
+  * **MutliAttack**:
+    * MutliAttack does not need a model as an input. It automatically get models from given attacks.
+    * Demo added.

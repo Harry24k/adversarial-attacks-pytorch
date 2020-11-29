@@ -16,12 +16,12 @@ class CW(Attack):
         
     Arguments:
         model (nn.Module): model to attack.
-        c (float): c in the paper. parameter for box-constraint. (DEFALUT : 1e-4)    
+        c (float): c in the paper. parameter for box-constraint. (DEFALUT: 1e-4)    
             :math:`minimize \Vert\frac{1}{2}(tanh(w)+1)-x\Vert^2_2+c\cdot f(\frac{1}{2}(tanh(w)+1))`    
-        kappa (float): kappa (also written as 'confidence') in the paper. (DEFALUT : 0)
+        kappa (float): kappa (also written as 'confidence') in the paper. (DEFALUT: 0)
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
-        steps (int): number of steps. (DEFALUT : 1000)
-        lr (float): learning rate of the Adam optimizer. (DEFALUT : 0.01)
+        steps (int): number of steps. (DEFALUT: 1000)
+        lr (float): learning rate of the Adam optimizer. (DEFALUT: 0.01)
         
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
     

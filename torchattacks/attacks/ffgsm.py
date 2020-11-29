@@ -13,8 +13,8 @@ class FFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT : 8/255)
-        alpha (float): step size. (DEFALUT : 10/255)
+        eps (float): maximum perturbation. (DEFALUT: 8/255)
+        alpha (float): step size. (DEFALUT: 10/255)
     
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].

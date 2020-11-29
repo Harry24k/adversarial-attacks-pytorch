@@ -13,9 +13,9 @@ class RFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (DEFALUT : 16/255)
-        alpha (float): step size. (DEFALUT : 8/255)
-        steps (int): number of steps. (DEFALUT : 1)
+        eps (float): strength of the attack or maximum perturbation. (DEFALUT: 16/255)
+        alpha (float): step size. (DEFALUT: 8/255)
+        steps (int): number of steps. (DEFALUT: 1)
     
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].

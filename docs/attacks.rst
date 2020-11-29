@@ -11,6 +11,11 @@ Attacks
    :undoc-members:
    :show-inheritance:
 
+   VANILA
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.vanila
+    :members:
+    
    FGSM
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.fgsm

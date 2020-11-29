@@ -13,8 +13,8 @@ class MIFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT : 8/255)
-        decay (float): momentum factor. (DEFAULT : 1.0)
+        eps (float): maximum perturbation. (DEFALUT: 8/255)
+        decay (float): momentum factor. (DEFAULT: 1.0)
         steps (int): number of iterations. (DEFAULT: 5)
 
     Shape:
