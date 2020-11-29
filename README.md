@@ -20,8 +20,9 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
 3. [Documentation](#Documentation)
-4. [Contribution](#Contribution)
-5. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
+4. [Expanding the Usage](#Expanding-the-Usage)
+5. [Contribution](#Contribution)
+6. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
 
 
 
@@ -129,9 +130,117 @@ If you want to cite this package, please use the following BibTex:
 
 
 
-### :anchor: Update Records
+## Expanding the Usage
 
-Update records can be found in [here](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/Update%20Records.md).
+Torchattacks supports collaboration with other attack packages.
+
+Through expending the usage, we can use fucntions in _torchattacks_ such as _save_, _multiattack_.
+
+
+
+###  :milky_way: AutoAttack
+
+* https://github.com/fra31/auto-attack
+* pip install git+https://github.com/fra31/auto-attack
+
+```python
+from torchattacks.attack import Attack
+import autoattack
+
+class AutoAttack(Attack):
+    def __init__(self, model, eps):
+        super(AutoAttack, self).__init__("AutoAttack", model)
+        self.adversary = autoattack.AutoAttack(self.model, norm='Linf', eps=eps, version='standard', verbose=False)
+        self._attack_mode = 'only_default'
+
+    def forward(self, images, labels):
+        adv_images = self.adversary.run_standard_evaluation(images.cuda(), labels.cuda(), bs=images.shape[0])
+        return adv_images
+
+atk = AutoAttack(model, eps=0.3)
+atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+```
+
+
+
+###  :milky_way: FoolBox
+
+* https://github.com/bethgelab/foolbox
+* pip install foolbox
+* e.g., L2BrendelBethge
+
+```python
+from torchattacks.attack import Attack
+import foolbox as fb
+
+class L2BrendelBethge(Attack):
+    def __init__(self, model):
+        super(L2BrendelBethge, self).__init__("L2BrendelBethge", model)
+        self.fmodel = fb.PyTorchModel(self.model, bounds=(0,1), device=self.device)
+        self.init_attack = fb.attacks.DatasetAttack()
+        self.adversary = fb.attacks.L2BrendelBethgeAttack(init_attack=self.init_attack)
+        self._attack_mode = 'only_default'
+        
+    def forward(self, images, labels):
+        images, labels = images.to(self.device), labels.to(self.device)
+        
+        # DatasetAttack
+        batch_size = len(images)
+        batches = [(images[:batch_size//2], labels[:batch_size//2]), (images[batch_size//2:], labels[batch_size//2:])]
+        self.init_attack.feed(model=self.fmodel, inputs=batches[0][0]) # feed 1st batch of inputs
+        self.init_attack.feed(model=self.fmodel, inputs=batches[1][0]) # feed 2nd batch of inputs
+        criterion = fb.Misclassification(labels)
+        init_advs = self.init_attack.run(self.fmodel, images, criterion)
+        
+        # L2BrendelBethge
+        adv_images = self.adversary.run(self.fmodel, images, labels, starting_points=init_advs)
+        return adv_images
+
+atk = L2BrendelBethge(model)
+atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+```
+
+
+
+###  :milky_way: Adversarial-Robustness-Toolbox (ART)
+
+* !git clone https://github.com/IBM/adversarial-robustness-toolbox
+* pip install foolbox
+* e.g., SaliencyMapMethod
+
+```python
+import torch.nn as nn
+import torch.optim as optim
+
+from torchattacks.attack import Attack
+
+import art.attacks.evasion as evasion
+from art.classifiers import PyTorchClassifier
+
+class JSMA(Attack):
+    def __init__(self, model, theta=1/255, gamma=0.15, batch_size=128):
+        super(JSMA, self).__init__("JSMA", model)
+        self.classifier = PyTorchClassifier(
+                            model=self.model,
+                            clip_values=(0, 1),
+                            loss=nn.CrossEntropyLoss(),
+                            optimizer=optim.Adam(self.model.parameters(), lr=0.01),
+                            input_shape=(1, 28, 28),
+                            nb_classes=10,
+        )
+        self.adversary = evasion.SaliencyMapMethod(classifier=self.classifier,
+                                                   theta=theta, gamma=gamma,
+                                                   batch_size=batch_size)
+        self.target_map_function = lambda labels: (labels+1)%10
+        self._attack_mode = 'only_default'
+        
+    def forward(self, images, labels):
+        adv_images = self.adversary.generate(images, self.target_map_function(labels))
+        return torch.tensor(adv_images).to(self.device)
+
+atk = JSMA(model)
+atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+```
 
 
 
