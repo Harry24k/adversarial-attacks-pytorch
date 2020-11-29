@@ -209,7 +209,7 @@ atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
 
 * !git clone https://github.com/IBM/adversarial-robustness-toolbox
 * pip install foolbox
-* e.g., SaliencyMapMethod
+* e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
 
 ```python
 import torch.nn as nn
