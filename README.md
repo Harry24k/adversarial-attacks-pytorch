@@ -8,7 +8,13 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 
 [Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
 
+<center>
 
+|                            Clean                             |                         Adversarial                          |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
+
+</center>
 
 ## Table of Contents
 1. [Usage](#Usage)
@@ -91,12 +97,6 @@ The distance measure in parentheses.
 
 
 
-Clean | Adversarial
-:---: | :---:
-<img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300">
-
-
-
 ## Documentation
 
 ### :book: ReadTheDocs
@@ -161,7 +161,8 @@ Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/
     * [https://github.com/MadryLab/cifar10_challenge](https://github.com/MadryLab/cifar10_challenge)
     * [https://www.robust-ml.org/](https://www.robust-ml.org/)
     * [https://robust.vision/benchmark/leaderboard/](https://robust.vision/benchmark/leaderboard/)
-    * https://github.com/fra31/auto-attack
+    * https://github.com/RobustBench/robustbench
+    * https://github.com/Harry24k/adversarial-defenses-pytorch
     
     
     
