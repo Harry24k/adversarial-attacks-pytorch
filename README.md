@@ -10,7 +10,7 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 
 <center>
 
-|                            Clean                             |                         Adversarial                          |
+|                         Clean Image                          |                      Adversarial Image                       |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
 
