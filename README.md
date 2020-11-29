@@ -150,11 +150,13 @@ import autoattack
 class AutoAttack(Attack):
     def __init__(self, model, eps):
         super(AutoAttack, self).__init__("AutoAttack", model)
-        self.adversary = autoattack.AutoAttack(self.model, norm='Linf', eps=eps, version='standard', verbose=False)
+        self.adversary = autoattack.AutoAttack(self.model, norm='Linf',
+                                               eps=eps, version='standard', verbose=False)
         self._attack_mode = 'only_default'
 
     def forward(self, images, labels):
-        adv_images = self.adversary.run_standard_evaluation(images.cuda(), labels.cuda(), bs=images.shape[0])
+        adv_images = self.adversary.run_standard_evaluation(images.cuda(), labels.cuda(),
+                                                            bs=images.shape[0])
         return adv_images
 
 atk = AutoAttack(model, eps=0.3)
@@ -186,7 +188,8 @@ class L2BrendelBethge(Attack):
         
         # DatasetAttack
         batch_size = len(images)
-        batches = [(images[:batch_size//2], labels[:batch_size//2]), (images[batch_size//2:], labels[batch_size//2:])]
+        batches = [(images[:batch_size//2], labels[:batch_size//2]),
+                   (images[batch_size//2:], labels[batch_size//2:])]
         self.init_attack.feed(model=self.fmodel, inputs=batches[0][0]) # feed 1st batch of inputs
         self.init_attack.feed(model=self.fmodel, inputs=batches[1][0]) # feed 2nd batch of inputs
         criterion = fb.Misclassification(labels)
@@ -221,13 +224,10 @@ class JSMA(Attack):
     def __init__(self, model, theta=1/255, gamma=0.15, batch_size=128):
         super(JSMA, self).__init__("JSMA", model)
         self.classifier = PyTorchClassifier(
-                            model=self.model,
-                            clip_values=(0, 1),
+                            model=self.model, clip_values=(0, 1),
                             loss=nn.CrossEntropyLoss(),
                             optimizer=optim.Adam(self.model.parameters(), lr=0.01),
-                            input_shape=(1, 28, 28),
-                            nb_classes=10,
-        )
+                            input_shape=(1, 28, 28), nb_classes=10)
         self.adversary = evasion.SaliencyMapMethod(classifier=self.classifier,
                                                    theta=theta, gamma=gamma,
                                                    batch_size=batch_size)
