@@ -141,7 +141,7 @@ Through expending the usage, we can use fucntions in _torchattacks_ such as _sav
 ###  :milky_way: AutoAttack
 
 * https://github.com/fra31/auto-attack
-* pip install git+https://github.com/fra31/auto-attack
+* `pip install git+https://github.com/fra31/auto-attack`
 
 ```python
 from torchattacks.attack import Attack
@@ -168,7 +168,7 @@ atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
 ###  :milky_way: FoolBox
 
 * https://github.com/bethgelab/foolbox
-* pip install foolbox
+* `pip install foolbox`
 * e.g., L2BrendelBethge
 
 ```python
@@ -207,8 +207,8 @@ atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
 
 ###  :milky_way: Adversarial-Robustness-Toolbox (ART)
 
-* !git clone https://github.com/IBM/adversarial-robustness-toolbox
-* pip install foolbox
+* https://github.com/IBM/adversarial-robustness-toolbox
+* `git clone https://github.com/IBM/adversarial-robustness-toolbox`
 * e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
 
 ```python
