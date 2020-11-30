@@ -110,7 +110,7 @@
 
 
 
-### v2.7
+### v2.8
 
   * ``VANILA``:
     * Vanila version of torch.Attack

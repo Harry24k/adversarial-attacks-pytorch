@@ -10,3 +10,4 @@ MENIFEST.in
 setup.cfg
 setup.py
 data/
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
