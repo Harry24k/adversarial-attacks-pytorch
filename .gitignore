@@ -4,11 +4,13 @@ torchattacks.egg-info/*
 demos/data/MNIST/*
 demos/data/cifar*
 */.*
-__*
-_*
+__pycache__
+_build
 MENIFEST.in
 setup.cfg
 setup.py
 data/
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 Untitled.ipynb
+_commit.bat
+_PGD BIM.pptx
