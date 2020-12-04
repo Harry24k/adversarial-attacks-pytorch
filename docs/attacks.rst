@@ -16,6 +16,11 @@ Attacks
    .. automodule:: torchattacks.attacks.vanila
     :members:
     
+   GN
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.gn
+    :members:
+    
    FGSM
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.fgsm
