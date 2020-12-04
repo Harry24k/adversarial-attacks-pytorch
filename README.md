@@ -6,13 +6,11 @@
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
 
-This is a lightweight repository of adversarial attacks for Pytorch.
-
-[Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
+[Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples.
 
 
 <p align="center">
-
+  
 |                         Clean Image                          |                      Adversarial Image                       |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
