@@ -10,7 +10,8 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 
 [Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples and to verify the robustness of deep learning models.
 
-<center>
+
+<p align="center">
 
 |                         Clean Image                          |                      Adversarial Image                       |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
