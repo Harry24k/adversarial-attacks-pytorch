@@ -1,8 +1,12 @@
 # Adversarial-Attacks-Pytorch
 
-[![License](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch)](https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch)
-[![Pypi](https://img.shields.io/pypi/v/torchattacks.svg)](https://img.shields.io/pypi/v/torchattacks)
-[![Documentation Status](https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest)](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/)
+<p align="center">
+  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch" /></a>
+  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg" /></a>
+  <a href="https://img.shields.io/pypi/v/torchattacks"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg" /></a>
+  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/actions?query=workflow:build"><img alt="Build Status" src="https://github.com/Harry24k/adversarial-attacks-pytorch/workflows/build/badge.svg" /></a>
+  <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
+</p>
 
 This is a lightweight repository of adversarial attacks for Pytorch.
 
