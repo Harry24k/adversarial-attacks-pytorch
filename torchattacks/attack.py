@@ -107,8 +107,8 @@ class Attack(object):
 
         total_batch = len(data_loader)
 
-        for step, (images, labels) in enumerate(data_loader):
-            adv_images = self.__call__(images, labels)
+        for step, data in enumerate(data_loader):
+            adv_images = self.__call__(*data)
 
             image_list.append(adv_images.cpu())
             label_list.append(labels.cpu())

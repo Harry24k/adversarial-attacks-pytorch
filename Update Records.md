@@ -94,7 +94,7 @@
 
 ### v2.5
 
-  * **Common methods are added**:
+  * **Methods for ``Attack`` are added**:
     * `set_attack_mode`: To set attack mode to `targeted` (Use input labels as targeted labels) or `least likely` (Use least likely labels as targeted labels), `set_attack_mode` is added.
       * `StepLL` is merged to `BIM`. Please use `set_attack_mode(mode='least_likely')`.
       * However, there are several methods that can not be changed by `set_attack_mode` such as `Deepfool`
@@ -114,11 +114,11 @@
 
   * ``VANILA``:
     * Vanila version of _torch.Attack_.
-  * **set_attack_mode**:
-    * For the targeted mode, target_map_function is required.
-  * **MultiAttack**:
+  * ``MultiAttack``:
     * MultiAttack does not need a model as an input. It automatically get models from given attacks.
     * Demo added.
+  * ``Attack.set_attack_mode``:
+    * For the targeted mode, target_map_function is required.
 
 
 
@@ -127,3 +127,11 @@
 
   * ``GN``:
     * Add guassian noise with given sigma.
+
+
+
+
+### v2.10.1
+
+  * ``TPGD``: Faster computation
+  * ``Attack``: ``save`` method is changed.
