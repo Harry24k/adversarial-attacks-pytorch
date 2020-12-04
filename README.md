@@ -17,7 +17,7 @@ This is a lightweight repository of adversarial attacks for Pytorch.
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
 
-</center>
+</p>
 
 ## Table of Contents
 1. [Usage](#Usage)
