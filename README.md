@@ -2,7 +2,6 @@
 
 <p>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch" /></a>
-  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg" /></a>
   <a href="https://img.shields.io/pypi/v/torchattacks"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
