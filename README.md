@@ -10,7 +10,7 @@
 
 
 <p align="center">
-  
+
 |                         Clean Image                          |                      Adversarial Image                       |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
@@ -104,6 +104,12 @@ The distance measure in parentheses.
 ### :book: ReadTheDocs
 
 Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) for this package.
+
+
+
+### :mag_right: Update Records
+
+Here is [update records](Update%20Records.md) of this package.
 
 
 
