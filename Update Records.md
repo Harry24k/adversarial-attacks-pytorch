@@ -54,10 +54,6 @@
 * ~~**Two attacks are merged** :~~
     * ~~RPGD, PGD -> PGD~~
 
-### ~v1.2 (DON'T USE)
-
-  * **Pip packages were corrupted by accumulating previous versions.**
-
 
 
 ### v1.3
