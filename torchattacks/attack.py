@@ -87,7 +87,7 @@ class Attack(object):
         else:
             raise ValueError(type + " is not a valid type. [Options : float, int]")
 
-    def save(self, save_path, data_loader, verbose=True):
+    def save(self, data_loader, save_path=None, verbose=True):
         r"""
         Save adversarial images as torch.tensor from given torch.utils.data.DataLoader.
 
@@ -107,8 +107,8 @@ class Attack(object):
 
         total_batch = len(data_loader)
 
-        for step, data in enumerate(data_loader):
-            adv_images = self.__call__(*data)
+        for step, (images, labels) in enumerate(data_loader):
+            adv_images = self.__call__(images, labels)
 
             image_list.append(adv_images.cpu())
             label_list.append(labels.cpu())
@@ -127,8 +127,10 @@ class Attack(object):
 
         x = torch.cat(image_list, 0)
         y = torch.cat(label_list, 0)
-        torch.save((x, y), save_path)
-        print('\n- Save Complete!')
+        
+        if save_path is not None:
+            torch.save((x, y), save_path)
+            print('\n- Save Complete!')
 
         self._switch_model()
         

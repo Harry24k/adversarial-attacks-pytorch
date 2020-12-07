@@ -127,7 +127,6 @@
 
 
 
-### v2.10.2
+### v2.10.3
 
   * ``TPGD``: Faster computation
-  * ``Attack``: ``save`` method is changed.
