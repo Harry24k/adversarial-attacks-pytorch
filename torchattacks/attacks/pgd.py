@@ -39,9 +39,10 @@ class PGD(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
-        labels = labels.to(self.device)
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
+        
         loss = nn.CrossEntropyLoss()
 
         adv_images = images.clone().detach()
@@ -49,13 +50,13 @@ class PGD(Attack):
         if self.random_start:
             # Starting at a uniformly random point
             adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
-            adv_images = torch.clamp(adv_images, min=0, max=1)
+            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for i in range(self.steps):
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
 
-            cost = self._targeted*loss(outputs, labels).to(self.device)
+            cost = self._targeted*loss(outputs, labels)
 
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]

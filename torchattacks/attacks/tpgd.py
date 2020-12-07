@@ -38,10 +38,10 @@ class TPGD(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
+        images = images.clone().detach().to(self.device)
         logit_ori = self.model(images).detach()
         
-        adv_images = images.clone().detach() + 0.001*torch.randn_like(images).to(self.device).detach()
+        adv_images = images + 0.001*torch.randn_like(images)
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         loss = nn.KLDivLoss(reduction='sum')
@@ -51,7 +51,7 @@ class TPGD(Attack):
             logit_adv = self.model(adv_images)
 
             cost = loss(F.log_softmax(logit_adv, dim=1),
-                        F.softmax(logit_ori, dim=1)).to(self.device)
+                        F.softmax(logit_ori, dim=1))
 
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]

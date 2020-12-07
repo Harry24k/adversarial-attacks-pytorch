@@ -130,3 +130,10 @@
 ### v2.10.3
 
   * ``TPGD``: Faster computation
+
+
+
+
+### v2.10.4
+
+  * ``attacks`` : To preserve the original gradient status of images, all attacks uses ``images.clone().detach()`` instead of `images`.

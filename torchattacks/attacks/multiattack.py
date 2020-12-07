@@ -39,8 +39,8 @@ class MultiAttack(Attack):
         Overridden.
         """
         fails = torch.arange(images.shape[0]).to(self.device)
-        final_images = images.clone().to(self.device)
-        labels = labels.to(self.device)
+        final_images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
 
         for i, attack in enumerate(self.attacks):
             # print('- Multi Attack Progress [%d / %d]             ' % ((i+1), len(self.attacks)), end='\r')

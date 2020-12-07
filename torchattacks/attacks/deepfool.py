@@ -33,7 +33,7 @@ class DeepFool(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
+        images = images.clone().detach().to(self.device)
 
         for b in range(images.shape[0]):
 

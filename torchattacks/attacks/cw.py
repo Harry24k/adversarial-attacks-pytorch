@@ -51,10 +51,10 @@ class CW(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
-        labels = labels.to(self.device)
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
-
+        
         # f-function in the paper
         def f(x):
             outputs = self.model(x)
@@ -65,7 +65,7 @@ class CW(Attack):
 
             return torch.clamp(self._targeted*(j-i), min=-self.kappa)
 
-        w = torch.zeros_like(images).to(self.device)
+        w = torch.zeros_like(images)
         w.detach_()
         w.requires_grad = True
 

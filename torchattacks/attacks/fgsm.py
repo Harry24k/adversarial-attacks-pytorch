@@ -33,14 +33,15 @@ class FGSM(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
-        labels = labels.to(self.device)
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
+        
         loss = nn.CrossEntropyLoss()
 
         images.requires_grad = True
         outputs = self.model(images)
-        cost = self._targeted*loss(outputs, labels).to(self.device)
+        cost = self._targeted*loss(outputs, labels)
 
         grad = torch.autograd.grad(cost, images,
                                    retain_graph=False, create_graph=False)[0]

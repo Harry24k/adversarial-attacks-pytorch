@@ -36,18 +36,18 @@ class RFGSM(Attack):
         r"""
         Overridden.
         """
-        images = images.to(self.device)
-        labels = labels.to(self.device)
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
         loss = nn.CrossEntropyLoss()
 
-        adv_images = images.clone().detach() + self.alpha*torch.randn_like(images).sign()
+        adv_images = images + self.alpha*torch.randn_like(images).sign()
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for i in range(self.steps):
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
-            cost = self._targeted*loss(outputs, labels).to(self.device)
+            cost = self._targeted*loss(outputs, labels)
 
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
