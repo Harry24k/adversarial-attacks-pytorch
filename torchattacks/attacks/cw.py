@@ -31,7 +31,7 @@ class CW(Attack):
         - output: :math:`(N, C, H, W)`.
           
     Examples::
-        >>> attack = torchattacks.CW(model, targeted=False, c=1e-4, kappa=0, steps=1000, lr=0.01)
+        >>> attack = torchattacks.CW(model, c=1e-4, kappa=0, steps=1000, lr=0.01)
         >>> adv_images = attack(images, labels)
         
     .. note:: NOT IMPLEMENTED methods in the paper due to time consuming.
