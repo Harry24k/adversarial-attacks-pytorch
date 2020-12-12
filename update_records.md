@@ -137,3 +137,21 @@
 ### v2.10.4
 
   * ``attacks`` : To preserve the original gradient status of images, all attacks uses ``images.clone().detach()`` instead of `images`.
+
+
+
+
+### v2.11.0
+
+  * ``CW``
+      * Now it outputs the best L2 adversarial images.
+      * Faster computation.
+  * `DeepFool`
+      * Make the codes cleaner.
+  * `BIM`
+      * Bug fixed: Wrong cliping.
+  * `MIFGSM`
+      * Bug fixed: Wrong cliping.
+      * Bug fixed: [Gradient Norm](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/12).
+  * Demo Added
+      * Performance Comparison (CIFAR10)
