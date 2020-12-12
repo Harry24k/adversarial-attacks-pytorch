@@ -22,9 +22,10 @@
 2. [Attacks and Papers](#Attacks-and-Papers)
 3. [Performance Comparison](#Performance-Comparison)
 4. [Documentation](#Documentation)
-5. [Expanding the Usage](#Expanding-the-Usage)
-6. [Contribution](#Contribution)
-7. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
+5. [Citation](#Citation)
+6. [Expanding the Usage](#Expanding-the-Usage)
+7. [Contribution](#Contribution)
+8. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
 
 
 
@@ -172,7 +173,7 @@ Here is [update records](update_records.md) of this package.
 
 
 
-### :bell: ​Citation
+## Citation
 
 If you want to cite this package, please use the following BibTex:
 
