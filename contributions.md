@@ -1,7 +1,7 @@
 # Guidelines for Contributors
 
 First of all, thank you for participating in this project :heart_eyes:.
-The goal of this project is to make _paper-oriented_ and _easy_ implementation that is easy to understand even for those who are new to adversarial attacks.
+The goal of this project is to make _paper-oriented_ and _clear_ implementation that is easy to understand even for those who are new to adversarial attacks.
 Thus, I note some guidelines so that contributors can easily create new attacks, so please refer to it.
 
 ## Add a New Attack
