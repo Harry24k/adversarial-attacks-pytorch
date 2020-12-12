@@ -126,9 +126,9 @@ For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench)
 
 As for the comparison methods, currently updated and the most cited methods were selected:
 
-* **Foolbox**: [178](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018)
+* **Foolbox**: [178](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2020.10.19.
 
-* **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5)
+* **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2020.12.11.
 
 For other methods, please refer to each projects' github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
 
