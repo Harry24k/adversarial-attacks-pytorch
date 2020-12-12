@@ -151,13 +151,13 @@ Accuracy and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the
 |    **CW**    | torchattacks |                14% / 0.00016 <br />(4361 ms) |                22% / 0.00013<br />(44572 ms) |                  26% / 8.5e-05<br />(13052 ms) |             Different results             |
 |   **(L2)**   |   foolbox    |                32% / 0.00016 <br />(4564 ms) |                34% / 0.00017<br />(45034 ms) |                  32% / 0.00016<br />(13332 ms) |                                           |
 |              |     ART      |                32% / 0.00016<br />(72684 ms) |               34% / 0.00017<br />(711699 ms) |                 32% / 0.00016<br />(206290 ms) |            Slower than others             |
-| **DeepFool** | torchattacks |                20% / 0.00063<br />(12942 ms) |                14% / 0.00094<br />(46856 ms) |                   10% / 0.0021<br />(14232 ms) | Different results<br />Slower than others |
+| **DeepFool** | torchattacks |                20% / 0.00063<br />(12942 ms) |                14% / 0.00094<br />(46856 ms) |                  10% / 0.00210<br />(14232 ms) | Different results<br />Slower than others |
 |   **(L2)**   |   foolbox    |                 40% / 0.00018<br />(1959 ms) |                36% / 0.00019<br />(20410 ms) |                   46% / 0.00021<br />(5936 ms) |                                           |
 |              |     ART      |                 40% / 0.00018<br />(2193 ms) |                36% / 0.00019<br />(19941 ms) |                   46% / 0.00021<br />(5905 ms) |                                           |
 
 * **Note**:
   * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use `MultiAttack`.
-  * In torchattacks, DeepFool takes longer time than other methods. Altough it produces stronger adverarial examples, please use other packages untill fixed.
+  * In torchattacks, DeepFool takes longer time than other methods. Please use other packages untill fixed.
 
 ## Documentation
 
