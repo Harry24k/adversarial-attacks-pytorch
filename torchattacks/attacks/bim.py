@@ -46,6 +46,8 @@ class BIM(Attack):
         labels = self._transform_label(images, labels)
         
         loss = nn.CrossEntropyLoss()
+        
+        ori_images = images.clone().detach()
 
         for i in range(self.steps):
             images.requires_grad = True
@@ -57,14 +59,15 @@ class BIM(Attack):
                                        create_graph=False)[0]
 
             adv_images = images + self.alpha*grad.sign()
-
-            a = torch.clamp(images - self.eps, min=0)
-            b = (adv_images >= a).float()*adv_images + (a > adv_images).float()*a
-            c = (b > images+self.eps).float()*(images+self.eps) + (
-                images + self.eps >= b
-            ).float()*b
+            # a = max(ori_images-eps, 0)
+            a = torch.clamp(ori_images - self.eps, min=0)
+            # b = max(adv_images, a) = max(adv_images, ori_images-eps, 0)
+            b = (adv_images >= a).float()*adv_images \
+                + (adv_images < a).float()*a 
+            # c = min(ori_images+eps, b) = min(ori_images+eps, max(adv_images, ori_images-eps, 0))
+            c = (b > ori_images+self.eps).float()*(ori_images+self.eps) \
+                + (b <= ori_images + self.eps).float()*b 
+            # images = max(1, c) = min(1, ori_images+eps, max(adv_images, ori_images-eps, 0))
             images = torch.clamp(c, max=1).detach()
 
-        adv_images = torch.clamp(images, min=0, max=1).detach()
-
-        return adv_images
+        return images

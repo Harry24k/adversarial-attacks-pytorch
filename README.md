@@ -43,8 +43,28 @@
 
 ```python
 import torchattacks
+
+# Untargeted (Default)
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
 adversarial_images = atk(images, labels)
+
+# Targeted (User Define)
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+target_map_function = lambda images, labels: labels.fill_(300)
+atk.set_attack_mode("targeted", target_map_function=target_map_function)
+adversarial_images = atk(images, labels)
+
+# Targeted (Least Likely)
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+atk.set_attack_mode("least_likely")
+adversarial_images = atk(images, labels)
+
+# Type of Return
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+atk.set_return_type('int')
+
+# Save Adversarial Images and Show accuracy
+atk.save(data_loader=test_loader, save_path="./data/cifar10_pgd.pt", verbose=True)
 ```
 
 
@@ -85,7 +105,7 @@ The distance measure in parentheses.
   - PGD (Linf)
   
 * **Boosting Adversarial Attacks with Momentum (Oct 2017)**: [Paper](https://arxiv.org/abs/1710.06081)
-  * MIFGSM (Linf) - :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926)
+  * MIFGSM (Linf) - :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926), [huitailangyz](https://github.com/huitailangyz)
   
 * **Theoretically Principled Trade-off between Robustness and Accuracy (Jan 2019)**: [Paper](https://arxiv.org/abs/1901.08573)
   - TPGD (Linf)
@@ -97,7 +117,45 @@ The distance measure in parentheses.
   - FFGSM (Linf)
   
 
+## Performance Comparison
 
+All experiments were done on GeForce RTX 2080. 
+
+For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench) is used.
+
+As for the comparison methods, currently updated and the most cited methods were selected:
+
+* **Foolbox**: [178](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018)
+
+* **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5)
+
+For other methods, please refer to each projects' github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
+
+The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
+
+Accuracy and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded.
+
+| Attack        | Package      | Wong2020Fast             | Rice2020Overfitting      | Carmon2019Unlabeled       | Remark                                 |
+| ------------- | ------------ | ------------------------ | ------------------------ | ------------------------- | -------------------------------------- |
+| FGSM (Linf)   | torchattacks | 48% (15 ms)              | 62% (88 ms)              | 68% (11 ms)               |                                        |
+|               | foolbox      | 48% (15 ms)              | 62% (55 ms)              | 68% (24 ms)               |                                        |
+|               | ART          | 48% (64 ms)              | 62% (750 ms)             | 68% (223 ms)              |                                        |
+| BIM (Linf)    | torchattacks | 46% (83 ms)              | 58% (671 ms)             | 64% (119 ms)              |                                        |
+|               | foolbox      | 46% (80 ms)              | 58% (1169 ms)            | 64% (256 ms)              |                                        |
+|               | ART          | 46% (248 ms)             | 58% (2571 ms)            | 64% (760 ms)              |                                        |
+| PGD (Linf)    | torchattacks | 46% (64 ms)              | 58% (593 ms)             | 64% (95 ms)               |                                        |
+|               | foolbox      | 46% (70 ms)              | 58% (1177 ms)            | 64% (264 ms)              |                                        |
+|               | ART          | 46% (243 ms)             | 58% (2569 ms)            | 64% (759 ms)              |                                        |
+| CW (L2)       | torchattacks | 14% / 0.00016 (4361 ms)  | 22% / 0.00013 (4361 ms)  | 26% / 8.5e-05 (13052 ms)  | Different Results                      |
+|               | foolbox      | 32% / 0.00016 (4564 ms)  | 34% / 0.00017 (4361 ms)  | 32% / 0.00016 (13332 ms)  |                                        |
+|               | ART          | 32% / 0.00016 (72684 ms) | 34% / 0.00017 (4361 ms)  | 32% / 0.00016 (206290 ms) | Slower than others                     |
+| DeepFool (L2) | torchattacks | 20% / 0.00063 (12942 ms) | 14% / 0.00094 (46856 ms) | 10% / 0.0021 (14232 ms)   | Different Results / Slower than others |
+|               | foolbox      | 40% / 0.00018 (1959 ms)  | 36% / 0.00019 (20410 ms) | 46% / 0.00021 (5936 ms)   |                                        |
+|               | ART          | 40% / 0.00018 (2193 ms)  | 36% / 0.00019 (19941 ms) | 46% / 0.00021 (5905 ms)   |                                        |
+
+* **Note**:
+  * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use MultiAttack.
+  * In torchattacks, DeepFool takes longer time than other methods. Altough it produces stronger adverarial examples, please use other packages untill fixed.
 
 ## Documentation
 
@@ -109,7 +167,7 @@ Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/
 
 ### :mag_right: Update Records
 
-Here is [update records](Update%20Records.md) of this package.
+Here is [update records](update_records.md) of this package.
 
 
 
