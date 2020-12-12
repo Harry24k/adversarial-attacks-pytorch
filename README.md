@@ -155,7 +155,7 @@ Accuracy and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the
 |              | ART          | 40% / 0.00018<br />(2193 ms)  | 36% / 0.00019<br />(19941 ms)  | 46% / 0.00021<br />(5905 ms)   |                                        |
 
 * **Note**:
-  * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use MultiAttack.
+  * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use `MultiAttack`.
   * In torchattacks, DeepFool takes longer time than other methods. Altough it produces stronger adverarial examples, please use other packages untill fixed.
 
 ## Documentation
