@@ -20,10 +20,11 @@
 ## Table of Contents
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
-3. [Documentation](#Documentation)
-4. [Expanding the Usage](#Expanding-the-Usage)
-5. [Contribution](#Contribution)
-6. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
+3. [Performance Comparison](#Performance-Comparison)
+4. [Documentation](#Documentation)
+5. [Expanding the Usage](#Expanding-the-Usage)
+6. [Contribution](#Contribution)
+7. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
 
 
 
@@ -135,23 +136,23 @@ The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch
 
 Accuracy and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded.
 
-| Attack        | Package      | Wong2020Fast             | Rice2020Overfitting      | Carmon2019Unlabeled       | Remark                                 |
-| ------------- | ------------ | ------------------------ | ------------------------ | ------------------------- | -------------------------------------- |
-| FGSM (Linf)   | torchattacks | 48% (15 ms)              | 62% (88 ms)              | 68% (11 ms)               |                                        |
-|               | foolbox      | 48% (15 ms)              | 62% (55 ms)              | 68% (24 ms)               |                                        |
-|               | ART          | 48% (64 ms)              | 62% (750 ms)             | 68% (223 ms)              |                                        |
-| BIM (Linf)    | torchattacks | 46% (83 ms)              | 58% (671 ms)             | 64% (119 ms)              |                                        |
-|               | foolbox      | 46% (80 ms)              | 58% (1169 ms)            | 64% (256 ms)              |                                        |
-|               | ART          | 46% (248 ms)             | 58% (2571 ms)            | 64% (760 ms)              |                                        |
-| PGD (Linf)    | torchattacks | 46% (64 ms)              | 58% (593 ms)             | 64% (95 ms)               |                                        |
-|               | foolbox      | 46% (70 ms)              | 58% (1177 ms)            | 64% (264 ms)              |                                        |
-|               | ART          | 46% (243 ms)             | 58% (2569 ms)            | 64% (759 ms)              |                                        |
-| CW (L2)       | torchattacks | 14% / 0.00016 (4361 ms)  | 22% / 0.00013 (4361 ms)  | 26% / 8.5e-05 (13052 ms)  | Different Results                      |
-|               | foolbox      | 32% / 0.00016 (4564 ms)  | 34% / 0.00017 (4361 ms)  | 32% / 0.00016 (13332 ms)  |                                        |
-|               | ART          | 32% / 0.00016 (72684 ms) | 34% / 0.00017 (4361 ms)  | 32% / 0.00016 (206290 ms) | Slower than others                     |
-| DeepFool (L2) | torchattacks | 20% / 0.00063 (12942 ms) | 14% / 0.00094 (46856 ms) | 10% / 0.0021 (14232 ms)   | Different Results / Slower than others |
-|               | foolbox      | 40% / 0.00018 (1959 ms)  | 36% / 0.00019 (20410 ms) | 46% / 0.00021 (5936 ms)   |                                        |
-|               | ART          | 40% / 0.00018 (2193 ms)  | 36% / 0.00019 (19941 ms) | 46% / 0.00021 (5905 ms)   |                                        |
+| Attack   | Package      | Wong2020Fast                  | Rice2020Overfitting           | Carmon2019Unlabeled            | Remark                                 |
+| -------- | ------------ | ----------------------------- | ----------------------------- | ------------------------------ | -------------------------------------- |
+| FGSM     | torchattacks | 48% (15 ms)                   | 62% (88 ms)                   | 68% (11 ms)                    |                                        |
+| (Linf)   | foolbox      | 48% (15 ms)                   | 62% (55 ms)                   | 68% (24 ms)                    |                                        |
+|          | ART          | 48% (64 ms)                   | 62% (750 ms)                  | 68% (223 ms)                   |                                        |
+| BIM      | torchattacks | 46% (83 ms)                   | 58% (671 ms)                  | 64% (119 ms)                   |                                        |
+| (Linf)   | foolbox      | 46% (80 ms)                   | 58% (1169 ms)                 | 64% (256 ms)                   |                                        |
+|          | ART          | 46% (248 ms)                  | 58% (2571 ms)                 | 64% (760 ms)                   |                                        |
+| PGD      | torchattacks | 46% (64 ms)                   | 58% (593 ms)                  | 64% (95 ms)                    |                                        |
+| (Linf)   | foolbox      | 46% (70 ms)                   | 58% (1177 ms)                 | 64% (264 ms)                   |                                        |
+|          | ART          | 46% (243 ms)                  | 58% (2569 ms)                 | 64% (759 ms)                   |                                        |
+| CW       | torchattacks | 14% / 0.00016 <br />(4361 ms) | 22% / 0.00013<br />(4361 ms)  | 26% / 8.5e-05<br />(13052 ms)  | Different Results                      |
+| (L2)     | foolbox      | 32% / 0.00016 <br />(4564 ms) | 34% / 0.00017<br />(4361 ms)  | 32% / 0.00016<br />(13332 ms)  |                                        |
+|          | ART          | 32% / 0.00016<br />(72684 ms) | 34% / 0.00017<br />(4361 ms)  | 32% / 0.00016<br />(206290 ms) | Slower than others                     |
+| DeepFool | torchattacks | 20% / 0.00063<br />(12942 ms) | 14% / 0.00094<br />(46856 ms) | 10% / 0.0021<br />(14232 ms)   | Different Results / Slower than others |
+| (L2)     | foolbox      | 40% / 0.00018<br />(1959 ms)  | 36% / 0.00019<br />(20410 ms) | 46% / 0.00021<br />(5936 ms)   |                                        |
+|          | ART          | 40% / 0.00018<br />(2193 ms)  | 36% / 0.00019<br />(19941 ms) | 46% / 0.00021<br />(5905 ms)   |                                        |
 
 * **Note**:
   * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use MultiAttack.
@@ -311,7 +312,9 @@ atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
 
 ## Contribution
 
-Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/adversarial-attacks-pytorch/pulls) :blush:
+All kind of contributions are always welcome! :blush:
+
+If you are interested in adding a new attack in this repo or fixing some issues, please have a look at [contribution.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/contributions.md).
 
 
 
