@@ -45,11 +45,11 @@
 
 ```python
 import torchattacks
-
-# Untargeted (Default)
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
 adversarial_images = atk(images, labels)
+```
 
+```python
 # Targeted (User Define)
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
 target_map_function = lambda images, labels: labels.fill_(300)
