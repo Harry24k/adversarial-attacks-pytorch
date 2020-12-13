@@ -20,10 +20,12 @@
 ## Table of Contents
 1. [Usage](#Usage)
 2. [Attacks and Papers](#Attacks-and-Papers)
-3. [Documentation](#Documentation)
-4. [Expanding the Usage](#Expanding-the-Usage)
-5. [Contribution](#Contribution)
-6. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
+3. [Performance Comparison](#Performance-Comparison)
+4. [Documentation](#Documentation)
+5. [Citation](#Citation)
+6. [Expanding the Usage](#Expanding-the-Usage)
+7. [Contribution](#Contribution)
+8. [Recommended Sites and Packages](#Recommended-Sites-and-Packages)
 
 
 
@@ -43,8 +45,28 @@
 
 ```python
 import torchattacks
+
+# Untargeted (Default)
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
 adversarial_images = atk(images, labels)
+
+# Targeted (User Define)
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+target_map_function = lambda images, labels: labels.fill_(300)
+atk.set_attack_mode("targeted", target_map_function=target_map_function)
+adversarial_images = atk(images, labels)
+
+# Targeted (Least Likely)
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+atk.set_attack_mode("least_likely")
+adversarial_images = atk(images, labels)
+
+# Type of Return
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+atk.set_return_type('int')
+
+# Save Adversarial Images and Show accuracy
+atk.save(data_loader=test_loader, save_path="./data/cifar10_pgd.pt", verbose=True)
 ```
 
 
@@ -85,7 +107,7 @@ The distance measure in parentheses.
   - PGD (Linf)
   
 * **Boosting Adversarial Attacks with Momentum (Oct 2017)**: [Paper](https://arxiv.org/abs/1710.06081)
-  * MIFGSM (Linf) - :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926)
+  * MIFGSM (Linf) - :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926), [huitailangyz](https://github.com/huitailangyz)
   
 * **Theoretically Principled Trade-off between Robustness and Accuracy (Jan 2019)**: [Paper](https://arxiv.org/abs/1901.08573)
   - TPGD (Linf)
@@ -97,7 +119,45 @@ The distance measure in parentheses.
   - FFGSM (Linf)
   
 
+## Performance Comparison
 
+All experiments were done on GeForce RTX 2080. 
+
+For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench) is used.
+
+As for the comparison methods, currently updated and the most cited methods were selected:
+
+* **Foolbox**: [178](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2020.10.19.
+
+* **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2020.12.11.
+
+For other methods, please refer to each projects' github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
+
+The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
+
+Accuracy and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded.
+
+|  **Attack**  | **Package**  | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |                **Remark**                 |
+| :----------: | :----------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :---------------------------------------: |
+|   **FGSM**   | torchattacks |                                  48% (15 ms) |                                  62% (88 ms) |                                    68% (11 ms) |                                           |
+|  **(Linf)**  |   foolbox    |                                  48% (15 ms) |                                  62% (55 ms) |                                    68% (24 ms) |                                           |
+|              |     ART      |                                  48% (64 ms) |                                 62% (750 ms) |                                   68% (223 ms) |                                           |
+|   **BIM**    | torchattacks |                                  46% (83 ms) |                                 58% (671 ms) |                                   64% (119 ms) |                                           |
+|  **(Linf)**  |   foolbox    |                                  46% (80 ms) |                                58% (1169 ms) |                                   64% (256 ms) |                                           |
+|              |     ART      |                                 46% (248 ms) |                                58% (2571 ms) |                                   64% (760 ms) |                                           |
+|   **PGD**    | torchattacks |                                  46% (64 ms) |                                 58% (593 ms) |                                    64% (95 ms) |                                           |
+|  **(Linf)**  |   foolbox    |                                  46% (70 ms) |                                58% (1177 ms) |                                   64% (264 ms) |                                           |
+|              |     ART      |                                 46% (243 ms) |                                58% (2569 ms) |                                   64% (759 ms) |                                           |
+|    **CW**    | torchattacks |                14% / 0.00016 <br />(4361 ms) |                22% / 0.00013<br />(44572 ms) |                  26% / 8.5e-05<br />(13052 ms) |             Different results             |
+|   **(L2)**   |   foolbox    |                32% / 0.00016 <br />(4564 ms) |                34% / 0.00017<br />(45034 ms) |                  32% / 0.00016<br />(13332 ms) |                                           |
+|              |     ART      |                32% / 0.00016<br />(72684 ms) |               34% / 0.00017<br />(711699 ms) |                 32% / 0.00016<br />(206290 ms) |            Slower than others             |
+| **DeepFool** | torchattacks |                20% / 0.00063<br />(12942 ms) |                14% / 0.00094<br />(46856 ms) |                  10% / 0.00210<br />(14232 ms) | Different results<br />Slower than others |
+|   **(L2)**   |   foolbox    |                 40% / 0.00018<br />(1959 ms) |                36% / 0.00019<br />(20410 ms) |                   46% / 0.00021<br />(5936 ms) |                                           |
+|              |     ART      |                 40% / 0.00018<br />(2193 ms) |                36% / 0.00019<br />(19941 ms) |                   46% / 0.00021<br />(5905 ms) |                                           |
+
+* **Note**:
+  * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use `MultiAttack`.
+  * In torchattacks, DeepFool takes longer time than other methods. Please use other packages untill fixed.
 
 ## Documentation
 
@@ -109,11 +169,20 @@ Here is a [documentation](https://adversarial-attacks-pytorch.readthedocs.io/en/
 
 ### :mag_right: Update Records
 
-Here is [update records](Update%20Records.md) of this package.
+Here is [update records](update_records.md) of this package.
 
 
 
-### :bell: ​Citation
+### :rocket: Demos
+
+- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
+- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
+- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
+- **Applications of MultiAttack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb)):  This code shows the applications of _Multiattack_. It can be used for implementing (1) Attack with random restarts, and (2) Attack on only correct examples.
+
+
+
+## Citation
 
 If you want to cite this package, please use the following BibTex:
 
@@ -125,15 +194,6 @@ If you want to cite this package, please use the following BibTex:
   year={2020}
 }
 ```
-
-
-
-### :rocket: Demos
-
-- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool [Inception v3](https://arxiv.org/abs/1512.00567).
-- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
-- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
-- **Applications of MultiAttack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb)):  This code shows the applications of _Multiattack_. It can be used for implementing (1) Attack with random restarts, and (2) Attack on only correct examples.
 
 
 
@@ -253,7 +313,9 @@ atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
 
 ## Contribution
 
-Contribution is always welcome! Use [pull requests](https://github.com/Harry24k/adversarial-attacks-pytorch/pulls) :blush:
+All kind of contributions are always welcome! :blush:
+
+If you are interested in adding a new attack in this repo or fixing some issues, please have a look at [contribution.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/contributions.md).
 
 
 

@@ -44,29 +44,27 @@ class MIFGSM(Attack):
         labels = self._transform_label(images, labels)
         
         loss = nn.CrossEntropyLoss()
-        momentum = torch.zeros_like(images).to(self.device)
+        momentum = torch.zeros_like(images).detach().to(self.device)
 
+        adv_images = images.clone().detach()
+        
         for i in range(self.steps):
-            images.requires_grad = True
-            outputs = self.model(images)
+            adv_images.requires_grad = True
+            outputs = self.model(adv_images)
 
             cost = self._targeted*loss(outputs, labels)
-            grad = torch.autograd.grad(cost, images, 
+            
+            grad = torch.autograd.grad(cost, adv_images, 
                                        retain_graph=False, create_graph=False)[0]
-            grad_norm = torch.norm(grad, p=1)
-            grad /= grad_norm
-            grad += momentum*self.decay
+            
+            grad_norm = torch.norm(nn.Flatten()(grad), p=1, dim=1)
+            grad = grad / grad_norm.view([-1]+[1]*(len(grad.shape)-1))
+            grad = grad + momentum*self.decay
             momentum = grad
 
-            adv_images = images + self.alpha*grad.sign()
-
-            a = torch.clamp(images - self.eps, min=0)
-            b = (adv_images >= a).float()*adv_images + (a > adv_images).float()*a
-            c = (b > images + self.eps).float() * (images + self.eps) + (
-                images + self.eps >= b
-            ).float() * b
-            images = torch.clamp(c, max=1).detach()
-
-        adv_images = torch.clamp(images, min=0, max=1).detach()
+            adv_images = adv_images.detach() + self.alpha*grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images
+    

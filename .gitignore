@@ -1,6 +1,9 @@
 build/*
 dist/*
+robustbench/*
 torchattacks.egg-info/*
+data/*
+models/*
 demos/data/MNIST/*
 demos/data/cifar*
 */.*
@@ -9,8 +12,4 @@ _build
 MENIFEST.in
 setup.cfg
 setup.py
-data/
-.ipynb_checkpoints/Untitled-checkpoint.ipynb
-Untitled.ipynb
 _commit.bat
-_PGD BIM.pptx

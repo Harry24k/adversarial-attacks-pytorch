@@ -1,5 +1,3 @@
-import warnings
-
 import torch
 
 from ..attack import Attack
@@ -43,7 +41,6 @@ class MultiAttack(Attack):
         labels = labels.clone().detach().to(self.device)
 
         for i, attack in enumerate(self.attacks):
-            # print('- Multi Attack Progress [%d / %d]             ' % ((i+1), len(self.attacks)), end='\r')
             adv_images = attack(images[fails], labels[fails])
 
             outputs = self.model(adv_images)
@@ -60,7 +57,6 @@ class MultiAttack(Attack):
             fails = torch.masked_select(fails, corrects)
 
             if len(fails) == 0:
-                # warnings.warn("Ealry stopped because all images are successfully perturbed.")
                 break
 
         return final_images
