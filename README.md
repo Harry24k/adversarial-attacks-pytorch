@@ -156,7 +156,7 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 |              |     ART      |                 40% / 0.00018<br />(2193 ms) |                36% / 0.00019<br />(19941 ms) |                   46% / 0.00021<br />(5905 ms) |                                           |
 
 * **Note**:
-  * In torchattacks, there is no binary search algorithms for const `c`. It will be added in the future. Recommanded to use `MultiAttack`.
+  * In torchattacks, CW has no binary search algorithms for const `c`. It will be added in the future. Recommanded to use `MultiAttack`.
   * In torchattacks, DeepFool takes longer time than other methods. Please use other packages untill fixed.
 
 ## Documentation
