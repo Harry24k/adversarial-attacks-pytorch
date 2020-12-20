@@ -227,7 +227,7 @@ class AutoAttack(Attack):
         return adv_images
 
 atk = AutoAttack(model, eps=0.3)
-atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 ```
 
 
@@ -267,7 +267,7 @@ class L2BrendelBethge(Attack):
         return adv_images
 
 atk = L2BrendelBethge(model)
-atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 ```
 
 
@@ -306,7 +306,7 @@ class JSMA(Attack):
         return torch.tensor(adv_images).to(self.device)
 
 atk = JSMA(model)
-atk.save(data_loader=test_loader, file_name="_temp.pt", accuracy=True)
+atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 ```
 
 
