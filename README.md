@@ -1,4 +1,4 @@
-# Adversarial-Attacks-Pytorch
+# Adversarial-Attacks-PyTorch
 
 <p>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch" /></a>
@@ -33,8 +33,8 @@
 
 ### :clipboard: Dependencies
 
-- torch 1.2.0
-- python 3.6
+- torch==1.4.0
+- python==3.6
 
 
 
@@ -184,7 +184,7 @@ Here is [update records](update_records.md) of this package.
 
 ## Citation
 
-If you want to cite this package, please use the following BibTex:
+If you use this package, please cite the following BibTex:
 
 ```
 @article{kim2020torchattacks,
