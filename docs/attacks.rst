@@ -25,11 +25,6 @@ Attacks
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.fgsm
     :members:
-    
-   DeepFool
-   ~~~~~~~~~
-   .. automodule:: torchattacks.attacks.deepfool
-    :members:
 
    BIM
    ~~~~~~~~~

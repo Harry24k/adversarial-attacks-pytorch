@@ -155,3 +155,20 @@
       * Bug fixed: [Gradient Norm](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/12).
   * Demo Added
       * Performance Comparison (CIFAR10)
+
+
+
+### v2.12.1
+
+  * `DeepFool`
+      * Deprecated.
+  * `Attack._targeted`
+      * ._targeted is set to 1 when targeted mode is activated. [Issue](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/14).
+          * All attacks supporting targeted mode is change.
+  * `Attack.set_attack_mode`
+      * To provide various attack mode, it uses following methods.
+          * `set_default_mode`: default mode.
+          * `set_targeted_mode`: targeted mode. Now supporting `target_map_function=None` for pre-generated targeted labels.
+          * `set_least_likely_mode`: least likely targeted mode. Now supporting k-th smallest probability targeted mode by `kth_min`.
+  * `Attack.save`
+      * Bug fixed: When `verbose=True`, it now use model.eval() and torch.no_grad().

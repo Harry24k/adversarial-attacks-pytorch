@@ -11,4 +11,4 @@ from .attacks.mifgsm import MIFGSM
 from .attacks.vanila import VANILA
 from .attacks.gn import GN
 
-__version__ = '2.12.0'
+__version__ = '2.12.1'

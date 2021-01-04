@@ -15,7 +15,7 @@ class Attack(object):
         Initializes internal attack state.
 
         Arguments:
-            name (str) : name of an attack.
+            name (str): name of an attack.
             model (torch.nn.Module): model to attack.
         """
 
@@ -41,14 +41,14 @@ class Attack(object):
         
     def set_attack_mode(self, mode, target_map_function=None):
         r"""
-        Set the attack mode.
+        Set attack mode.
   
         Arguments:
-            mode (str) : 'default' (DEFAULT)
+            mode (str): 'default' (DEFAULT)
                          'targeted' - Use input labels as targeted labels.
                          'least_likely' - Use least likely labels as targeted labels.
                          
-            target_map_function (function) : Label mapping function.
+            target_map_function (function): Label mapping function.
                 e.g. lambda images, labels:(labels+1)%10.
                 None for using input labels as targeted labels. (DEFAULT)
 
@@ -60,9 +60,13 @@ class Attack(object):
         elif mode=="least_likely":
             self.set_least_likely_mode()
         else:
-            raise ValueError(mode + " is not a valid mode. [Options : default, targeted, least_likely]")
+            raise ValueError(mode + " is not a valid mode. [Options: default, targeted, least_likely]")
             
     def set_default_mode(self):
+        r"""
+        Set attack mode as default mode.
+
+        """
         if self._attack_mode is 'only_default':
             self._attack_mode = "only_default"
         else:
@@ -72,6 +76,15 @@ class Attack(object):
         self._transform_label = self._get_label
         
     def set_targeted_mode(self, target_map_function=None):
+        r"""
+        Set attack mode as targeted mode.
+  
+        Arguments:
+            target_map_function (function): Label mapping function.
+                e.g. lambda images, labels:(labels+1)%10.
+                None for using input labels as targeted labels. (DEFAULT)
+
+        """
         if self._attack_mode is 'only_default':
             raise ValueError("Changing attack mode is not supported in this attack method.")
             
@@ -85,6 +98,14 @@ class Attack(object):
         
         
     def set_least_likely_mode(self, kth_min=1):
+        r"""
+        Set attack mode as least likely mode.
+  
+        Arguments:
+            kth_min (str): k-th smallest probability used as target labels (DEFAULT: 1)
+                e.g. kth_min can have a range of [0, #Labels].
+
+        """
         if self._attack_mode is 'only_default':
             raise ValueError("Changing attack mode is not supported in this attack method.")
             
@@ -99,7 +120,7 @@ class Attack(object):
         Set the return type of adversarial images: `int` or `float`.
 
         Arguments:
-            type (str) : 'float' or 'int'. (DEFAULT : 'float')
+            type (str): 'float' or 'int'. (DEFAULT: 'float')
 
         """
         if type == 'float':
@@ -107,16 +128,16 @@ class Attack(object):
         elif type == 'int':
             self._return_type = 'int'
         else:
-            raise ValueError(type + " is not a valid type. [Options : float, int]")
+            raise ValueError(type + " is not a valid type. [Options: float, int]")
 
     def save(self, data_loader, save_path=None, verbose=True):
         r"""
         Save adversarial images as torch.tensor from given torch.utils.data.DataLoader.
 
         Arguments:
-            save_path (str) : save_path.
-            data_loader (torch.utils.data.DataLoader) : data loader.
-            verbose (bool) : True for displaying detailed information. (DEFAULT : True)
+            save_path (str): save_path.
+            data_loader (torch.utils.data.DataLoader): data loader.
+            verbose (bool): True for displaying detailed information. (DEFAULT: True)
 
         """
         if (self._attack_mode is 'targeted') and (self._target_map_function is None):
@@ -148,7 +169,7 @@ class Attack(object):
                     correct += (predicted == labels.to(self.device)).sum()
 
                     acc = 100 * float(correct) / total
-                    print('- Save Progress : %2.2f %% / Accuracy : %2.2f %%' \
+                    print('- Save Progress: %2.2f %% / Accuracy: %2.2f %%' \
                           % ((step+1)/total_batch*100, acc), end='\r')
 
         x = torch.cat(image_list, 0)
@@ -181,7 +202,7 @@ class Attack(object):
         """
         outputs = self.model(images)
         if self._kth_min < 0:
-            pos = outputs.shape[1] + self._kth_min
+            pos = outputs.shape[1] + self._kth_min + 1
         else:
             pos = self._kth_min
         _, labels = torch.kthvalue(outputs.data, pos)
@@ -210,14 +231,14 @@ class Attack(object):
         del_keys = ['model', 'attack']
         
         for key in info.keys():
-            if key[0] == "_" :
+            if key[0] == "_":
                 del_keys.append(key)
                 
         for key in del_keys:
             del info[key]
         
         info['attack_mode'] = self._attack_mode
-        if info['attack_mode'] == 'only_default' :
+        if info['attack_mode'] == 'only_default':
             info['attack_mode'] = 'default'
             
         info['return_type'] = self._return_type
