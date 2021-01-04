@@ -154,15 +154,3 @@ I think it will be easy to fix the rest part of code based on other attack imple
 #### 4. Git Pull
 
 Finally, **PULL** your new branch to Github!!!
-
-
-## TODO List
-
-Here, I note **TODO List** for those who are interested in this.
-
-* **Fix DeepFool**
-    * Use BATCHES instead of Iterations.
-    * Memory Error when calculate jacobian gradients.
-    
-* **Add JSMA**
-    * https://github.com/Harry24k/adversarial-attacks-pytorch/issues/9
