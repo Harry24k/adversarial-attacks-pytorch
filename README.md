@@ -84,21 +84,13 @@ The distance measure in parentheses.
 
 ## Performance Comparison
 
-All experiments were done on GeForce RTX 2080. 
-
-For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench) is used.
-
-As for the comparison methods, currently updated and the most cited methods were selected:
+For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench) is used. As for the comparison packages, currently updated and the most cited methods were selected:
 
 * **Foolbox**: [178](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2020.10.19.
 
 * **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2020.12.11.
 
-For other methods, please refer to each project github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
-
-The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
-
-Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded.
+Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)). All experiments were done on GeForce RTX 2080.
 
 |     **Attack**     |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
 | :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
