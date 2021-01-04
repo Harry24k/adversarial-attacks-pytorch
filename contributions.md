@@ -51,8 +51,7 @@ class Attack(object):
 
 The most important thing is that `Attack` only takes `model` when it is called.
 
-Now, all methods are made on assumption that "Users feed the original images and labels". 
-
+In addition, all methods are made on assumption that "Users feed the original images and labels".
 However, it can be changed in the future if there is a new attack that uses other inputs.
 **Any ideas to further improve `Attack` class are welcome!!!**
 
