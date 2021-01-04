@@ -264,7 +264,7 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 
 All kind of contributions are always welcome! :blush:
 
-If you are interested in adding a new attack in this repo or fixing some issues, please have a look at [contribution.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/contributions.md).
+If you are interested in adding a new attack to this repo or fixing some issues, please have a look at [contribution.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/contributions.md).
 
 
 
