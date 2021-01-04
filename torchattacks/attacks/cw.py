@@ -117,4 +117,4 @@ class CW(Attack):
         i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
         j = torch.masked_select(outputs, one_hot_labels.bool())
 
-        return torch.clamp(self._targeted*(j-i), min=-self.kappa)
+        return torch.clamp(self._targeted*(i-j), min=-self.kappa)

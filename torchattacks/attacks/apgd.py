@@ -61,7 +61,7 @@ class APGD(Attack):
                                             create_graph=False)[0]
 
             # grad.sign() is used instead of (grad/sampling).sign()
-            adv_images = images + self.alpha*grad.sign()
+            adv_images = images - self.alpha*grad.sign()
             eta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
             images = torch.clamp(ori_images + eta, min=0, max=1).detach()
 

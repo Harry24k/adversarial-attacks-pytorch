@@ -26,10 +26,11 @@ class Attack(object):
         self.training = model.training
         self.device = next(model.parameters()).device
         
-        self._targeted = 1
+        self._transform_label = self._get_label
+        self._targeted = -1
         self._attack_mode = 'default'
         self._return_type = 'float'
-        self._target_map_function = lambda images, labels:labels
+        self._kth_min = 1
 
     def forward(self, *input):
         r"""
@@ -47,31 +48,52 @@ class Attack(object):
                          'targeted' - Use input labels as targeted labels.
                          'least_likely' - Use least likely labels as targeted labels.
                          
-            target_map_function (function) :
+            target_map_function (function) : Label mapping function.
+                e.g. lambda images, labels:(labels+1)%10.
+                None for using input labels as targeted labels. (DEFAULT)
 
         """
-        if self._attack_mode is 'only_default':
-            raise ValueError("Changing attack mode is not supported in this attack method.")
-            
-        if (mode is 'targeted') and (target_map_function is None):
-            raise ValueError("Please give a target_map_function, e.g., lambda images, labels:(labels+1)%10.")
-            
         if mode=="default":
-            self._attack_mode = "default"
-            self._targeted = 1
-            self._transform_label = self._get_label
+            self.set_default_mode()
         elif mode=="targeted":
-            self._attack_mode = "targeted"
-            self._targeted = -1
-            self._target_map_function = target_map_function
-            self._transform_label = self._get_target_label
+            self.set_targeted_mode(target_map_function)
         elif mode=="least_likely":
-            self._attack_mode = "least_likely"
-            self._targeted = -1
-            self._transform_label = self._get_least_likely_label
+            self.set_least_likely_mode()
         else:
             raise ValueError(mode + " is not a valid mode. [Options : default, targeted, least_likely]")
             
+    def set_default_mode(self):
+        if self._attack_mode is 'only_default':
+            self._attack_mode = "only_default"
+        else:
+            self._attack_mode = "default"
+            
+        self._targeted = -1
+        self._transform_label = self._get_label
+        
+    def set_targeted_mode(self, target_map_function=None):
+        if self._attack_mode is 'only_default':
+            raise ValueError("Changing attack mode is not supported in this attack method.")
+            
+        self._attack_mode = "targeted"
+        self._targeted = 1
+        if target_map_function is None:
+            self._target_map_function = lambda images, labels:labels
+        else:
+            self._target_map_function = target_map_function
+        self._transform_label = self._get_target_label
+        
+        
+    def set_least_likely_mode(self, kth_min=1):
+        if self._attack_mode is 'only_default':
+            raise ValueError("Changing attack mode is not supported in this attack method.")
+            
+        self._attack_mode = "least_likely"
+        self._targeted = 1
+        self._transform_label = self._get_least_likely_label
+        self._kth_min = kth_min
+        
+        
     def set_return_type(self, type):
         r"""
         Set the return type of adversarial images: `int` or `float`.
@@ -97,8 +119,9 @@ class Attack(object):
             verbose (bool) : True for displaying detailed information. (DEFAULT : True)
 
         """
-        self.model.eval()
-
+        if (self._attack_mode is 'targeted') and (self._target_map_function is None):
+            raise ValueError("save is not supported for target_map_function=None")
+        
         image_list = []
         label_list = []
 
@@ -117,13 +140,16 @@ class Attack(object):
                 adv_images = adv_images.float()/255
 
             if verbose:
-                outputs = self.model(adv_images)
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels.to(self.device)).sum()
+                with torch.no_grad():
+                    self.model.eval()
+                    outputs = self.model(adv_images)
+                    _, predicted = torch.max(outputs.data, 1)
+                    total += labels.size(0)
+                    correct += (predicted == labels.to(self.device)).sum()
 
-                acc = 100 * float(correct) / total
-                print('- Save Progress : %2.2f %% / Accuracy : %2.2f %%' % ((step+1)/total_batch*100, acc), end='\r')
+                    acc = 100 * float(correct) / total
+                    print('- Save Progress : %2.2f %% / Accuracy : %2.2f %%' \
+                          % ((step+1)/total_batch*100, acc), end='\r')
 
         x = torch.cat(image_list, 0)
         y = torch.cat(label_list, 0)
@@ -133,12 +159,6 @@ class Attack(object):
             print('\n- Save Complete!')
 
         self._switch_model()
-        
-    def _transform_label(self, images, labels):
-        r"""
-        Function for changing the attack mode.
-        """
-        return labels
         
     def _get_label(self, images, labels):
         r"""
@@ -160,7 +180,11 @@ class Attack(object):
         Return least likely labels.
         """
         outputs = self.model(images)
-        _, labels = torch.min(outputs.data, 1)
+        if self._kth_min < 0:
+            pos = outputs.shape[1] + self._kth_min
+        else:
+            pos = self._kth_min
+        _, labels = torch.kthvalue(outputs.data, pos)
         labels = labels.detach_()
         return labels
     
