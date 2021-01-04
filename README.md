@@ -100,22 +100,21 @@ The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch
 
 Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded.
 
-|     **Attack**     | **Package**  | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
-| :----------------: | :----------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
-|      **FGSM**      | torchattacks |                                  48% (15 ms) |                                  62% (88 ms) |                                    68% (11 ms) |                    |
-|     **(Linf)**     |   foolbox    |                                  48% (15 ms) |                                  62% (55 ms) |                                    68% (24 ms) |                    |
-|                    |     ART      |                                  48% (64 ms) |                                 62% (750 ms) |                                   68% (223 ms) |                    |
-|      **BIM**       | torchattacks |                                  46% (83 ms) |                                 58% (671 ms) |                                   64% (119 ms) |                    |
-|     **(Linf)**     |   foolbox    |                                  46% (80 ms) |                                58% (1169 ms) |                                   64% (256 ms) |                    |
-|                    |     ART      |                                 46% (248 ms) |                                58% (2571 ms) |                                   64% (760 ms) |                    |
-|      **PGD**       | torchattacks |                                  46% (64 ms) |                                 58% (593 ms) |                                    64% (95 ms) |                    |
-|     **(Linf)**     |   foolbox    |                                  46% (70 ms) |                                58% (1177 ms) |                                   64% (264 ms) |                    |
-|                    |     ART      |                                 46% (243 ms) |                                58% (2569 ms) |                                   64% (759 ms) |                    |
-| **CW<sup>†</sup>** | torchattacks |                14% / 0.00016 <br />(4361 ms) |                22% / 0.00013<br />(44572 ms) |                  26% / 8.5e-05<br />(13052 ms) | Different results  |
-|      **(L2)**      |   foolbox    |                32% / 0.00016 <br />(4564 ms) |                34% / 0.00017<br />(45034 ms) |                  32% / 0.00016<br />(13332 ms) |                    |
-|                    |     ART      |                32% / 0.00016<br />(72684 ms) |               34% / 0.00017<br />(711699 ms) |                 32% / 0.00016<br />(206290 ms) | Slower than others |
+|     **Attack**     |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
+| :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
+|      **FGSM**      |    Torchattacks     |                                  48% (31 ms) |                                  62% (87 ms) |                                    68% (23 ms) |                    |
+|     **(Linf)**     | Foolbox<sup>*</sup> |                                  48% (24 ms) |                                  62% (55 ms) |                                    68% (33 ms) |                    |
+|                    |         ART         |                                  48% (71 ms) |                                 62% (728 ms) |                                   68% (217 ms) |                    |
+|      **PGD**       |    Torchattacks     |                                  46% (55 ms) |                                 58% (583 ms) |                                    64% (87 ms) |                    |
+|     **(Linf)**     | Foolbox<sup>*</sup> |                                  46% (71 ms) |                                58% (1143 ms) |                                   64% (255 ms) |                    |
+|                    |         ART         |                                 46% (239 ms) |                                58% (2485 ms) |                                   64% (745 ms) |                    |
+| **CW<sup>†</sup>** |    Torchattacks     |                14% / 0.00016 <br />(4367 ms) |                22% / 0.00013<br />(43680 ms) |                  26% / 8.5e-05<br />(13032 ms) | Different results  |
+|      **(L2)**      | Foolbox<sup>*</sup> |                32% / 0.00016 <br />(4530 ms) |                34% / 0.00017<br />(45273 ms) |                  32% / 0.00016<br />(13314 ms) |                    |
+|                    |         ART         |                32% / 0.00016<br />(71613 ms) |               34% / 0.00017<br />(691977 ms) |                 32% / 0.00016<br />(206250 ms) | Slower than others |
 
-<sup>**†**</sup>In torchattacks, CW has no binary search algorithms for const `c`. Instead of binary search, torchattacks supports customized search as in [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb).
+<sup>*</sup>Note that Foolbox returns accuracy and adversarial images simultaneously, thus the *actual* time for generating adversarial images  might be shorter than records.
+
+<sup>**†**</sup>Considering that the binary search algorithm for const `c` can be time-consuming, torchattacks supports customized grid search as in [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb).
 
 ## Documentation
 
