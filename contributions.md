@@ -148,7 +148,7 @@ class PGD(Attack):
 
 As above, the paper information is noted in the first line after the class definition.
 Likewise here, **the class name must be written in uppercase** following PEP8.
-I think it will be easy to fix the rest part of code based on other attack implementations. (This is how I do it :blush:).
+I think it would be easy to fix the rest part of code based on other attack implementations. (This is how I do it :blush:).
 
 #### 4. Git Pull
 
