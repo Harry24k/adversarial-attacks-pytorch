@@ -94,7 +94,7 @@ As for the comparison methods, currently updated and the most cited methods were
 
 * **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2020.12.11.
 
-For other methods, please refer to each projects' github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
+For other methods, please refer to each project github on [Recommended Sites and Packages](#Recommended-Sites-and-Packages).
 
 The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
 
