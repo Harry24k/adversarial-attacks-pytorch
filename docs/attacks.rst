@@ -45,6 +45,11 @@ Attacks
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.pgd
     :members:
+    
+   PGDL2
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pgdl2
+    :members:
 
    APGD (EOT + PGD)
    ~~~~~~~~~~~~~~~~~
