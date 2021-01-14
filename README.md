@@ -103,6 +103,7 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 |                    |         ART         |                             44% (495 ms) |                             58% (4782 ms) |                               58% (1444 ms) |                    |
 
 | **Attack (L2)**  |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
+| :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
 | **CW<sup>†</sup>** |    Torchattacks     |               14% / 0.61 <br />(4367 ms) |            22% / 0.56<br />(43680 ms) |               26% / 0.48<br />(13032 ms) | **Highest Success Rate** |
 |                    | Foolbox<sup>*</sup> |               32% / 0.41 <br />(4530 ms) |               34% / 0.43<br />(45273 ms) |                 32% / 0.42<br />(13314 ms) | **Smallest Perturbation** |
 |                    |         ART         |             24% / 0.71<br />(71613 ms) |           26% / 0.65<br />(691977 ms) |               26% / 0.62<br />(206250 ms) |  |
