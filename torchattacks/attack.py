@@ -148,12 +148,14 @@ class Attack(object):
 
         correct = 0
         total = 0
-
+        l2_distance = []
+        
         total_batch = len(data_loader)
 
         for step, (images, labels) in enumerate(data_loader):
             adv_images = self.__call__(images, labels)
 
+            batch_size = len(images)
             image_list.append(adv_images.cpu())
             label_list.append(labels.cpu())
 
@@ -166,11 +168,14 @@ class Attack(object):
                     outputs = self.model(adv_images)
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
-                    correct += (predicted == labels.to(self.device)).sum()
-
+                    right_idx = (predicted == labels.to(self.device))
+                    correct += right_idx.sum()
+                    
+                    delta = (adv_images - images.to(self.device)).view(batch_size, -1)
+                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))                    
                     acc = 100 * float(correct) / total
-                    print('- Save Progress: %2.2f %% / Accuracy: %2.2f %%' \
-                          % ((step+1)/total_batch*100, acc), end='\r')
+                    print('- Save Progress: %2.2f %% / Accuracy: %2.2f %% / L2: %1.5f' \
+                          % ((step+1)/total_batch*100, acc, torch.cat(l2_distance).mean()), end='\r')
 
         x = torch.cat(image_list, 0)
         y = torch.cat(label_list, 0)

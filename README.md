@@ -75,6 +75,7 @@ The distance measure in parentheses.
 |    **CW**<br />(L2)    | Towards Evaluating the Robustness of Neural Networks ([Carlini et al., 2016](https://arxiv.org/abs/1608.04644)) |                                                              |
 | **RFGSM**<br />(Linf)  | Ensemble Adversarial Traning: Attacks and Defences ([Tramèr et al., 2017](https://arxiv.org/abs/1705.07204)) | Random initialization + FGSM                                 |
 |  **PGD**<br />(Linf)   | Towards Deep Learning Models Resistant to Adversarial Attacks ([Mardry et al., 2017](https://arxiv.org/abs/1706.06083)) | Projected Gradient Method                                    |
+|  **PGDL2**<br />(L2)   | Towards Deep Learning Models Resistant to Adversarial Attacks ([Mardry et al., 2017](https://arxiv.org/abs/1706.06083)) | Projected Gradient Method                                    |
 | **MIFGSM**<br />(Linf) | Boosting Adversarial Attacks with Momentum ([Dong et al., 2017](https://arxiv.org/abs/1710.06081)) | :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926), [huitailangyz](https://github.com/huitailangyz) |
 |  **TPGD**<br />(Linf)  | Theoretically Principled Trade-off between Robustness and Accuracy ([Zhang et al., 2019](https://arxiv.org/abs/1901.08573)) |                                                              |
 |  **APGD**<br />(Linf)  | Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network" ([Zimmermann, 2019](https://arxiv.org/abs/1907.00895)) | [EOT](https://arxiv.org/abs/1707.07397) + PGD                |
@@ -92,17 +93,21 @@ For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench)
 
 Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)). All experiments were done on GeForce RTX 2080.
 
-|     **Attack**     |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
+|  **Attack (Linf)**   |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
 | :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
-|      **FGSM**      |    Torchattacks     |                                  48% (31 ms) |                                  62% (87 ms) |                                    68% (23 ms) |                    |
-|     **(Linf)**     | Foolbox<sup>*</sup> |                                  48% (24 ms) |                                  62% (55 ms) |                                    68% (33 ms) |                    |
-|                    |         ART         |                                  48% (71 ms) |                                 62% (728 ms) |                                   68% (217 ms) |                    |
-|      **PGD**       |    Torchattacks     |                                  46% (55 ms) |                                 58% (583 ms) |                                    64% (87 ms) |                    |
-|     **(Linf)**     | Foolbox<sup>*</sup> |                                  46% (71 ms) |                                58% (1143 ms) |                                   64% (255 ms) |                    |
-|                    |         ART         |                                 46% (239 ms) |                                58% (2485 ms) |                                   64% (745 ms) |                    |
-| **CW<sup>†</sup>** |    Torchattacks     |                14% / 0.00016 <br />(4367 ms) |                22% / 0.00013<br />(43680 ms) |                  26% / 8.5e-05<br />(13032 ms) | Different results  |
-|      **(L2)**      | Foolbox<sup>*</sup> |                32% / 0.00016 <br />(4530 ms) |                34% / 0.00017<br />(45273 ms) |                  32% / 0.00016<br />(13314 ms) |                    |
-|                    |         ART         |                32% / 0.00016<br />(71613 ms) |               34% / 0.00017<br />(691977 ms) |                 32% / 0.00016<br />(206250 ms) | Slower than others |
+|      **FGSM**      |    Torchattacks     |                                 48% (15 ms) |                                 62% (94 ms) |                                  68% (18 ms) |                    |
+|                    | Foolbox<sup>*</sup> |                                 48% (34 ms) |                                62% (46 ms) |                                   68% (27 ms) |                    |
+|                    |         ART         |                                48% (50 ms) |                               62% (799 ms) |                                 68% (221 ms) |                    |
+|      **PGD**       |    Torchattacks     |                              44% (156 ms) |                             58% (2770 ms) |                                 58% (692 ms) |                    |
+|                    | Foolbox<sup>*</sup> |                                44% (249 ms) |                             58% (3452 ms) |                                58% (945 ms) |                    |
+|                    |         ART         |                             44% (495 ms) |                             58% (4782 ms) |                               58% (1444 ms) |                    |
+| **Attack (Linf)**  |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
+| **CW<sup>†</sup>** |    Torchattacks     |               14% / 0.61 <br />(4367 ms) |            22% / 0.56<br />(43680 ms) |               26% / 0.48<br />(13032 ms) | **Highest Success Rate** |
+|                    | Foolbox<sup>*</sup> |               32% / 0.41 <br />(4530 ms) |               34% / 0.43<br />(45273 ms) |                 32% / 0.42<br />(13314 ms) | **Smallest Perturbation** |
+|                    |         ART         |             24% / 0.71<br />(71613 ms) |           26% / 0.65<br />(691977 ms) |               26% / 0.62<br />(206250 ms) |  |
+| **PGDL2** |    Torchattacks     |                     68% / 0.5<br /> (166 ms) |                     70% / 0.5<br />(2796 ms) |                       68% / 0.5<br /> (712 ms) |                           |
+|                    | Foolbox<sup>*</sup> |                     68% / 0.5<br /> (267 ms) |                    70% / 0.5<br /> (3501 ms) |                       68% / 0.5<br /> (962 ms) |                    |
+|                    |         ART         |                     68% / 0.5<br /> (470 ms) |                    70% / 0.5<br /> (4822 ms) |                       68% / 0.5<br />(1441 ms) |                           |
 
 <sup>*</sup>Note that Foolbox returns accuracy and adversarial images simultaneously, thus the *actual* time for generating adversarial images  might be shorter than the records.
 

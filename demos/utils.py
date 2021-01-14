@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
+import torch
 import torchvision.datasets as dsets
 
 def imshow(img, title):
@@ -30,3 +32,12 @@ def image_folder_custom_label(root, transform, idx2label) :
     new_data.class_to_idx = label2idx
 
     return new_data
+
+
+def l2_distance(model, images, adv_images, labels, device="cuda"):
+    outputs = model(adv_images)
+    _, pre = torch.max(outputs.data, 1)
+    corrects = (labels.to(device) == pre)
+    delta = (adv_images - images.to(device)).view(len(images), -1)
+    l2 = torch.norm(delta[~corrects], p=2, dim=1).mean()
+    return l2
