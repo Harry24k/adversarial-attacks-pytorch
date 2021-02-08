@@ -209,10 +209,10 @@ adversarial_images = atk(images, labels)
 
 ### :rocket: 데모
 
-- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  [Inception v3](https://arxiv.org/abs/1512.00567)을  [ImageNet](http://www.image-net.org/) 데이터와 _torchattacks_을 활용하여 속이는 데모입니다.
-- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)):  _torchattacks_을 활용하여 Black Box Attack을 실행하는 방법입니다.
-- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)): _torchattacks_을 활용하여 Adversarial Training을 하는 코드입니다.
-- **Applications of MultiAttack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb)):   _torchattacks_ 중 _Multiattack_을 어떻게하면 잘 활용할 수 있을까에 대한 정리 문서입니다.
+- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  [Inception v3](https://arxiv.org/abs/1512.00567)을  [ImageNet](http://www.image-net.org/) 데이터와 *torchattacks*을 활용하여 속이는 데모입니다.
+- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)): *torchattacks*을 활용하여 Black Box Attack을 실행하는 방법입니다.
+- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)): *torchattacks*을 활용하여 Adversarial Training을 하는 코드입니다.
+- **Applications of MultiAttack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb)):   *torchattacks* 중 *Multiattack*을 어떻게하면 잘 활용할 수 있을까에 대한 정리 문서입니다.
 
 
 
@@ -233,7 +233,7 @@ adversarial_images = atk(images, labels)
 
 ## 200% 활용하기
 
-Torchattacks은 다른 유명한 적대적 공격 패키지와도 호환할 수 있도록 구성되어 있습니다. 특히, 다른 패키지의 공격을 _torchattacks_로 이식할경우, 적대적 예제를 저장할 수 있는 _save_나 _multiattack_을 활용하여 더 강한 공격을 만들어낼 수도 있습니다.
+Torchattacks은 다른 유명한 적대적 공격 패키지와도 호환할 수 있도록 구성되어 있습니다. 특히, 다른 패키지의 공격을 *torchattacks*로 이식할경우, 적대적 예제를 저장할 수 있는 *save*나 *multiattack*을 활용하여 더 강한 공격을 만들어낼 수도 있습니다.
 
 
 
