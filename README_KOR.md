@@ -185,9 +185,9 @@ adversarial_images = atk(images, labels)
 
 ###  :warning: 주의 사항
 
-* **모든 이미지는 transform[to.Tensor()]을 활용하여 [0, 1]로 입력되어야합니다!** 본래 PyTorch에서는 transform을 통해 지원되는 normalization을 활용하고는 합니다. 하지만, 적대적 공격의 특징 상 최대 섭동(Maximum Perturbtion) 범위를 주거나 이를 비용으로 활용하기 때문에, 입력 이미지가 [0, 1]일 때 정확히 적대적 예제를 생성할 수 있습니다. 따라서, normalization을 _데이터를 불러오는 과정_이 아니라 _모델의 안_에 삽입하여야합니다. 자세한 내용은 이 [데모](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb)를 참고 부탁드립니다.
+* **모든 이미지는 transform[to.Tensor()]을 활용하여 [0, 1]로 입력되어야합니다!** 본래 PyTorch에서는 transform을 통해 지원되는 normalization을 활용하고는 합니다. 하지만, 적대적 공격의 특징 상 최대 섭동(Maximum Perturbtion) 범위를 주거나 이를 비용으로 활용하기 때문에, 입력 이미지가 [0, 1]일 때 정확히 적대적 예제를 생성할 수 있습니다. 따라서, normalization을 *데이터를 불러오는 과정*이 아니라 *모델의 안*에 삽입하여야합니다. 자세한 내용은 이 [데모](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb)를 참고 부탁드립니다.
 
-* **모든 모델은 `(N, C)` 형태의 tensor를 출력해야합니다. 여기서 `N`은 배치(Batch)의 개수, `C`는 정답 클래스(class)의 개수입니다!** 주어지는 모델은 _torchvision.models_과의 호환을 위해서 확률 벡터로 사용될 `(N,C)` 만을 출력해야합니다. 만약 그렇지 않을 경우, 모델의 출력을 조절할 수 있는 레이어(Layer)를 이 [데모](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Model%20with%20Multiple%20Outputs.ipynb)와 같이 추가하면 됩니다.
+* **모든 모델은 `(N, C)` 형태의 tensor를 출력해야합니다. 여기서 `N`은 배치(Batch)의 개수, `C`는 정답 클래스(class)의 개수입니다!** 주어지는 모델은 *torchvision.models*과의 호환을 위해서 확률 벡터로 사용될 `(N,C)` 만을 출력해야합니다. 만약 그렇지 않을 경우, 모델의 출력을 조절할 수 있는 레이어(Layer)를 이 [데모](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Model%20with%20Multiple%20Outputs.ipynb)와 같이 추가하면 됩니다.
 
 * **만약 매번 똑같은 적대적 예제가 나오게 하려면, `torch.backends.cudnn.deterministic = True`를 사용합니다**. GPU에서 이루어지는 연산은 non-deterministic한 경우도 있기 때문에, 기울기를 활용하는 적대적 공격은 모든 환경이 똑같더라도 항상 똑같은 값을 출력하지 않습니다 [[discuss]](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). 따라서, 이를 방지하기 위해서는  GPU의 랜덤성을 고정하도록 다음 명령어를 실행해야 합니다. `torch.backends.cudnn.deterministic = True`[[ref]](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch).
 
