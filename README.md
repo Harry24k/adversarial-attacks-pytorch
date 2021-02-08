@@ -5,6 +5,7 @@
   <a href="https://img.shields.io/pypi/v/torchattacks"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
+[README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)
 
 [Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples.
 

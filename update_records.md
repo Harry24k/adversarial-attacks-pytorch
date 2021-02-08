@@ -198,3 +198,10 @@
       * PGD with L2 distance measure.
   * `Attack.save`
       * Print L2 distance between adversarial examples and the original examples.
+
+
+
+### v2.12.3
+
+  * `PGDL2`
+    * Initialization perturbation is changed.

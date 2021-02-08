@@ -51,9 +51,12 @@ class PGDL2(Attack):
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
-            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
-
+            delta = torch.empty_like(adv_images).normal_()
+            d_flat = delta.view(adv_images.size(0),-1)
+            n = d_flat.norm(p=2,dim=1).view(adv_images.size(0),1,1,1)
+            r = torch.zeros_like(n).uniform_(0, 1)
+            delta *= r/n*epsilon
+            
         for i in range(self.steps):
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
