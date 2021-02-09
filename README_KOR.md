@@ -74,7 +74,9 @@ Evasion Attack의 경우 크게 **White Box**와 **Black Box**로 나뉠 수 있
 * **White Box Attack**: 모델 자체에 접근 가능한 경우의 공격. (기울기 정보 활용 가능)
 
 * **Black Box Attack**: 모델에 대한 정보가 아예 없거나, 사용된 구조 혹은 결과만 알 수 있는 경우의 공격. (기울기 정보 활용 불가능)
+
   * **Transfer Attack**: 대리(Surrogate) 모델을 활용하여 공격하는 방법.
+  
   * **Score-based, Decision-based Attack** : 모델이 출력하는 값(Output)인 예측(Prediction)이나 확률(Probabilty)를 가지고 공격하는 방법. 
 
 
