@@ -65,7 +65,7 @@
 
 
 
-#### Evasion Attack
+#### Evasion Attack.
 
 **Evasion Attack**은 말 그대로, 이미 학습된 모델을 공격하는 것입니다. 주로 사진이나 소리에 노이즈(Noise)를 더해 잘못된 예측을 유도합니다. 이 때 적대적 공격을 위해 사용된 노이즈를 특별히 적대적 섭동(Adversarial Perturbation)이라고도 부릅니다. 그리고, 적대적 공격을 활용해 생성된 섭동이 더해진 이미지를 적대적 예제(Adversarial Example)이라고 부르게 됩니다. 문제는 위에서 언급했던 것과 같이, 섭동이 사람의 눈에 보이지 않을 정도임에도 예측이 민감하게 바뀐다는 것입니다.
 
@@ -74,7 +74,9 @@ Evasion Attack의 경우 크게 **White Box**와 **Black Box**로 나뉠 수 있
 * **White Box Attack**: 모델 자체에 접근 가능한 경우의 공격. (기울기 정보 활용 가능)
 
 * **Black Box Attack**: 모델에 대한 정보가 아예 없거나, 사용된 구조 혹은 결과만 알 수 있는 경우의 공격. (기울기 정보 활용 불가능)
-* **Transfer Attack**: 대리(Surrogate) 모델을 활용하여 공격하는 방법.
+
+  * **Transfer Attack**: 대리(Surrogate) 모델을 활용하여 공격하는 방법.
+  
   * **Score-based, Decision-based Attack** : 모델이 출력하는 값(Output)인 예측(Prediction)이나 확률(Probabilty)를 가지고 공격하는 방법. 
 
 
@@ -113,7 +115,7 @@ Evasion Attack의 경우 크게 **White Box**와 **Black Box**로 나뉠 수 있
 
 
 
-#### Poisoning Attack
+#### Poisoning Attack.
 
 **Poisoning Attack**은 모델의 학습을 잘못된 방향으로 이끄는 공격으로, 주로 *학습 데이터(Training Data)*를 변화시켜서 이를 이루어내게 합니다.
 
