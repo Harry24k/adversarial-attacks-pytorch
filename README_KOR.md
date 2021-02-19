@@ -238,34 +238,6 @@ adversarial_images = atk(images, labels)
 Torchattacks은 다른 유명한 적대적 공격 패키지와도 호환할 수 있도록 구성되어 있습니다. 특히, 다른 패키지의 공격을 *torchattacks*로 이식할경우, 적대적 예제를 저장할 수 있는 *save*나 *multiattack*을 활용하여 더 강한 공격을 만들어낼 수도 있습니다.
 
 
-
-###  :milky_way: AutoAttack
-
-* https://github.com/fra31/auto-attack
-* `pip install git+https://github.com/fra31/auto-attack`
-
-```python
-from torchattacks.attack import Attack
-import autoattack
-
-class AutoAttack(Attack):
-    def __init__(self, model, eps):
-        super(AutoAttack, self).__init__("AutoAttack", model)
-        self.adversary = autoattack.AutoAttack(self.model, norm='Linf',
-                                               eps=eps, version='standard', verbose=False)
-        self._attack_mode = 'only_default'
-
-    def forward(self, images, labels):
-        adv_images = self.adversary.run_standard_evaluation(images.cuda(), labels.cuda(),
-                                                            bs=images.shape[0])
-        return adv_images
-
-atk = AutoAttack(model, eps=0.3)
-atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
-```
-
-
-
 ###  :milky_way: FoolBox
 
 * https://github.com/bethgelab/foolbox
