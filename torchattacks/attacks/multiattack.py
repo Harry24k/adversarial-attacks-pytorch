@@ -14,7 +14,7 @@ class MultiAttack(Attack):
     Examples::
         >>> attack1 = torchattacks.PGD(model, eps=4/255, alpha=8/255, iters=40, random_start=False)
         >>> attack2 = torchattacks.PGD(model, eps=4/255, alpha=8/255, iters=40, random_start=False)
-        >>> attack = torchattacks.MultiAttack(model, [attack1, attack2])
+        >>> attack = torchattacks.MultiAttack([attack1, attack2])
         >>> adv_images = attack(images, labels)
         
     """
