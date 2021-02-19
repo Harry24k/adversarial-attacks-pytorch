@@ -1,6 +1,7 @@
 build/*
 dist/*
 robustbench/*
+autoattack/*
 torchattacks.egg-info/*
 data/*
 models/*
@@ -17,3 +18,4 @@ _PGD BIM.pptx
 _deepfool.py
 debug.log
 _Untitle.ipynb
+sample.pth

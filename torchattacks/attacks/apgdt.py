@@ -11,9 +11,9 @@ import torch.nn.functional as F
 from ..attack import Attack
 
 
-class APGD(Attack):
+class APGDT(Attack):
     r"""
-    APGD in the paper 'Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks'
+    APGD-Targeted in the paper 'Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks'
     [https://arxiv.org/abs/2003.01690]
     [https://github.com/fra31/auto-attack]
     
@@ -26,10 +26,10 @@ class APGD(Attack):
         steps (int): number of steps. (DEFALUT: 100)
         n_restarts (int): number of random restarts. (DEFALUT: 1)
         seed (int): random seed for the starting point. (DEFAULT: 0)
-        loss (str): loss function optimized ('ce', 'dlr' supported, DEFALUT: 'ce')
         eot_iter (int): number of iteration for EOT. (DEFALUT: 1)
         rho (float): parameter for step-size update (DEFALUT: 0.75)
         verbose (bool): print progress. (DEFAULT: False)
+        n_classes (int): number of classes. (DEFAULT: 10)
         
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -37,23 +37,24 @@ class APGD(Attack):
         - output: :math:`(N, C, H, W)`.
           
     Examples::
-        >>> attack = torchattacks.APGD(model, norm='Linf', eps=8/255, steps=100, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False)
+        >>> attack = torchattacks.APGDT(model, norm='Linf', eps=8/255, steps=100, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10)
         >>> adv_images = attack(images, labels)
         
     """
     def __init__(self, model, norm='Linf', eps=8/255, steps=100, n_restarts=1, 
-                 seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False):
-        super(APGD, self).__init__("APGD", model)
+                 seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10):
+        super(APGDT, self).__init__("APGDT", model)
         self.eps = eps
         self.steps = steps
         self.norm = norm
         self.n_restarts = n_restarts
         self.seed = seed
-        self.loss = loss
         self.eot_iter = eot_iter
         self.thr_decr = rho
         self.verbose = verbose
         self._attack_mode = 'only_default'
+        self.target_class = None
+        self.n_target_classes = n_classes - 1
 
     def forward(self, images, labels):
         r"""
@@ -65,7 +66,7 @@ class APGD(Attack):
 
         return adv_images
     
-    def check_oscillation(self, x, j, k, y5, k3=0.75):
+    def check_oscillation(self, x, j, k, y5, k3=0.5):
         t = np.zeros(x.shape[1])
         for counter5 in range(k):
           t += x[j - counter5] > x[j - counter5 - 1]
@@ -75,11 +76,10 @@ class APGD(Attack):
     def check_shape(self, x):
         return x if len(x.shape) > 0 else np.expand_dims(x, 0)
     
-    def dlr_loss(self, x, y):
+    def dlr_loss_targeted(self, x, y, y_target):
         x_sorted, ind_sorted = x.sort(dim=1)
-        ind = (ind_sorted[:, -1] == y).float()
         
-        return -(x[np.arange(x.shape[0]), y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind)) / (x_sorted[:, -1] - x_sorted[:, -3] + 1e-12)
+        return -(x[np.arange(x.shape[0]), y] - x[np.arange(x.shape[0]), y_target]) / (x_sorted[:, -1] - .5 * x_sorted[:, -3] - .5 * x_sorted[:, -4] + 1e-12)
     
     def attack_single_run(self, x_in, y_in):
         x = x_in.clone() if len(x_in.shape) == 4 else x_in.clone().unsqueeze(0)
@@ -102,21 +102,17 @@ class APGD(Attack):
         loss_best_steps = torch.zeros([self.steps + 1, x.shape[0]])
         acc_steps = torch.zeros_like(loss_best_steps)
         
-        if self.loss == 'ce':
-            criterion_indiv = nn.CrossEntropyLoss(reduction='none')
-        elif self.loss == 'dlr':
-            criterion_indiv = self.dlr_loss
-        else:
-            raise ValueError('unknowkn loss')
+        output = self.model(x)
+        y_target = output.sort(dim=1)[1][:, -self.target_class]
         
         x_adv.requires_grad_()
         grad = torch.zeros_like(x)
         for _ in range(self.eot_iter):
             with torch.enable_grad():
                 logits = self.model(x_adv) # 1 forward pass (eot_iter = 1)
-                loss_indiv = criterion_indiv(logits, y)
+                loss_indiv = self.dlr_loss_targeted(logits, y, y_target)
                 loss = loss_indiv.sum()
-                    
+            
             grad += torch.autograd.grad(loss, [x_adv])[0].detach() # 1 backward pass (eot_iter = 1)
             
         grad /= float(self.eot_iter)
@@ -149,13 +145,13 @@ class APGD(Attack):
                 if self.norm == 'Linf':
                     x_adv_1 = x_adv + step_size * torch.sign(grad)
                     x_adv_1 = torch.clamp(torch.min(torch.max(x_adv_1, x - self.eps), x + self.eps), 0.0, 1.0)
-                    x_adv_1 = torch.clamp(torch.min(torch.max(x_adv + (x_adv_1 - x_adv) * a + grad2 * (1 - a), x - self.eps), x + self.eps), 0.0, 1.0)
+                    x_adv_1 = torch.clamp(torch.min(torch.max(x_adv + (x_adv_1 - x_adv)*a + grad2*(1 - a), x - self.eps), x + self.eps), 0.0, 1.0)
                     
                 elif self.norm == 'L2':
-                    x_adv_1 = x_adv + step_size * grad / ((grad ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12)
+                    x_adv_1 = x_adv + step_size[0] * grad / ((grad ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12)
                     x_adv_1 = torch.clamp(x + (x_adv_1 - x) / (((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12) * torch.min(
                         self.eps * torch.ones(x.shape).to(self.device).detach(), ((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt()), 0.0, 1.0)
-                    x_adv_1 = x_adv + (x_adv_1 - x_adv) * a + grad2 * (1 - a)
+                    x_adv_1 = x_adv + (x_adv_1 - x_adv)*a + grad2*(1 - a)
                     x_adv_1 = torch.clamp(x + (x_adv_1 - x) / (((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12) * torch.min(
                         self.eps * torch.ones(x.shape).to(self.device).detach(), ((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12), 0.0, 1.0)
                     
@@ -167,12 +163,11 @@ class APGD(Attack):
             for _ in range(self.eot_iter):
                 with torch.enable_grad():
                     logits = self.model(x_adv) # 1 forward pass (eot_iter = 1)
-                    loss_indiv = criterion_indiv(logits, y)
+                    loss_indiv = self.dlr_loss_targeted(logits, y, y_target)
                     loss = loss_indiv.sum()
                 
                 grad += torch.autograd.grad(loss, [x_adv])[0].detach() # 1 backward pass (eot_iter = 1)
                 
-            
             grad /= float(self.eot_iter)
             
             pred = logits.detach().max(1)[1] == y
@@ -215,7 +210,6 @@ class APGD(Attack):
               
         return x_best, acc, loss_best, x_best_adv
     
-
     def perturb(self, x_in, y_in, best_loss=False, cheap=True):
         assert self.norm in ['Linf', 'L2']
         x = x_in.clone() if len(x_in.shape) == 4 else x_in.clone().unsqueeze(0)
@@ -229,14 +223,15 @@ class APGD(Attack):
             print('initial accuracy: {:.2%}'.format(acc.float().mean()))
         startt = time.time()
         
-        if not best_loss:
-            torch.random.manual_seed(self.seed)
-            torch.cuda.random.manual_seed(self.seed)
-            
-            if not cheap:
-                raise ValueError('not implemented yet')
-            
-            else:
+        torch.random.manual_seed(self.seed)
+        torch.cuda.random.manual_seed(self.seed)
+        
+        if not cheap:
+            raise ValueError('not implemented yet')
+        
+        else:
+            for target_class in range(2, self.n_target_classes + 2):
+                self.target_class = target_class
                 for counter in range(self.n_restarts):
                     ind_to_fool = acc.nonzero().squeeze()
                     if len(ind_to_fool.shape) == 0: ind_to_fool = ind_to_fool.unsqueeze(0)
@@ -248,21 +243,7 @@ class APGD(Attack):
                         acc[ind_to_fool[ind_curr]] = 0
                         adv[ind_to_fool[ind_curr]] = adv_curr[ind_curr].clone()
                         if self.verbose:
-                            print('restart {} - robust accuracy: {:.2%} - cum. time: {:.1f} s'.format(
-                                counter, acc.float().mean(), time.time() - startt))
-            
-            return acc, adv
-        
-        else:
-            adv_best = x.detach().clone()
-            loss_best = torch.ones([x.shape[0]]).to(self.device) * (-float('inf'))
-            for counter in range(self.n_restarts):
-                best_curr, _, loss_curr, _ = self.attack_single_run(x, y)
-                ind_curr = (loss_curr > loss_best).nonzero().squeeze()
-                adv_best[ind_curr] = best_curr[ind_curr] + 0.
-                loss_best[ind_curr] = loss_curr[ind_curr] + 0.
-            
-                if self.verbose:
-                    print('restart {} - loss: {:.5f}'.format(counter, loss_best.sum()))
-            
-            return loss_best, adv_best
+                            print('restart {} - target_class {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s'.format(
+                                counter, self.target_class, acc.float().mean(), self.eps, time.time() - startt))
+                                
+        return acc, adv

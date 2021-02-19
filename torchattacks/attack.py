@@ -38,31 +38,8 @@ class Attack(object):
         Should be overridden by all subclasses.
         """
         raise NotImplementedError
-        
-    def set_attack_mode(self, mode, target_map_function=None):
-        r"""
-        Set attack mode.
-  
-        Arguments:
-            mode (str): 'default' (DEFAULT)
-                         'targeted' - Use input labels as targeted labels.
-                         'least_likely' - Use least likely labels as targeted labels.
-                         
-            target_map_function (function): Label mapping function.
-                e.g. lambda images, labels:(labels+1)%10.
-                None for using input labels as targeted labels. (DEFAULT)
-
-        """
-        if mode=="default":
-            self.set_default_mode()
-        elif mode=="targeted":
-            self.set_targeted_mode(target_map_function)
-        elif mode=="least_likely":
-            self.set_least_likely_mode()
-        else:
-            raise ValueError(mode + " is not a valid mode. [Options: default, targeted, least_likely]")
             
-    def set_default_mode(self):
+    def set_mode_default(self):
         r"""
         Set attack mode as default mode.
 
@@ -75,7 +52,7 @@ class Attack(object):
         self._targeted = -1
         self._transform_label = self._get_label
         
-    def set_targeted_mode(self, target_map_function=None):
+    def set_mode_targeted(self, target_map_function=None):
         r"""
         Set attack mode as targeted mode.
   
@@ -97,13 +74,12 @@ class Attack(object):
         self._transform_label = self._get_target_label
         
         
-    def set_least_likely_mode(self, kth_min=1):
+    def set_mode_least_likely(self, kth_min=1):
         r"""
         Set attack mode as least likely mode.
   
         Arguments:
             kth_min (str): k-th smallest probability used as target labels (DEFAULT: 1)
-                e.g. kth_min can have a range of [0, #Labels].
 
         """
         if self._attack_mode is 'only_default':

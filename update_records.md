@@ -205,3 +205,22 @@
 
   * `PGDL2`
     * Initialization perturbation is changed.
+    
+    
+    
+### v2.13.1
+
+  * `Attack.set_attack_mode`
+      * Deprecated. Use following built-in functions.
+          * `set_mode_default`: default mode.
+          * `set_mode_targeted`: targeted mode. Now supporting `target_map_function=None` for pre-generated targeted labels.
+          * `set_mode_least_likely`: least likely targeted mode. Now supporting k-th smallest probability targeted mode by `kth_min`.
+  * `APGD` is changed to `EOTPGD`.
+  * `PGDDLR` is added.
+  * `APGD`, `APGDT`, `Square`, `FAB`
+      * Modified from https://github.com/fra31/auto-attack.
+          * `n_iters` is changed to `steps`.
+          * `n_target_classes` is calculated based on `n_claases`.
+          * `reduce=False` is erased because it is enough with `reduction='none'`.
+  * `AutoAttack`
+      * Created based on `APGD`, `APGDT`, `Square`, `FAB`.

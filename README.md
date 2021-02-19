@@ -80,8 +80,13 @@ The distance measure in parentheses.
 |  **PGDL2**<br />(L2)   | Towards Deep Learning Models Resistant to Adversarial Attacks ([Mardry et al., 2017](https://arxiv.org/abs/1706.06083)) | Projected Gradient Method                                    |
 | **MIFGSM**<br />(Linf) | Boosting Adversarial Attacks with Momentum ([Dong et al., 2017](https://arxiv.org/abs/1710.06081)) | :heart_eyes: Contributor [zhuangzi926](https://github.com/zhuangzi926), [huitailangyz](https://github.com/huitailangyz) |
 |  **TPGD**<br />(Linf)  | Theoretically Principled Trade-off between Robustness and Accuracy ([Zhang et al., 2019](https://arxiv.org/abs/1901.08573)) |                                                              |
-|  **APGD**<br />(Linf)  | Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network" ([Zimmermann, 2019](https://arxiv.org/abs/1907.00895)) | [EOT](https://arxiv.org/abs/1707.07397) + PGD                |
-| **FFGSM**<br />(Linf)  | Fast is better than free: Revisiting adversarial training ([Wong et al., 2020](https://arxiv.org/abs/2001.03994)) | Random initialization + FGSM                                 |
+|  **EOTPGD**<br />(Linf)  | Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network" ([Zimmermann, 2019](https://arxiv.org/abs/1907.00895)) | [EOT](https://arxiv.org/abs/1707.07397)+PGD                |
+| **PGDDLR**<br />(Linf)  | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) | PGD based on DLR loss                                 |
+| **APGD**<br />(Linf, L2) | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) |                                  |
+| **APGDT**<br />(Linf, L2) | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) | Targeted APGD                                 |
+| **FAB**<br />(Linf, L2) | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044)) |                               |
+| **Square**<br />(Linf, L2, L1) | Square Attack: a query-efficient black-box adversarial attack via random search ([Andriushchenko et al., 2019](https://arxiv.org/abs/1912.00049)) |                                |
+| **AutoAttack**<br />(Linf, L2) | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) | APGD+APGDT+FAB+Square                                 |
 
 
 
@@ -93,7 +98,7 @@ For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench)
 
 * **ART**: [102](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2020.12.11.
 
-Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. The code is here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)). All experiments were done on GeForce RTX 2080.
+Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. All experiments were done on GeForce RTX 2080. This is for `torchattacks==1.12.3`. For the latest version, please refer to here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
 
 |  **Attack (Linf)**   |     **Package**     | [Wong2020](https://arxiv.org/abs/2001.03994) | [Rice2020](https://arxiv.org/abs/2002.11569) | [Carmon2019](https://arxiv.org/abs/1905.13736) |     **Remark**     |
 | :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
@@ -114,6 +119,8 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 <sup>*</sup>Note that Foolbox returns accuracy and adversarial images simultaneously, thus the *actual* time for generating adversarial images  might be shorter than the records.
 
 <sup>**†**</sup>Considering that the binary search algorithm for const `c` can be time-consuming, torchattacks supports customized grid search as in [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb).
+
+
 
 ## Documentation
 
@@ -158,33 +165,6 @@ If you use this package, please cite the following BibTex:
 Torchattacks supports collaboration with other attack packages.
 
 Through expending the usage, we can use fucntions in _torchattacks_ such as _save_ and _multiattack_.
-
-
-
-###  :milky_way: AutoAttack
-
-* https://github.com/fra31/auto-attack
-* `pip install git+https://github.com/fra31/auto-attack`
-
-```python
-from torchattacks.attack import Attack
-import autoattack
-
-class AutoAttack(Attack):
-    def __init__(self, model, eps):
-        super(AutoAttack, self).__init__("AutoAttack", model)
-        self.adversary = autoattack.AutoAttack(self.model, norm='Linf',
-                                               eps=eps, version='standard', verbose=False)
-        self._attack_mode = 'only_default'
-
-    def forward(self, images, labels):
-        adv_images = self.adversary.run_standard_evaluation(images.cuda(), labels.cuda(),
-                                                            bs=images.shape[0])
-        return adv_images
-
-atk = AutoAttack(model, eps=0.3)
-atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
-```
 
 
 

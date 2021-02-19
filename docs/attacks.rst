@@ -51,9 +51,9 @@ Attacks
    .. automodule:: torchattacks.attacks.pgdl2
     :members:
 
-   APGD (EOT + PGD)
+   EOTPGD (EOT + PGD)
    ~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.apgd
+   .. automodule:: torchattacks.attacks.eotpgd
     :members:
     
    TPGD (TRADES' PGD)
@@ -69,4 +69,34 @@ Attacks
    MIFGSM
    ~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.mifgsm
+    :members:
+    
+   PGDDLR
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pgddlr
+    :members:
+    
+   APGD
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.apgd
+    :members:
+    
+   APGDT
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.apgdt
+    :members:
+    
+   FAB
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.fab
+    :members:
+    
+   Square
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.square
+    :members:
+    
+   AutoAttack
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.autoattack
     :members:
