@@ -119,8 +119,9 @@ class Attack(object):
         if (self._attack_mode is 'targeted') and (self._target_map_function is None):
             raise ValueError("save is not supported for target_map_function=None")
         
-        image_list = []
-        label_list = []
+        if save_path is not None:
+            image_list = []
+            label_list = []
 
         correct = 0
         total = 0
@@ -132,8 +133,10 @@ class Attack(object):
             adv_images = self.__call__(images, labels)
 
             batch_size = len(images)
-            image_list.append(adv_images.cpu())
-            label_list.append(labels.cpu())
+            
+            if save_path is not None:
+                image_list.append(adv_images.cpu())
+                label_list.append(labels.cpu())
 
             if self._return_type == 'int':
                 adv_images = adv_images.float()/255
@@ -153,10 +156,9 @@ class Attack(object):
                     print('- Save Progress: %2.2f %% / Accuracy: %2.2f %% / L2: %1.5f' \
                           % ((step+1)/total_batch*100, acc, torch.cat(l2_distance).mean()), end='\r')
 
-        x = torch.cat(image_list, 0)
-        y = torch.cat(label_list, 0)
-        
         if save_path is not None:
+            x = torch.cat(image_list, 0)
+            y = torch.cat(label_list, 0)            
             torch.save((x, y), save_path)
             print('\n- Save Complete!')
 

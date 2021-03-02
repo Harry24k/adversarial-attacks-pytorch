@@ -224,3 +224,10 @@
           * `reduce=False` is erased because it is enough with `reduction='none'`.
   * `AutoAttack`
       * Created based on `APGD`, `APGDT`, `Square`, `FAB`.
+
+
+
+### v2.13.2
+
+  * `Attack.save`
+      * Don't use an additional memory if `save_path=None`

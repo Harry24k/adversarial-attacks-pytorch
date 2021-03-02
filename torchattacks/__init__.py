@@ -18,4 +18,4 @@ from .attacks.fab import FAB
 from .attacks.square import Square
 from .attacks.autoattack import AutoAttack
 
-__version__ = '2.13.1'
+__version__ = '2.13.2'
