@@ -22,8 +22,8 @@ class AutoAttack(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        norm (str) : Lp-norm to minimize. ('Linf', 'L2' supported, DEFALUT: 'Linf')
-        eps (float): maximum perturbation. (DEFALUT: 0.3)
+        norm (str) : Lp-norm to minimize. ('Linf', 'L2' supported, DEFAULT: 'Linf')
+        eps (float): maximum perturbation. (DEFAULT: 0.3)
         version (bool): version. (DEFAULT: 'standard')
         n_classes (int): number of classes. (DEFAULT: 10)
         seed (int): random seed for the starting point. (DEFAULT: 0)

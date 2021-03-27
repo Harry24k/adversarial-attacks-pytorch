@@ -13,9 +13,9 @@ class PGDL2(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT: 1.0)
-        alpha (float): step size. (DEFALUT: 0.2)
-        steps (int): number of steps. (DEFALUT: 40)
+        eps (float): maximum perturbation. (DEFAULT: 1.0)
+        alpha (float): step size. (DEFAULT: 0.2)
+        steps (int): number of steps. (DEFAULT: 40)
         random_start (bool): using random initialization of delta. (DEFAULT: False)
         
     Shape:

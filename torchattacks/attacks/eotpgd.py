@@ -13,10 +13,10 @@ class EOTPGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT: 0.3)
-        alpha (float): step size. (DEFALUT: 2/255)
-        steps (int): number of steps. (DEFALUT: 40)
-        sampling (int) : number of models to estimate the mean gradient. (DEFALUT: 100)
+        eps (float): maximum perturbation. (DEFAULT: 0.3)
+        alpha (float): step size. (DEFAULT: 2/255)
+        steps (int): number of steps. (DEFAULT: 40)
+        sampling (int) : number of models to estimate the mean gradient. (DEFAULT: 100)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].

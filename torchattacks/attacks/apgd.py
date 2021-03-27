@@ -22,13 +22,13 @@ class APGD(Attack):
     Arguments:
         model (nn.Module): model to attack.
         norm (str): Lp-norm of the attack. ('Linf', 'L2' supported, DEFAULT: 'Linf')
-        eps (float): maximum perturbation. (DEFALUT: None)
-        steps (int): number of steps. (DEFALUT: 100)
-        n_restarts (int): number of random restarts. (DEFALUT: 1)
+        eps (float): maximum perturbation. (DEFAULT: None)
+        steps (int): number of steps. (DEFAULT: 100)
+        n_restarts (int): number of random restarts. (DEFAULT: 1)
         seed (int): random seed for the starting point. (DEFAULT: 0)
-        loss (str): loss function optimized ('ce', 'dlr' supported, DEFALUT: 'ce')
-        eot_iter (int): number of iteration for EOT. (DEFALUT: 1)
-        rho (float): parameter for step-size update (DEFALUT: 0.75)
+        loss (str): loss function optimized ('ce', 'dlr' supported, DEFAULT: 'ce')
+        eot_iter (int): number of iteration for EOT. (DEFAULT: 1)
+        rho (float): parameter for step-size update (DEFAULT: 0.75)
         verbose (bool): print progress. (DEFAULT: False)
         
     Shape:

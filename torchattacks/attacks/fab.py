@@ -27,13 +27,13 @@ class FAB(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        norm (str) : Lp-norm to minimize. ('Linf', 'L2', 'L1' supported, DEFALUT: 'Linf')
-        eps (float): maximum perturbation. (DEFALUT: None)
-        steps (int): number of steps. (DEFALUT: 100)
-        n_restarts (int): number of random restarts. (DEFALUT: 1)
-        alpha_max (float): alpha_max. (DEFALUT: 0.1)
-        eta (float): overshooting. (DEFALUT: 1.05)
-        beta (float): backward step. (DEFALUT: 0.9)
+        norm (str) : Lp-norm to minimize. ('Linf', 'L2', 'L1' supported, DEFAULT: 'Linf')
+        eps (float): maximum perturbation. (DEFAULT: None)
+        steps (int): number of steps. (DEFAULT: 100)
+        n_restarts (int): number of random restarts. (DEFAULT: 1)
+        alpha_max (float): alpha_max. (DEFAULT: 0.1)
+        eta (float): overshooting. (DEFAULT: 1.05)
+        beta (float): backward step. (DEFAULT: 0.9)
         verbose (bool): print progress. (DEFAULT: False)
         seed (int): random seed for the starting point. (DEFAULT: 0)
         targeted (bool): targeted attack for every wrong classes. (DEFAULT: False)
