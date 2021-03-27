@@ -8,15 +8,15 @@ class EOTPGD(Attack):
     r"""
     Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"
     [https://arxiv.org/abs/1907.00895]
-    
+
     Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT: 0.3)
-        alpha (float): step size. (DEFALUT: 2/255)
-        steps (int): number of steps. (DEFALUT: 40)
-        sampling (int) : number of models to estimate the mean gradient. (DEFALUT: 100)
+        eps (float): maximum perturbation. (DEFAULT: 0.3)
+        alpha (float): step size. (DEFAULT: 2/255)
+        steps (int): number of steps. (DEFAULT: 40)
+        sampling (int) : number of models to estimate the mean gradient. (DEFAULT: 100)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -28,6 +28,7 @@ class EOTPGD(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, eps=0.3, alpha=2/255, steps=40, sampling=10):
         super(EOTPGD, self).__init__("EOTPGD", model)
         self.eps = eps
@@ -42,7 +43,7 @@ class EOTPGD(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
-        
+
         loss = nn.CrossEntropyLoss()
         ori_images = images.clone().detach()
 
@@ -62,7 +63,8 @@ class EOTPGD(Attack):
 
             # grad.sign() is used instead of (grad/sampling).sign()
             adv_images = images - self.alpha*grad.sign()
-            eta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
+            eta = torch.clamp(adv_images - ori_images,
+                              min=-self.eps, max=self.eps)
             images = torch.clamp(ori_images + eta, min=0, max=1).detach()
 
         adv_images = images
