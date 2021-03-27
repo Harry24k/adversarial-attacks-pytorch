@@ -13,9 +13,9 @@ class BIM(Attack):
     
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFALUT: 4/255)
-        alpha (float): step size. (DEFALUT: 1/255)
-        steps (int): number of steps. (DEFALUT: 0)
+        eps (float): maximum perturbation. (DEFAULT: 4/255)
+        alpha (float): step size. (DEFAULT: 1/255)
+        steps (int): number of steps. (DEFAULT: 0)
     
     .. note:: If steps set to 0, steps will be automatically decided following the paper.
     
