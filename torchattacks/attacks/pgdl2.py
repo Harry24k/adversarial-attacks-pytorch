@@ -55,7 +55,7 @@ class PGDL2(Attack):
             d_flat = delta.view(adv_images.size(0),-1)
             n = d_flat.norm(p=2,dim=1).view(adv_images.size(0),1,1,1)
             r = torch.zeros_like(n).uniform_(0, 1)
-            delta *= r/n*epsilon
+            delta *= r/n*epsilon # <--- A bug here, there is no epsilon. And random start seems should return a new adv_images
             
         for i in range(self.steps):
             adv_images.requires_grad = True
