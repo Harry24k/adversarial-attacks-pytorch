@@ -32,9 +32,8 @@ class CW(Attack):
         >>> attack = torchattacks.CW(model, c=1e-4, kappa=0, steps=1000, lr=0.01)
         >>> adv_images = attack(images, labels)
         
-    .. note:: NOT IMPLEMENTED methods in the paper due to time consuming.
+    .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
     
-        (1) Binary search for c.
     """
     def __init__(self, model, c=1e-4, kappa=0, steps=1000, lr=0.01):
         super(CW, self).__init__("CW", model)

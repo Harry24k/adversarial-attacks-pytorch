@@ -231,3 +231,9 @@
 
   * `Attack.save`
       * Don't use an additional memory if `save_path=None`
+
+
+
+### v2.14.0
+
+  * `DeepFool`, `OnePixel`, `SparseFool` are added.

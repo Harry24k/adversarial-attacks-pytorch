@@ -1,6 +1,6 @@
 from .attacks.fgsm import FGSM
 from .attacks.bim import BIM
-from .attacks.rfgsm import RFGSM 
+from .attacks.rfgsm import RFGSM
 from .attacks.cw import CW
 from .attacks.pgd import PGD
 from .attacks.pgdl2 import PGDL2
@@ -17,5 +17,8 @@ from .attacks.apgdt import APGDT
 from .attacks.fab import FAB
 from .attacks.square import Square
 from .attacks.autoattack import AutoAttack
+from .attacks.onepixel import OnePixel
+from .attacks.deepfool import DeepFool
+from .attacks.sparsefool import SparseFool
 
-__version__ = '2.13.3'
+__version__ = '2.14.0'
