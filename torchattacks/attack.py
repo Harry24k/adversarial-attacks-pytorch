@@ -7,25 +7,24 @@ class Attack(object):
 
     .. note::
         It automatically set device to the device where given model is.
-        It temporarily changes the model's training mode to `test`
-        by `.eval()` only during an attack process.
+        It basically changes training mode to eval during attack process.
+        To change this, please see `set_training_mode`.
     """
     def __init__(self, name, model):
         r"""
         Initializes internal attack state.
 
         Arguments:
-            name (str): name of an attack.
+            name (str): name of attack.
             model (torch.nn.Module): model to attack.
         """
 
         self.attack = name
         self.model = model
         self.model_name = str(model).split("(")[0]
-
-        self.training = model.training
         self.device = next(model.parameters()).device
-        
+
+        self._training_mode = False
         self._transform_label = self._get_label
         self._targeted = -1
         self._attack_mode = 'default'
@@ -44,7 +43,7 @@ class Attack(object):
         Set attack mode as default mode.
 
         """
-        if self._attack_mode is 'only_default':
+        if self._attack_mode == 'only_default':
             self._attack_mode = "only_default"
         else:
             self._attack_mode = "default"
@@ -62,7 +61,7 @@ class Attack(object):
                 None for using input labels as targeted labels. (DEFAULT)
 
         """
-        if self._attack_mode is 'only_default':
+        if self._attack_mode == 'only_default':
             raise ValueError("Changing attack mode is not supported in this attack method.")
             
         self._attack_mode = "targeted"
@@ -73,7 +72,6 @@ class Attack(object):
             self._target_map_function = target_map_function
         self._transform_label = self._get_target_label
         
-        
     def set_mode_least_likely(self, kth_min=1):
         r"""
         Set attack mode as least likely mode.
@@ -82,14 +80,13 @@ class Attack(object):
             kth_min (str): k-th smallest probability used as target labels (DEFAULT: 1)
 
         """
-        if self._attack_mode is 'only_default':
+        if self._attack_mode == 'only_default':
             raise ValueError("Changing attack mode is not supported in this attack method.")
             
         self._attack_mode = "least_likely"
         self._targeted = 1
         self._transform_label = self._get_least_likely_label
         self._kth_min = kth_min
-        
         
     def set_return_type(self, type):
         r"""
@@ -106,6 +103,16 @@ class Attack(object):
         else:
             raise ValueError(type + " is not a valid type. [Options: float, int]")
 
+    def set_training_mode(self, flag):
+        r"""
+        Set training mode during attack process.
+
+        Arguments:
+            flag (bool): True for using training mode during attack process.
+
+        """
+        self._training_mode = flag
+
     def save(self, data_loader, save_path=None, verbose=True):
         r"""
         Save adversarial images as torch.tensor from given torch.utils.data.DataLoader.
@@ -116,7 +123,7 @@ class Attack(object):
             verbose (bool): True for displaying detailed information. (DEFAULT: True)
 
         """
-        if (self._attack_mode is 'targeted') and (self._target_map_function is None):
+        if (self._attack_mode == 'targeted') and (self._target_map_function is None):
             raise ValueError("save is not supported for target_map_function=None")
         
         if save_path is not None:
@@ -153,14 +160,14 @@ class Attack(object):
                     correct += right_idx.sum()
                     
                     delta = (adv_images - images.to(self.device)).view(batch_size, -1)
-                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))                    
+                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
                     acc = 100 * float(correct) / total
                     print('- Save Progress: %2.2f %% / Accuracy: %2.2f %% / L2: %1.5f' \
                           % ((step+1)/total_batch*100, acc, torch.cat(l2_distance).mean()), end='\r')
 
         if save_path is not None:
             x = torch.cat(image_list, 0)
-            y = torch.cat(label_list, 0)            
+            y = torch.cat(label_list, 0)
             torch.save((x, y), save_path)
             print('\n- Save Complete!')
 
@@ -233,9 +240,14 @@ class Attack(object):
 
     def __call__(self, *input, **kwargs):
         training_mode = self.model.training
-        if training_mode:
+
+        if self._training_mode:
+            self.model.train()
+        else:
             self.model.eval()
+
         images = self.forward(*input, **kwargs)
+
         if training_mode:
             self.model.train()
         
