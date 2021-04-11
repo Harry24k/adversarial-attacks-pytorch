@@ -237,3 +237,13 @@
 ### v2.14.0
 
   * `DeepFool`, `OnePixel`, `SparseFool` are added.
+
+
+
+
+
+### v2.14.1
+
+  * `Attack.set_training_mode`
+      * The method to support changing the model to training mode.
+      * Note that RNN requires model.training=True to calculate gradient.
