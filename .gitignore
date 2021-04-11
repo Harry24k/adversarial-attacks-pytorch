@@ -20,3 +20,4 @@ debug.log
 _Untitle.ipynb
 sample.pth
 _old/*
+.ipynb_checkpoints/*
