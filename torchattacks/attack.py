@@ -129,6 +129,7 @@ class Attack(object):
         
         total_batch = len(data_loader)
 
+        training_mode = self.model.training
         for step, (images, labels) in enumerate(data_loader):
             adv_images = self.__call__(images, labels)
 
@@ -143,7 +144,8 @@ class Attack(object):
 
             if verbose:
                 with torch.no_grad():
-                    self.model.eval()
+                    if training_mode:
+                        self.model.eval()
                     outputs = self.model(adv_images)
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
@@ -162,7 +164,8 @@ class Attack(object):
             torch.save((x, y), save_path)
             print('\n- Save Complete!')
 
-        self._switch_model()
+        if training_mode:
+            self.model.train()
         
     def _get_label(self, images, labels):
         r"""
@@ -229,10 +232,13 @@ class Attack(object):
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
 
     def __call__(self, *input, **kwargs):
-        self.model.eval()
+        training_mode = self.model.training
+        if training_mode:
+            self.model.eval()
         images = self.forward(*input, **kwargs)
-        self._switch_model()
-
+        if training_mode:
+            self.model.train()
+        
         if self._return_type == 'int':
             images = self._to_uint(images)
 
