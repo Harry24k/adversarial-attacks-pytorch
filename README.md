@@ -8,7 +8,7 @@
 
 [README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)
 
-[Torchattacks](https://arxiv.org/abs/2010.01950) is a PyTorch library that contains adversarial attacks to generate adversarial examples.
+[Torchattacks](https://www.semanticscholar.org/paper/Torchattacks-%3A-A-Pytorch-Repository-for-Adversarial-Kim/1f4b3283faf534ef92d7d7fa798b26480605ead9) is a PyTorch library that contains adversarial attacks to generate adversarial examples.
 
 
 <p align="center">
@@ -149,7 +149,7 @@ Here is [update records](update_records.md) of this package.
 
 
 ## Citation
-
+[SemanticScholar](https://www.semanticscholar.org/paper/Torchattacks-%3A-A-Pytorch-Repository-for-Adversarial-Kim/1f4b3283faf534ef92d7d7fa798b26480605ead9).
 If you use this package, please cite the following BibTex:
 
 ```
