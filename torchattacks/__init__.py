@@ -21,4 +21,4 @@ from .attacks.onepixel import OnePixel
 from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
 
-__version__ = '2.14.0'
+__version__ = '2.14.1'
