@@ -100,3 +100,18 @@ Attacks
    ~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.autoattack
     :members:
+    
+   OnePixel
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.onepixel
+    :members:
+    
+   DeepFool
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.deepfool
+    :members:
+    
+   SparseFool
+   ~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.sparsefool
+    :members:
