@@ -247,3 +247,12 @@
   * `Attack.set_training_mode`
       * The method to support changing the model to training mode.
       * Note that RNN requires model.training=True to calculate gradient.
+
+
+
+
+
+### v2.14.2
+
+  * `SparseFool` 
+    * [Issue](https://github.com/Harry24k/adversarial-attacks-pytorch/pull/24#issue-625939975) solved.
