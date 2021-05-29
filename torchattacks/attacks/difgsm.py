@@ -46,7 +46,7 @@ class DI2FGSM(Attack):
         self.resize_rate = resize_rate
         self.diversity_prob = diversity_prob
 
-    def _input_diversity(self, x):
+    def input_diversity(self, x):
         assert self.resize_rate >= 1.0
         assert self.diversity_prob >= 0.0 and self.diversity_prob <= 1.0
 
@@ -86,7 +86,7 @@ class DI2FGSM(Attack):
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
         
         for i in range(self.steps):
-            adv_images = self._input_diversity(adv_images)
+            adv_images = self.input_diversity(adv_images)
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
 
