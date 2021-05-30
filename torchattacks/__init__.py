@@ -20,5 +20,6 @@ from .attacks.autoattack import AutoAttack
 from .attacks.onepixel import OnePixel
 from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
+from .attacks.difgsm import DI2FGSM
 
-__version__ = '2.14.2'
+__version__ = '2.14.3'

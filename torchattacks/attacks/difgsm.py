@@ -17,9 +17,9 @@ class DI2FGSM(Attack):
         eps (float): maximum perturbation. (DEFAULT: 8/255)
         alpha (float): step size. (DEFAULT: 2/255)
         decay (float): momentum factor. (DEFAULT: 0.0)
-        steps (int): number of iterations. (DEFAULT: 5)
-        resize_rate (float): resize factor used in input diversity. (DEFAULT: 1.10)
-        diversity_prob (float) : the probability of applying input diversity. (DEFAULT: 0.7)
+        steps (int): number of iterations. (DEFAULT: 20)
+        resize_rate (float): resize factor used in input diversity. (DEFAULT: 0.9)
+        diversity_prob (float) : the probability of applying input diversity. (DEFAULT: 0.5)
         random_start (bool): using random initialization of delta. (DEFAULT: False)
 
     Shape:
@@ -29,15 +29,15 @@ class DI2FGSM(Attack):
 
     Examples::
         # DI2FGSM
-        >>> attack = torchattacks.DI2FGSM(model, eps=8/255, steps=5, decay=0.0)
+        >>> attack = torchattacks.DI2FGSM(model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
         >>> adv_images = attack(images, labels)
         # M-DI2FGSM
-        >>> attack = torchattacks.DI2FGSM(model, eps=8/255, steps=5, decay=1.0)
+        >>> attack = torchattacks.DI2FGSM(model, eps=8/255, alpha=2/255, steps=20, decay=1.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=0.0, resize_rate=1.10, diversity_prob=0.7, random_start=False):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False):
         super(DI2FGSM, self).__init__("DI2FGSM", model)
         self.eps = eps
         self.steps = steps
@@ -45,14 +45,19 @@ class DI2FGSM(Attack):
         self.alpha = alpha
         self.resize_rate = resize_rate
         self.diversity_prob = diversity_prob
-
-    def input_diversity(self, x):
-        assert self.resize_rate >= 1.0
+        self.random_start = random_start
+        
+#         assert self.resize_rate >= 1.0
         assert self.diversity_prob >= 0.0 and self.diversity_prob <= 1.0
 
+    def input_diversity(self, x):
         img_size = x.shape[-1]
         img_resize = int(img_size * self.resize_rate)
-        # print(img_size, img_resize, resize_rate)
+        
+        if self.resize_rate < 1:
+            img_size = img_resize
+            img_resize = x.shape[-1]
+            
         rnd = torch.randint(low=img_size, high=img_resize, size=(1,), dtype=torch.int32)
         rescaled = F.interpolate(x, size=[rnd, rnd], mode='bilinear', align_corners=False)
         h_rem = img_resize - rnd
@@ -86,9 +91,8 @@ class DI2FGSM(Attack):
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
         
         for i in range(self.steps):
-            adv_images = self.input_diversity(adv_images)
             adv_images.requires_grad = True
-            outputs = self.model(adv_images)
+            outputs = self.model(self.input_diversity(adv_images))
 
             cost = self._targeted*loss(outputs, labels)
             

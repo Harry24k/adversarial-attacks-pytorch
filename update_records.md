@@ -256,3 +256,11 @@
 
   * `SparseFool` 
     * [Issue](https://github.com/Harry24k/adversarial-attacks-pytorch/pull/24#issue-625939975) solved.
+
+
+
+
+
+### v2.14.3
+
+  * `DI2FGSM` is added.
