@@ -46,9 +46,6 @@ class DI2FGSM(Attack):
         self.resize_rate = resize_rate
         self.diversity_prob = diversity_prob
         self.random_start = random_start
-        
-#         assert self.resize_rate >= 1.0
-        assert self.diversity_prob >= 0.0 and self.diversity_prob <= 1.0
 
     def input_diversity(self, x):
         img_size = x.shape[-1]

@@ -38,6 +38,13 @@ class Attack(object):
         """
         raise NotImplementedError
             
+    def get_mode(self):
+        r"""
+        Get attack mode.
+
+        """
+        return self._attack_mode
+        
     def set_mode_default(self):
         r"""
         Set attack mode as default mode.

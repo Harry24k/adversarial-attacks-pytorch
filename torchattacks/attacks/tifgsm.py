@@ -10,8 +10,8 @@ from ..attack import Attack
 
 class TIFGSM(Attack):
     r"""
-    TIFGSM in the paper 'Improving Transferability of Adversarial Examples with Input Diversity'
-    [https://arxiv.org/abs/1803.06978]
+    TIFGSM in the paper 'Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks'
+    [https://arxiv.org/abs/1904.02884]
 
     Distance Measure : Linf
 
@@ -58,14 +58,11 @@ class TIFGSM(Attack):
         self.resize_rate = resize_rate
         self.diversity_prob = diversity_prob
         self.random_start = random_start
-        self.kernel_method = kernel_name
+        self.kernel_name = kernel_name
         self.len_kernel = len_kernel
         self.nsig = nsig
 
         self.stacked_kernel = torch.from_numpy(self.kernel_generation())
-        
-#         assert self.resize_rate >= 1.0
-        assert self.diversity_prob >= 0.0 and self.diversity_prob <= 1.0
 
     def input_diversity(self, x):
         img_size = x.shape[-1]
@@ -117,7 +114,7 @@ class TIFGSM(Attack):
             grad = torch.autograd.grad(cost, adv_images, 
                                        retain_graph=False, create_graph=False)[0]
             # depth wise conv2d
-            grad = F.conv2d(grad, stacked_kernel, stride=1, padding=(self.len_kernel-1)/2, groups=3)
+            grad = F.conv2d(grad, stacked_kernel, stride=1, padding=int((self.len_kernel-1)/2), groups=3)
             grad_norm = torch.norm(nn.Flatten()(grad), p=1, dim=1)
             grad = grad / grad_norm.view([-1]+[1]*(len(grad.shape)-1))
             grad = grad + momentum*self.decay
@@ -143,7 +140,7 @@ class TIFGSM(Attack):
         stack_kernel = np.expand_dims(stack_kernel, 1)
         return stack_kernel
 
-    def gkern(kernlen=15, nsig=3):
+    def gkern(self, kernlen=15, nsig=3):
         """Returns a 2D Gaussian kernel array."""
         x = np.linspace(-nsig, nsig, kernlen)
         kern1d = st.norm.pdf(x)
@@ -151,11 +148,11 @@ class TIFGSM(Attack):
         kernel = kernel_raw / kernel_raw.sum()
         return kernel
 
-    def ukern(kernlen=15):
+    def ukern(self, kernlen=15):
         kernel = np.ones((kernlen,kernlen))* 1.0 /(kernlen*kernlen)
         return kernel
 
-    def lkern(kernlen=15):
+    def lkern(self, kernlen=15):
         kern1d = 1-np.abs(np.linspace((-kernlen+1)/2, (kernlen-1)/2, kernlen)/(kernlen+1)*2)
         kernel_raw = np.outer(kern1d, kern1d)
         kernel = kernel_raw / kernel_raw.sum()
