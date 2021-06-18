@@ -211,8 +211,11 @@ class Square(Attack):
                 s_init = int(math.sqrt(self.p_init * n_features / c))
                 
                 for i_iter in range(self.n_queries):
-                    idx_to_fool = (margin_min > 0.0).nonzero().squeeze()
+                    idx_to_fool = (margin_min > 0.0).nonzero().flatten()
                     
+                    if len(idx_to_fool) == 0:
+                        break
+                        
                     x_curr = self.check_shape(x[idx_to_fool])
                     x_best_curr = self.check_shape(x_best[idx_to_fool])
                     y_curr = y[idx_to_fool]
@@ -292,8 +295,11 @@ class Square(Attack):
                 s_init = int(math.sqrt(self.p_init * n_features / c))
 
                 for i_iter in range(self.n_queries):
-                    idx_to_fool = (margin_min > 0.0).nonzero().squeeze()
+                    idx_to_fool = (margin_min > 0.0).nonzero().flatten()
 
+                    if len(idx_to_fool) == 0:
+                        break
+                        
                     x_curr = self.check_shape(x[idx_to_fool])
                     x_best_curr = self.check_shape(x_best[idx_to_fool])
                     y_curr = y[idx_to_fool]
