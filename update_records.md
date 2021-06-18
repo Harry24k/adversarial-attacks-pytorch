@@ -264,3 +264,12 @@
 ### v2.14.3
 
   * `DI2FGSM` is added.
+
+
+
+
+
+### v2.14.4
+
+  * `Square` is fixed.
+      * If idx_to_fool is empty, then terminate an iteration.
