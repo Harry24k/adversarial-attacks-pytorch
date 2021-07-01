@@ -273,3 +273,14 @@
 
   * `Square` is fixed.
       * If idx_to_fool is empty, then terminate an iteration.
+
+
+
+
+
+### v2.14.5
+
+  * `MIFGSM` is fixed.
+      * https://github.com/Harry24k/adversarial-attacks-pytorch/issues/33
+  * `CW` is fixed.
+      * https://github.com/Harry24k/adversarial-attacks-pytorch/issues/32

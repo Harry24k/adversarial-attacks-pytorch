@@ -83,7 +83,10 @@ class CW(Attack):
             
             # Update Adversarial Images
             _, pre = torch.max(outputs.detach(), 1)
-            correct = (pre == labels).float()
+            if self._targeted==-1: # untargeted
+                correct = (pre == labels).float()
+            else: # targeted
+                correct = (pre != labels).float()
             
             mask = (1-correct)*(best_L2 > current_L2.detach())
             best_L2 = mask*current_L2.detach() + (1-mask)*best_L2

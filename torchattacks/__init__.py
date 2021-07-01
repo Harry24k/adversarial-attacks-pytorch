@@ -22,4 +22,4 @@ from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
 from .attacks.difgsm import DI2FGSM
 
-__version__ = '2.14.4'
+__version__ = '2.14.5'
