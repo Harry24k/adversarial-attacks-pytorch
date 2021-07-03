@@ -115,8 +115,7 @@ class TIFGSM(Attack):
                                        retain_graph=False, create_graph=False)[0]
             # depth wise conv2d
             grad = F.conv2d(grad, stacked_kernel, stride=1, padding=int((self.len_kernel-1)/2), groups=3)
-            grad_norm = torch.norm(nn.Flatten()(grad), p=1, dim=1)
-            grad = grad / grad_norm.view([-1]+[1]*(len(grad.shape)-1))
+            grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 

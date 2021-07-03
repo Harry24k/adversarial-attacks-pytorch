@@ -96,8 +96,7 @@ class DI2FGSM(Attack):
             grad = torch.autograd.grad(cost, adv_images, 
                                        retain_graph=False, create_graph=False)[0]
             
-            grad_norm = torch.norm(nn.Flatten()(grad), p=1, dim=1)
-            grad = grad / grad_norm.view([-1]+[1]*(len(grad.shape)-1))
+            grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 
