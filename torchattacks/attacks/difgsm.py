@@ -27,12 +27,8 @@ class DI2FGSM(Attack):
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
 
-    Examples:
-        # DI2FGSM
+    Examples::
         >>> attack = torchattacks.DI2FGSM(model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
-        >>> adv_images = attack(images, labels)
-        # M-DI2FGSM
-        >>> attack = torchattacks.DI2FGSM(model, eps=8/255, alpha=2/255, steps=20, decay=1.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
