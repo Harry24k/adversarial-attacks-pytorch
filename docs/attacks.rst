@@ -52,66 +52,71 @@ Attacks
     :members:
 
    EOTPGD (EOT + PGD)
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.eotpgd
     :members:
     
    TPGD (TRADES' PGD)
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.tpgd
     :members:
 
    FFGSM (Fast's FGSM)
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.ffgsm
     :members:
 
    MIFGSM
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.mifgsm
     :members:
     
    PGDDLR
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.pgddlr
     :members:
     
    APGD
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgd
     :members:
     
    APGDT
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgdt
     :members:
     
    FAB
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.fab
     :members:
     
    Square
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.square
     :members:
     
    AutoAttack
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.autoattack
     :members:
     
    OnePixel
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.onepixel
     :members:
     
    DeepFool
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.deepfool
     :members:
     
    SparseFool
-   ~~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.sparsefool
+    :members:
+    
+   DI2FGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.difgsm
     :members:

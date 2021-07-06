@@ -14,6 +14,8 @@
 #
 import os
 import sys
+import scipy
+
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -24,9 +26,9 @@ copyright = '2020, harrykim'
 author = 'harrykim'
 
 # The short X.Y version
-version = 'v2.0'
+version = 'v2.14.5'
 # The full version, including alpha/beta/rc tags
-release = 'v2.0'
+release = 'v2.14.5'
 
 
 # -- General configuration ---------------------------------------------------
