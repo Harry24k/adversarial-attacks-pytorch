@@ -330,7 +330,7 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 
 <sup>*</sup> Note that Foolbox returns accuracy and adversarial images simultaneously, thus the *actual* time for generating adversarial images  might be shorter than the records.
 
-<sup>**†**</sup>Considering that the binary search algorithm for const `c` can be time-consuming, torchattacks supports customized grid search as in [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb).
+<sup>**†**</sup>Considering that the binary search algorithm for const `c` can be time-consuming, torchattacks supports MutliAttack for grid searching `c`.
 
 
 
