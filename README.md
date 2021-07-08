@@ -1,22 +1,20 @@
 # Adversarial-Attacks-PyTorch
 
+|                         Clean Image                          |                      Adversarial Image                       |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
+
 <p>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?&color=brightgreen" /></a>
   <a href="https://pypi.org/project/torchattacks/"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg?&color=orange" /></a>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg?&color=blue" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
+--------------------------------------------------------------------------------
 
+[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)).
 
-|                         Clean Image                          |                      Adversarial Image                       |
-| :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
-
-[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks. ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md))
-
-
-
-* **Features:**
+**Features:**
 
 <details><summary>Easy implementation</summary><p>
 
@@ -59,12 +57,13 @@ Refer to [Performance Comparison](#Performance-Comparison).
 
 
 
-* **What's New:**
+**What's New:**
+
+* **Apr 2019:** version 0.0 (Initial commit)
+* **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
+* **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
+* **July 2021:** version 3.0 (supports `torch==1.9.0`)
 * [UPDATE HISTORY.md](UPDATE_HISTORY.md)
-    * **Apr 2019:** version 0.0 (Initial commit)
-    * **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
-    * **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
-    * **July 2021:** version 3.0 (supports `torch==1.9.0`)
 
 
 
