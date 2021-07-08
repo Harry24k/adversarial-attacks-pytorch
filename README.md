@@ -313,7 +313,7 @@ For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench)
 
 Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. All experiments were done on GeForce RTX 2080. For the latest version, please refer to here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
 
-|  **Attack**  |     **Package**     |     Standard |     [Wong2020](https://arxiv.org/abs/2001.03994) |     [Rice2020](https://arxiv.org/abs/2002.11569) |     **Remark**     |
+|  **Attack**  |     **Package**     |     Standard |     [Wong2020Fast](https://arxiv.org/abs/2001.03994) |     [Rice2020Overfitting](https://arxiv.org/abs/2002.11569) |     **Remark**     |
 | :----------------: | :-----------------: | -------------------------------------------: | -------------------------------------------: | ---------------------------------------------: | :----------------: |
 |      **FGSM (Linf)**      |    Torchattacks     | 34% (54 ms) |                                     48% (5 ms) |                                    62% (82 ms) |                    |
 |  | Foolbox<sup>*</sup> | 34% (15ms) |                                     48% (8 ms) |                      62% (30 ms) |                    |
