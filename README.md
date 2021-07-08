@@ -6,32 +6,17 @@
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg?&color=blue" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
-[README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)
-
-[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks.
 
 
+|                         Clean Image                          |                      Adversarial Image                       |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
+
+[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks. ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md))
 
 
-<p align="center">
-<table width="650">
-<thead>
-<tr>
-<th align="center">Clean Image</th>
-<th align="center">Adversarial Image</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"></td>
-<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"></td>
-</tr>
-</tbody>
-</table>
-</p>
 
-
-### Features:
+* **Features:**
 
 <details><summary>Easy implementation</summary><p>
 
@@ -74,13 +59,12 @@ Refer to [Performance Comparison](#Performance-Comparison).
 
 
 
-#### What's New:
-
-* [UPDATE HISTORY](UPDATE_HISTORY.md)
-* **Apr 2019:** version 0.0 (Initial commit)
-* **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
-* **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
-* **July 2021:** version 3.0 (supports `torch==1.9.0`)
+* **What's New:**
+* [UPDATE HISTORY.md](UPDATE_HISTORY.md)
+    * **Apr 2019:** version 0.0 (Initial commit)
+    * **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
+    * **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
+    * **July 2021:** version 3.0 (supports `torch==1.9.0`)
 
 
 
@@ -128,7 +112,7 @@ git clone https://github.com/Harry24k/adversairal-attacks-pytorch
 
 ### :rocket: Demos
 
-Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
+* Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
 
 ```python
 import torchattacks
@@ -138,7 +122,7 @@ adv_images = atk(images, labels)
 
 
 
-Torchattacks supports following functions:
+* Torchattacks supports following functions:
 
 <details><summary>Targeted mode</summary><p>
 
@@ -224,18 +208,14 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 </p></details>
 
-
-Here are demos of torchattacks.
-
-- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
-- **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
-- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
+* Here are demos of torchattacks.
+  * **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
+  * **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
+  * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
   
 
-
-
-Torchattacks also supports collaboration with other attack packages.
+* Torchattacks also supports collaboration with other attack packages.
 
 <details><summary>FoolBox</summary><p>
 * https://github.com/bethgelab/foolbox
@@ -362,7 +342,7 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 |                    | Foolbox<sup>*</sup> | 0% (354ms) |                                  44% (56 ms) |              58% (1856 ms) |                    |
 |                    |         ART         | 0% (1384 ms) |                                   44% (437 ms) |                58% (4704 ms) |                    |
 | **CW<sup>†</sup> (L2)** |    Torchattacks     | 0% / 0.40<br /> (2596ms) |                    14% / 0.61 <br />(3795 ms) | 22% / 0.56<br />(43484 ms) | :crown: ​**Highest Success Rate** <br /> :crown: **Fastest** |
-|                    | Foolbox<sup>*</sup> | 0% / 0.40<br /> (2668ms) |                   32% / 0.41 <br />(3928 ms) |                34% / 0.43<br />(44418 ms) | :crown: **Smallest Perturbation** |
+|                    | Foolbox<sup>*</sup> | 0% / 0.40<br /> (2668ms) |                   32% / 0.41 <br />(3928 ms) |                34% / 0.43<br />(44418 ms) |  |
 |                    |         ART         | 0% / 0.59<br /> (196738ms) |                 24% / 0.70 <br />(66067 ms) | 26% / 0.65<br />(694972 ms) |  |
 | **PGD (L2)** |    Torchattacks     | 0% / 0.41 (184ms) |                      68% / 0.5<br /> (52 ms) |                      70% / 0.5<br />(1377 ms) | :crown: **Fastest** |
 |                    | Foolbox<sup>*</sup> | 0% / 0.41 (396ms) |                       68% / 0.5<br /> (57 ms) |                     70% / 0.5<br /> (1968 ms) |                    |
