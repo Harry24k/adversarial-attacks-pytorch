@@ -6,7 +6,9 @@
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg?&color=blue" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
+
 [Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)).
+
 
 <details><summary>Easy implementation</summary><p>
 
@@ -75,12 +77,6 @@ Refer to [Performance Comparison](#Performance-Comparison).
 pip install torchattacks
 ```
 
-or
-```
-git clone https://github.com/Harry24k/adversairal-attacks-pytorch
-```
-
-
 
 ## Getting Started
 
@@ -94,7 +90,7 @@ git clone https://github.com/Harry24k/adversairal-attacks-pytorch
 
 ### :rocket: Demos
 
-Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
+#### Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
 
 ```python
 import torchattacks
@@ -104,7 +100,7 @@ adv_images = atk(images, labels)
 
 
 
-Torchattacks supports following functions:
+#### Torchattacks supports following functions:
 
 <details><summary>Targeted mode</summary><p>
 
@@ -190,14 +186,15 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 </p></details>
 
-Here are demos of torchattacks.
+#### Here are demos of torchattacks.
+
 * **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
 * **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
 * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
 
 
-Torchattacks also supports collaboration with other attack packages.
+#### Torchattacks also supports collaboration with other attack packages.
 
 <details><summary>FoolBox</summary><p>
 * https://github.com/bethgelab/foolbox
