@@ -8,15 +8,15 @@ class EOTPGD(Attack):
     r"""
     Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network"
     [https://arxiv.org/abs/1907.00895]
-    
+
     Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFAULT: 0.3)
-        alpha (float): step size. (DEFAULT: 2/255)
-        steps (int): number of steps. (DEFAULT: 40)
-        sampling (int) : number of models to estimate the mean gradient. (DEFAULT: 100)
+        eps (float): maximum perturbation. (Default: 0.3)
+        alpha (float): step size. (Default: 2/255)
+        steps (int): number of steps. (Default: 40)
+        eot_iter (int) : number of models to estimate the mean gradient. (Default: 10)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -24,16 +24,19 @@ class EOTPGD(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.EOTPGD(model, eps=4/255, alpha=8/255, steps=40, sampling=100)
+        >>> attack = torchattacks.EOTPGD(model, eps=4/255, alpha=8/255, steps=40, eot_iter=10)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40, sampling=10):
-        super(EOTPGD, self).__init__("EOTPGD", model)
+    def __init__(self, model, eps=0.3, alpha=2/255, steps=40,
+                 eot_iter=10, random_start=True):
+        super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
-        self.sampling = sampling
+        self.eot_iter = eot_iter
+        self.random_start = random_start
+        self._supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -41,30 +44,39 @@ class EOTPGD(Attack):
         """
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-        labels = self._transform_label(images, labels)
-        
+
+        if self._targeted:
+            target_labels = self._get_target_label(images, labels)
+
         loss = nn.CrossEntropyLoss()
-        ori_images = images.clone().detach()
 
-        for i in range(self.steps):
+        adv_images = images.clone().detach()
 
-            grad = torch.zeros_like(images)
-            images.requires_grad = True
+        if self.random_start:
+            # Starting at a uniformly random point
+            adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
+            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
-            for j in range(self.sampling):
+        for _ in range(self.steps):
+            grad = torch.zeros_like(adv_images)
+            adv_images.requires_grad = True
 
-                outputs = self.model(images)
-                cost = self._targeted*loss(outputs, labels)
+            for j in range(self.eot_iter):
+                outputs = self.model(adv_images)
 
-                grad += torch.autograd.grad(cost, images,
+                # Calculate loss
+                if self._targeted:
+                    cost = -loss(outputs, target_labels)
+                else:
+                    cost = loss(outputs, labels)
+
+                # Update adversarial images
+                grad += torch.autograd.grad(cost, adv_images,
                                             retain_graph=False,
                                             create_graph=False)[0]
 
-            # grad.sign() is used instead of (grad/sampling).sign()
-            adv_images = images - self.alpha*grad.sign()
-            eta = torch.clamp(adv_images - ori_images, min=-self.eps, max=self.eps)
-            images = torch.clamp(ori_images + eta, min=0, max=1).detach()
-
-        adv_images = images
+            adv_images = adv_images.detach() + self.alpha*grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

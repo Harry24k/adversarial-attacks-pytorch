@@ -5,16 +5,26 @@
   <a href="https://img.shields.io/pypi/v/torchattacks"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
+[Torchattacks](https://arxiv.org/abs/2010.01950)은 파이토치(PyTorch) 기반의 딥러닝 모델에 대한 적대적 공격(Adversarial Attack)을 구현한 패키지입니다. 파이토치와 친숙한 코드를 제공하여, 파이토치 사용자들이 좀 더 쉽게 적대적 공격에 친숙해지는 것을 목표로 하고 있습니다.
 
-[Torchattacks](https://arxiv.org/abs/2010.01950)은 파이토치(PyTorch) 기반의 딥러닝 모델에 대한 적대적 공격(Adversarial Attack)을 구현한 패키지입니다.
+
 
 
 <p align="center">
-
-|                         원본 이미지                          |                      적대적 공격 이미지                      |
-| :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
-
+<table width="650">
+<thead>
+<tr>
+<th align="center">원본 이미지</th>
+<th align="center">적대적 이미지</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"></td>
+<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"></td>
+</tr>
+</tbody>
+</table>
 </p>
 
 
@@ -167,8 +177,8 @@ Evasion Attack의 경우 크게 **White Box**와 **Black Box**로 나뉠 수 있
 
 ### :clipboard: 개발 환경
 
-- torch==1.4.0
-- python==3.6
+- torch>=1.4.0
+- python>=3.6
 
 
 
@@ -185,6 +195,102 @@ adversarial_images = atk(images, labels)
 
 
 
+Torchattack은 또한 아래의 기능도 제공합니다.
+
+<details><summary>공격 라벨 정하기</summary><p>
+
+* Random target label:
+```python
+# random labels as target labels.
+atk.set_mode_targeted_random(n_classses)
+```
+
+* Least likely label:
+```python
+# label with the k-th smallest probability used as target labels.
+atk.set_mode_targeted_least_likely(kth_min)
+```
+
+* By custom function:
+```python
+# label from mapping function
+atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
+```
+
+* Return to default:
+```python
+atk.set_mode_default()
+```
+
+</p></details>
+
+<details><summary>반환 형식 바꾸기</summary><p>
+
+* Return adversarial images with integer value (0-255).
+```python
+atk.set_return_type(type='int')
+```
+
+* Return adversarial images with float value (0-1).
+```python
+atk.set_return_type(type='float')
+```
+
+</p></details>
+
+<details><summary>적대적 예제 저장하기</summary><p>
+```python
+atk.save(data_loader, save_path=None, verbose=True)
+```
+</p></details>
+
+<details><summary>Training/Eval 모드 바꾸기</summary><p>
+
+```python
+# For RNN-based models, we cannot calculate gradients with eval mode.
+# Thus, it should be changed to the training mode during the attack.
+atk.set_training_mode(training=False)
+```
+
+</p></details>
+
+
+<details><summary>공격 조합하기</summary><p>
+
+* Strong attacks
+```python
+atk1 = torchattacks.FGSM(model, eps=8/255)
+atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+atk = torchattacks.MultiAttack([atk1, atk2])
+```
+
+* Binary serach for CW
+```python
+atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
+atk2 = torchattacks.CW(model, c=01, steps=1000, lr=0.01)
+atk = torchattacks.MultiAttack([atk1, atk2])
+```
+
+* Random restarts
+```python
+atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+atk = torchattacks.MultiAttack([atk1, atk2])
+```
+
+</p></details>
+
+
+
+
+더 자세한 적용 방법은 아래 데모들을 통해 익힐 수 있습니다.
+
+- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  ResNet-18을 ImageNet 데이터와 torchattacks을 활용하여 속이는 데모입니다.
+- **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  torchattacks을 활용하여 Transfer Attack을 실행하는 방법입니다.
+- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)): torchattacks을 활용하여 Adversarial Training을 하는 코드입니다.
+
+
+
 ###  :warning: 주의 사항
 
 * **모든 이미지는 transform[to.Tensor()]을 활용하여 [0, 1]로 입력되어야합니다!** 본래 PyTorch에서는 transform을 통해 지원되는 normalization을 활용하고는 합니다. 하지만, 적대적 공격의 특징 상 최대 섭동(Maximum Perturbtion) 범위를 주거나 이를 비용으로 활용하기 때문에, 입력 이미지가 [0, 1]일 때 정확히 적대적 예제를 생성할 수 있습니다. 따라서, normalization을 *데이터를 불러오는 과정*이 아니라 *모델의 안*에 삽입하여야합니다. 자세한 내용은 이 [데모](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb)를 참고 부탁드립니다.
@@ -195,36 +301,13 @@ adversarial_images = atk(images, labels)
 
 
 
-## 문서 및 데모
-
-### :book: ReadTheDocs
-
-본 패키지에 대한 코드 설명이 있는 [RTD](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html)입니다.
-
-
-
-### :mag_right: 업데이트 기록
-
-보다 자세한 업데이트 기록을 보고 싶다면, [여기](update_records.md)를 참고해주세요.
-
-
-
-### :rocket: 데모
-
-- **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  [Inception v3](https://arxiv.org/abs/1512.00567)을  [ImageNet](http://www.image-net.org/) 데이터와 *torchattacks*을 활용하여 속이는 데모입니다.
-- **Black Box Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Black%20Box%20Attack%20%28CIFAR10%29.ipynb)): *torchattacks*을 활용하여 Black Box Attack을 실행하는 방법입니다.
-- **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)): *torchattacks*을 활용하여 Adversarial Training을 하는 코드입니다.
-- **Applications of MultiAttack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Applications%20of%20MultiAttack%20(CIFAR10).ipynb)):   *torchattacks* 중 *Multiattack*을 어떻게하면 잘 활용할 수 있을까에 대한 정리 문서입니다.
-
-
-
 ## 인용
 
-본 패키지를 사용한다면 아래를 인용 부탁드립니다 :)
+본 패키지를 사용하신다면 아래를 인용 부탁드립니다 :)
 
 ```
 @article{kim2020torchattacks,
-  title={Torchattacks: A Pytorch Repository for Adversarial Attacks},
+  title={Torchattacks: A pytorch repository for adversarial attacks},
   author={Kim, Hoki},
   journal={arXiv preprint arXiv:2010.01950},
   year={2020}
@@ -321,7 +404,7 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 
 어떤 종류의 기여라도 항상 감사드리며, 오류가 있다면 망설임 없이 지적 부탁드립니다. :blush:
 
-만약, 새로운 공격을 제안하고 싶다면 [contribution.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/contributions.md)을 참고해주세요!
+만약, 새로운 공격을 제안하고 싶다면 [CONTRIBUTING.md](CONTRIBUTING.md)을 참고해주세요!
 
 
 
@@ -339,17 +422,26 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
     
     
 * **Adversarial Defense Leaderboard:**
-  
+
     * [https://github.com/MadryLab/mnist_challenge](https://github.com/MadryLab/mnist_challenge)
     * [https://github.com/MadryLab/cifar10_challenge](https://github.com/MadryLab/cifar10_challenge)
     * [https://www.robust-ml.org/](https://www.robust-ml.org/)
     * [https://robust.vision/benchmark/leaderboard/](https://robust.vision/benchmark/leaderboard/)
     * https://github.com/RobustBench/robustbench
     * https://github.com/Harry24k/adversarial-defenses-pytorch
+
     
-    
-    
+
 * **Adversarial Attack and Defense Papers:**
-  
+
     * https://nicholas.carlini.com/writing/2019/all-adversarial-example-papers.html: A Complete List of All (arXiv) Adversarial Example Papers made by Nicholas Carlini.
     * https://github.com/chawins/Adversarial-Examples-Reading-List: Adversarial Examples Reading List made by Chawin Sitawarin.
+
+
+
+* **ETC**:
+
+  * https://github.com/Harry24k/gnn-meta-attack: Adversarial Poisoning Attack on Graph Neural Network.
+  * https://github.com/ChandlerBang/awesome-graph-attack-papers: Graph Neural Network Attack papers.
+
+  

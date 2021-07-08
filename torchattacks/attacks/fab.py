@@ -4,58 +4,58 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
-import os
-import sys
 import math
 
 import torch
-from torch.autograd.gradcheck import zero_gradients
-import torch.nn as nn
 import torch.nn.functional as F
+# zero_gradients deprecated in torch >= 1.9.
+# zero_gradients is re-defined in the bottom of the code.
+# from torch.autograd.gradcheck import zero_gradients
+from collections import abc as container_abcs
 
 from ..attack import Attack
 
-DEFAULT_EPS_DICT_BY_NORM = {'Linf': .3, 'L2': 1., 'L1': 5.0}
 
 class FAB(Attack):
     r"""
     Fast Adaptive Boundary Attack in the paper 'Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack'
     [https://arxiv.org/abs/1907.02044]
     [https://github.com/fra31/auto-attack]
-    
+
     Distance Measure : Linf, L2, L1
 
     Arguments:
         model (nn.Module): model to attack.
-        norm (str) : Lp-norm to minimize. ('Linf', 'L2', 'L1' supported, DEFAULT: 'Linf')
-        eps (float): maximum perturbation. (DEFAULT: None)
-        steps (int): number of steps. (DEFAULT: 100)
-        n_restarts (int): number of random restarts. (DEFAULT: 1)
-        alpha_max (float): alpha_max. (DEFAULT: 0.1)
-        eta (float): overshooting. (DEFAULT: 1.05)
-        beta (float): backward step. (DEFAULT: 0.9)
-        verbose (bool): print progress. (DEFAULT: False)
-        seed (int): random seed for the starting point. (DEFAULT: 0)
-        targeted (bool): targeted attack for every wrong classes. (DEFAULT: False)
-        n_classes (int): number of classes. (DEFAULT: 10)
-        
+        norm (str) : Lp-norm to minimize. ['Linf', 'L2', 'L1'] (Default: 'Linf')
+        eps (float): maximum perturbation. (Default: None)
+        steps (int): number of steps. (Default: 100)
+        n_restarts (int): number of random restarts. (Default: 1)
+        alpha_max (float): alpha_max. (Default: 0.1)
+        eta (float): overshooting. (Default: 1.05)
+        beta (float): backward step. (Default: 0.9)
+        verbose (bool): print progress. (Default: False)
+        seed (int): random seed for the starting point. (Default: 0)
+        targeted (bool): targeted attack for every wrong classes. (Default: False)
+        n_classes (int): number of classes. (Default: 10)
+
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
-          
+
     Examples::
         >>> attack = torchattacks.FAB(model, norm='Linf', steps=100, eps=None, n_restarts=1, alpha_max=0.1, eta=1.05, beta=0.9, loss_fn=None, verbose=False, seed=0, targeted=False, n_classes=10)
         >>> adv_images = attack(images, labels)
-        
+
     """
     def __init__(self, model, norm='Linf', eps=None, steps=100, n_restarts=1,
                  alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
                  targeted=False, n_classes=10):
-        super(FAB, self).__init__("FAB", model)
+        super().__init__("FAB", model)
         self.norm = norm
         self.n_restarts = n_restarts
-        self.eps = eps if eps is not None else DEFAULT_EPS_DICT_BY_NORM[norm]
+        Default_EPS_DICT_BY_NORM = {'Linf': .3, 'L2': 1., 'L1': 5.0}
+        self.eps = eps if eps is not None else Default_EPS_DICT_BY_NORM[norm]
         self.alpha_max = alpha_max
         self.eta = eta
         self.beta = beta
@@ -65,7 +65,7 @@ class FAB(Attack):
         self.seed = seed
         self.target_class = None
         self.n_target_classes = n_classes - 1
-        self._attack_mode = 'only_default'
+        self._supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
@@ -76,7 +76,7 @@ class FAB(Attack):
         adv_images = self.perturb(images, labels)
 
         return adv_images
-    
+
     def _get_predicted_label(self, x):
         with torch.no_grad():
             outputs = self.model(x)
@@ -101,7 +101,7 @@ class FAB(Attack):
             g2[counter] = im.grad.data
 
         g2 = torch.transpose(g2, 0, 1).detach()
-        #y2 = self.model(imgs).detach()
+        # y2 = self.model(imgs).detach()
         y2 = y.detach()
         df = y2 - y2[torch.arange(imgs.shape[0]), la].unsqueeze(1)
         dg = g2 - g2[torch.arange(imgs.shape[0]), la].unsqueeze(1)
@@ -131,12 +131,12 @@ class FAB(Attack):
         :param y:    clean labels, if None we use the predicted labels
         """
 
-        #self.device = x.device
+        # self.device = x.device
         self.orig_dim = list(x.shape[1:])
         self.ndims = len(self.orig_dim)
 
         x = x.detach().clone().float().to(self.device)
-        #assert next(self.model.parameters()).device == x.device
+        # assert next(self.model.parameters()).device == x.device
 
         y_pred = self._get_predicted_label(x)
         if y is None:
@@ -315,7 +315,7 @@ class FAB(Attack):
         self.ndims = len(self.orig_dim)
 
         x = x.detach().clone().float().to(self.device)
-        #assert next(self.model.parameters()).device == x.device
+        # assert next(self.model.parameters()).device == x.device
 
         y_pred = self._get_predicted_label(x)
         if y is None:
@@ -403,7 +403,7 @@ class FAB(Attack):
                     else:
                         raise ValueError('norm not supported')
                     ind = dist1.min(dim=1)[1]
-                    #print(ind)
+
                     dg2 = dg[u1, ind]
                     b = (- df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1)
                                          .sum(dim=-1))
@@ -546,12 +546,8 @@ class FAB(Attack):
                                     counter, self.target_class, acc.float().mean(), self.eps, time.time() - startt))
 
         return adv
-        
-        
-######################################################
-#################### Utils ###########################
-######################################################
-        
+
+
 def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
     device = points_to_project.device
     t, w, b = points_to_project, w_hyperplane.clone(), b_hyperplane.clone()
@@ -708,3 +704,13 @@ def projection_l1(points_to_project, w_hyperplane, b_hyperplane):
         d[c2, indr] = alpha
 
     return d * (w.abs() > 1e-8).float()
+
+
+def zero_gradients(x):
+    if isinstance(x, torch.Tensor):
+        if x.grad is not None:
+            x.grad.detach_()
+            x.grad.zero_()
+    elif isinstance(x, container_abcs.Iterable):
+        for elem in x:
+            zero_gradients(elem)

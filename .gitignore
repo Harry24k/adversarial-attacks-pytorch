@@ -22,3 +22,4 @@ sample.pth
 _old/*
 .ipynb_checkpoints/*
 TODO.txt
+demos/_*

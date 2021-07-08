@@ -71,11 +71,6 @@ Attacks
    .. automodule:: torchattacks.attacks.mifgsm
     :members:
     
-   PGDDLR
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.pgddlr
-    :members:
-    
    APGD
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgd
@@ -116,7 +111,12 @@ Attacks
    .. automodule:: torchattacks.attacks.sparsefool
     :members:
     
-   DI2FGSM
+   DIFGSM
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.difgsm
+    :members:
+    
+   UPGD
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.upgd
     :members:

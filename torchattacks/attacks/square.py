@@ -4,53 +4,49 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
-import os
-import sys
 import math
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from ..attack import Attack
 
-DEFAULT_EPS_DICT_BY_NORM = {'Linf': .3, 'L2': 1., 'L1': 5.0}
 
 class Square(Attack):
     r"""
     Square Attack in the paper 'Square Attack: a query-efficient black-box adversarial attack via random search'
     [https://arxiv.org/abs/1912.00049]
     [https://github.com/fra31/auto-attack]
-    
+
     Distance Measure : Linf, L2
 
     Arguments:
         model (nn.Module): model to attack.
-        norm (str): Lp-norm of the attack. ('Linf', 'L2' supported, DEFAULT: 'Linf')
-        eps (float): maximum perturbation. (DEFALUT: None)
-        n_queries (int): max number of queries (each restart). (DEFALUT: 5000)
-        n_restarts (int): number of random restarts. (DEFALUT: 1)
-        p_init (float): parameter to control size of squares. (DEFALUT: 0.8)
-        loss (str): loss function optimized ('margin', 'ce' supported, DEFALUT: 'margin')
-        resc_schedule (bool): adapt schedule of p to n_queries (DEFAULT: True)
-        seed (int): random seed for the starting point. (DEFAULT: 0)
-        verbose (bool): print progress. (DEFAULT: False)
-        targeted (bool): targeted. (DEFAULT: False)
-        
+        norm (str): Lp-norm of the attack. ['Linf', 'L2'] (Default: 'Linf')
+        eps (float): maximum perturbation. (Default: None)
+        n_queries (int): max number of queries (each restart). (Default: 5000)
+        n_restarts (int): number of random restarts. (Default: 1)
+        p_init (float): parameter to control size of squares. (Default: 0.8)
+        loss (str): loss function optimized ['margin', 'ce'] (Default: 'margin')
+        resc_schedule (bool): adapt schedule of p to n_queries (Default: True)
+        seed (int): random seed for the starting point. (Default: 0)
+        verbose (bool): print progress. (Default: False)
+        targeted (bool): targeted. (Default: False)
+
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
-          
+
     Examples::
         >>> attack = torchattacks.Square(model, model, norm='Linf', n_queries=5000, n_restarts=1, eps=None, p_init=.8, seed=0, verbose=False, targeted=False, loss='margin', resc_schedule=True)
         >>> adv_images = attack(images, labels)
-        
+
     """
     def __init__(self, model, norm='Linf', eps=None, n_queries=5000, n_restarts=1,
                  p_init=.8, loss='margin', resc_schedule=True,
-                 seed=0, verbose=False, targeted=False):
-        super(Square, self).__init__("Square", model)
+                 seed=0, verbose=False):
+        super().__init__("Square", model)
         self.norm = norm
         self.n_queries = n_queries
         self.eps = eps
@@ -58,10 +54,9 @@ class Square(Attack):
         self.n_restarts = n_restarts
         self.seed = seed
         self.verbose = verbose
-        self.targeted = targeted
         self.loss = loss
-        self.rescale_schedule = resc_schedule        
-        self._attack_mode = 'only_default'
+        self.rescale_schedule = resc_schedule
+        self._supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -72,7 +67,7 @@ class Square(Attack):
         adv_images = self.perturb(images, labels)
 
         return adv_images
-    
+
     def margin_and_loss(self, x, y):
         """
         :param y:        correct labels if untargeted else target labels
@@ -85,13 +80,16 @@ class Square(Attack):
         logits[u, y] = -float('inf')
         y_others = logits.max(dim=-1)[0]
 
-        if not self.targeted:
+        if not self._targeted:
             if self.loss == 'ce':
                 return y_corr - y_others, -1. * xent
             elif self.loss == 'margin':
                 return y_corr - y_others, y_corr - y_others
         else:
-            return y_others - y_corr, xent
+            if self.loss == 'ce':
+                return y_others - y_corr, xent
+            elif self.loss == 'margin':
+                return y_others - y_corr, y_others - y_corr
 
     def init_hyperparam(self, x):
         assert self.norm in ['Linf', 'L2']
@@ -104,16 +102,6 @@ class Square(Attack):
         self.ndims = len(self.orig_dim)
         if self.seed is None:
             self.seed = time.time()
-
-    def random_target_classes(self, y_pred, n_classes):
-        y = torch.zeros_like(y_pred)
-        for counter in range(y_pred.shape[0]):
-            l = list(range(n_classes))
-            l.remove(y_pred[counter])
-            t = self.random_int(0, len(l))
-            y[counter] = l[t]
-
-        return y.long().to(self.device)
 
     def check_shape(self, x):
         return x if len(x.shape) == (self.ndims + 1) else x.unsqueeze(0)
@@ -404,21 +392,21 @@ class Square(Attack):
 
         adv = x.clone()
         if y is None:
-            if not self.targeted:
+            if not self._targeted:
                 with torch.no_grad():
                     output = self.model(x)
                     y_pred = output.max(1)[1]
                     y = y_pred.detach().clone().long().to(self.device)
             else:
                 with torch.no_grad():
-                    output = self.model(x)
-                    n_classes = output.shape[-1]
-                    y_pred = output.max(1)[1]
-                    y = self.random_target_classes(y_pred, n_classes)
+                    y = self._get_target_label(x, None)
         else:
-            y = y.detach().clone().long().to(self.device)
+            if not self._targeted:
+                y = y.detach().clone().long().to(self.device)
+            else:
+                y = self._get_target_label(x, y)
 
-        if not self.targeted:
+        if not self._targeted:
             acc = self.model(x).max(1)[1] == y
         else:
             acc = self.model(x).max(1)[1] != y
@@ -439,7 +427,7 @@ class Square(Attack):
                 _, adv_curr = self.attack_single_run(x_to_fool, y_to_fool)
 
                 output_curr = self.model(adv_curr)
-                if not self.targeted:
+                if not self._targeted:
                     acc_curr = output_curr.max(1)[1] == y_to_fool
                 else:
                     acc_curr = output_curr.max(1)[1] != y_to_fool

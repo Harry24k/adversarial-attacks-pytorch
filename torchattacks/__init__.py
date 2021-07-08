@@ -11,7 +11,7 @@ from .attacks.tpgd import TPGD
 from .attacks.mifgsm import MIFGSM
 from .attacks.vanila import VANILA
 from .attacks.gn import GN
-from .attacks.pgddlr import PGDDLR
+from .attacks.upgd import UPGD
 from .attacks.apgd import APGD
 from .attacks.apgdt import APGDT
 from .attacks.fab import FAB
@@ -20,6 +20,6 @@ from .attacks.autoattack import AutoAttack
 from .attacks.onepixel import OnePixel
 from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
-from .attacks.difgsm import DI2FGSM
+from .attacks.difgsm import DIFGSM
 
-__version__ = '2.14.5'
+__version__ = '3.0.0'

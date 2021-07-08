@@ -10,15 +10,15 @@ class BIM(Attack):
     [https://arxiv.org/abs/1607.02533]
 
     Distance Measure : Linf
-    
+
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (DEFAULT: 4/255)
-        alpha (float): step size. (DEFAULT: 1/255)
-        steps (int): number of steps. (DEFAULT: 0)
-    
+        eps (float): maximum perturbation. (Default: 4/255)
+        alpha (float): step size. (Default: 1/255)
+        steps (int): number of steps. (Default: 0)
+
     .. note:: If steps set to 0, steps will be automatically decided following the paper.
-    
+
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
@@ -29,13 +29,14 @@ class BIM(Attack):
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, eps=4/255, alpha=1/255, steps=0):
-        super(BIM, self).__init__("BIM", model)
+        super().__init__("BIM", model)
         self.eps = eps
         self.alpha = alpha
         if steps == 0:
             self.steps = int(min(eps*255 + 4, 1.25*eps*255))
         else:
             self.steps = steps
+        self._supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -43,31 +44,35 @@ class BIM(Attack):
         """
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-        labels = self._transform_label(images, labels)
-        
+
+        if self._targeted:
+            target_labels = self._get_target_label(images, labels)
+
         loss = nn.CrossEntropyLoss()
-        
+
         ori_images = images.clone().detach()
 
-        for i in range(self.steps):
+        for _ in range(self.steps):
             images.requires_grad = True
             outputs = self.model(images)
-            cost = self._targeted*loss(outputs, labels)
 
+            # Calculate loss
+            if self._targeted:
+                cost = -loss(outputs, target_labels)
+            else:
+                cost = loss(outputs, labels)
+
+            # Update adversarial images
             grad = torch.autograd.grad(cost, images,
                                        retain_graph=False,
                                        create_graph=False)[0]
 
-            adv_images = images - self.alpha*grad.sign()
-            # a = max(ori_images-eps, 0)
+            adv_images = images + self.alpha*grad.sign()
             a = torch.clamp(ori_images - self.eps, min=0)
-            # b = max(adv_images, a) = max(adv_images, ori_images-eps, 0)
             b = (adv_images >= a).float()*adv_images \
-                + (adv_images < a).float()*a 
-            # c = min(ori_images+eps, b) = min(ori_images+eps, max(adv_images, ori_images-eps, 0))
+                + (adv_images < a).float()*a
             c = (b > ori_images+self.eps).float()*(ori_images+self.eps) \
-                + (b <= ori_images + self.eps).float()*b 
-            # images = max(1, c) = min(1, ori_images+eps, max(adv_images, ori_images-eps, 0))
+                + (b <= ori_images + self.eps).float()*b
             images = torch.clamp(c, max=1).detach()
 
         return images

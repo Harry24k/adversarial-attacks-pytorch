@@ -17,16 +17,16 @@ class TIFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        kernel_name (str): kernel name. (DEFAULT: gaussian)
-        len_kernel (int): kernel length.  (DEFAULT: 15, which is the best according to the paper)
-        nsig (int): radius of gaussian kernel. (DEFAULT: 3; see Section 3.2.2 in the paper for explanation)
-        eps (float): maximum perturbation. (DEFAULT: 8/255)
-        alpha (float): step size. (DEFAULT: 2/255)
-        decay (float): momentum factor. (DEFAULT: 0.0)
-        steps (int): number of iterations. (DEFAULT: 20)
-        resize_rate (float): resize factor used in input diversity. (DEFAULT: 0.9)
-        diversity_prob (float) : the probability of applying input diversity. (DEFAULT: 0.5)
-        random_start (bool): using random initialization of delta. (DEFAULT: False)
+        kernel_name (str): kernel name. (Default: gaussian)
+        len_kernel (int): kernel length.  (Default: 15, which is the best according to the paper)
+        nsig (int): radius of gaussian kernel. (Default: 3; see Section 3.2.2 in the paper for explanation)
+        eps (float): maximum perturbation. (Default: 8/255)
+        alpha (float): step size. (Default: 2/255)
+        decay (float): momentum factor. (Default: 0.0)
+        steps (int): number of iterations. (Default: 20)
+        resize_rate (float): resize factor used in input diversity. (Default: 0.9)
+        diversity_prob (float) : the probability of applying input diversity. (Default: 0.5)
+        random_start (bool): using random initialization of delta. (Default: False)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -34,23 +34,13 @@ class TIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        # TIFGSM
-        >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.0, random_start=False)
-        >>> adv_images = attack(images, labels)
-        # M-TIFGSM
-        >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=1.0, resize_rate=0.9, diversity_prob=0.0, random_start=False)
-        >>> adv_images = attack(images, labels)
-        # TI-DI-FGSM
-        >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.7, random_start=False)
-        >>> adv_images = attack(images, labels)
-        # M-TI-DI-FGSM
         >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=1.0, resize_rate=0.9, diversity_prob=0.7, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
 
     def __init__(self, model, kernel_name='gaussian', len_kernel=15, nsig=3, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False):
-        super(TIFGSM, self).__init__("TIFGSM", model)
+        super().__init__("TIFGSM", model)
         self.eps = eps
         self.steps = steps
         self.decay = decay
@@ -61,17 +51,17 @@ class TIFGSM(Attack):
         self.kernel_name = kernel_name
         self.len_kernel = len_kernel
         self.nsig = nsig
-
         self.stacked_kernel = torch.from_numpy(self.kernel_generation())
+        self._supported_mode = ['default', 'targeted']
 
     def input_diversity(self, x):
         img_size = x.shape[-1]
         img_resize = int(img_size * self.resize_rate)
-        
+
         if self.resize_rate < 1:
             img_size = img_resize
             img_resize = x.shape[-1]
-            
+
         rnd = torch.randint(low=img_size, high=img_resize, size=(1,), dtype=torch.int32)
         rescaled = F.interpolate(x, size=[rnd, rnd], mode='bilinear', align_corners=False)
         h_rem = img_resize - rnd
@@ -85,15 +75,16 @@ class TIFGSM(Attack):
 
         return padded if torch.rand(1) < self.diversity_prob else x
 
-
     def forward(self, images, labels):
         r"""
         Overridden.
         """
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-        labels = self._transform_label(images, labels)
-        
+
+        if self._targeted:
+            target_labels = self._get_target_label(images, labels)
+
         loss = nn.CrossEntropyLoss()
         momentum = torch.zeros_like(images).detach().to(self.device)
         stacked_kernel = self.stacked_kernel.to(self.device)
@@ -104,19 +95,23 @@ class TIFGSM(Attack):
             # Starting at a uniformly random point
             adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
-        
-        for i in range(self.steps):
+
+        for _ in range(self.steps):
             adv_images.requires_grad = True
             outputs = self.model(self.input_diversity(adv_images))
 
-            cost = self._targeted*loss(outputs, labels)
-            
-            grad = torch.autograd.grad(cost, adv_images, 
+            # Calculate loss
+            if self._targeted:
+                cost = -loss(outputs, target_labels)
+            else:
+                cost = loss(outputs, labels)
+
+            # Update adversarial images
+            grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
             # depth wise conv2d
             grad = F.conv2d(grad, stacked_kernel, stride=1, padding=int((self.len_kernel-1)/2), groups=3)
-            grad_norm = torch.norm(nn.Flatten()(grad), p=1, dim=1)
-            grad = grad / grad_norm.view([-1]+[1]*(len(grad.shape)-1))
+            grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 

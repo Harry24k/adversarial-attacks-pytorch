@@ -1,49 +1,46 @@
 import time
-import os
-import sys
 
 import numpy as np
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 from ..attack import Attack
 
 
 class APGDT(Attack):
     r"""
-    APGD-Targeted in the paper 'Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks'
+    APGD-Targeted in the paper 'Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks.'
+    Targeted attack for every wrong classes.
     [https://arxiv.org/abs/2003.01690]
     [https://github.com/fra31/auto-attack]
-    
+
     Distance Measure : Linf, L2
 
     Arguments:
         model (nn.Module): model to attack.
-        norm (str): Lp-norm of the attack. ('Linf', 'L2' supported, DEFAULT: 'Linf')
-        eps (float): maximum perturbation. (DEFAULT: None)
-        steps (int): number of steps. (DEFAULT: 100)
-        n_restarts (int): number of random restarts. (DEFAULT: 1)
-        seed (int): random seed for the starting point. (DEFAULT: 0)
-        eot_iter (int): number of iteration for EOT. (DEFAULT: 1)
-        rho (float): parameter for step-size update (DEFAULT: 0.75)
-        verbose (bool): print progress. (DEFAULT: False)
-        n_classes (int): number of classes. (DEFAULT: 10)
-        
+        norm (str): Lp-norm of the attack. ['Linf', 'L2'] (Default: 'Linf')
+        eps (float): maximum perturbation. (Default: None)
+        steps (int): number of steps. (Default: 100)
+        n_restarts (int): number of random restarts. (Default: 1)
+        seed (int): random seed for the starting point. (Default: 0)
+        eot_iter (int): number of iteration for EOT. (Default: 1)
+        rho (float): parameter for step-size update (Default: 0.75)
+        verbose (bool): print progress. (Default: False)
+        n_classes (int): number of classes. (Default: 10)
+
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
-          
+
     Examples::
         >>> attack = torchattacks.APGDT(model, norm='Linf', eps=8/255, steps=100, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10)
         >>> adv_images = attack(images, labels)
-        
+
     """
-    def __init__(self, model, norm='Linf', eps=8/255, steps=100, n_restarts=1, 
+    def __init__(self, model, norm='Linf', eps=8/255, steps=100, n_restarts=1,
                  seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10):
-        super(APGDT, self).__init__("APGDT", model)
+        super().__init__("APGDT", model)
         self.eps = eps
         self.steps = steps
         self.norm = norm
@@ -52,9 +49,9 @@ class APGDT(Attack):
         self.eot_iter = eot_iter
         self.thr_decr = rho
         self.verbose = verbose
-        self._attack_mode = 'only_default'
         self.target_class = None
         self.n_target_classes = n_classes - 1
+        self._supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
