@@ -10,22 +10,9 @@
 
 
 
-<p align="center">
-<table width="650">
-<thead>
-<tr>
-<th align="center">원본 이미지</th>
-<th align="center">적대적 이미지</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"></td>
-<td align="center"><img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"></td>
-</tr>
-</tbody>
-</table>
-</p>
+|                         원본 이미지                          |                      적대적 이미지                       |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
 
 
 ## 목차
