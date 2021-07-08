@@ -197,9 +197,10 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 #### Torchattacks also supports collaboration with other attack packages.
 
 <details><summary>FoolBox</summary><p>
-* https://github.com/bethgelab/foolbox
-* `pip install foolbox`
-* e.g., L2BrendelBethge
+https://github.com/bethgelab/foolbox
+`pip install foolbox`
+
+e.g., L2BrendelBethge
 
 ```python
 from torchattacks.attack import Attack
@@ -236,9 +237,10 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 </p></details>
 
 <details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
-* https://github.com/IBM/adversarial-robustness-toolbox
-* `git clone https://github.com/IBM/adversarial-robustness-toolbox`
-* e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
+https://github.com/IBM/adversarial-robustness-toolbox
+`git clone https://github.com/IBM/adversarial-robustness-toolbox`
+
+e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
 
 ```python
 import torch.nn as nn
