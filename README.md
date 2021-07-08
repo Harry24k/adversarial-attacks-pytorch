@@ -200,14 +200,11 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 https://github.com/bethgelab/foolbox
 
-`pip install foolbox`
-
-e.g., L2BrendelBethge
-
 ```python
 from torchattacks.attack import Attack
 import foolbox as fb
 
+# L2BrendelBethge
 class L2BrendelBethge(Attack):
     def __init__(self, model):
         super(L2BrendelBethge, self).__init__("L2BrendelBethge", model)
@@ -242,9 +239,6 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 
 https://github.com/IBM/adversarial-robustness-toolbox
 
-`git clone https://github.com/IBM/adversarial-robustness-toolbox`
-
-e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
 
 ```python
 import torch.nn as nn
@@ -255,6 +249,7 @@ from torchattacks.attack import Attack
 import art.attacks.evasion as evasion
 from art.classifiers import PyTorchClassifier
 
+# SaliencyMapMethod (or Jacobian based saliency map attack)
 class JSMA(Attack):
     def __init__(self, model, theta=1/255, gamma=0.15, batch_size=128):
         super(JSMA, self).__init__("JSMA", model)
