@@ -1,18 +1,17 @@
 # Adversarial-Attacks-PyTorch [KOR]
 
 <p>
-  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch" /></a>
-  <a href="https://img.shields.io/pypi/v/torchattacks"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg" /></a>
+  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?&color=brightgreen" /></a>
+  <a href="https://pypi.org/project/torchattacks/"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg?&color=orange" /></a>
+  <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg?&color=blue" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
-[Torchattacks](https://arxiv.org/abs/2010.01950)은 파이토치(PyTorch) 기반의 딥러닝 모델에 대한 적대적 공격(Adversarial Attack)을 구현한 패키지입니다. 파이토치와 친숙한 코드를 제공하여, 파이토치 사용자들이 좀 더 쉽게 적대적 공격에 친숙해지는 것을 목표로 하고 있습니다.
-
-
-
 
 |                         원본 이미지                          |                      적대적 이미지                       |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
+
+[Torchattacks](https://arxiv.org/abs/2010.01950) 은 파이토치(PyTorch) 기반의 딥러닝 모델에 대한 적대적 공격(Adversarial Attack)을 구현한 패키지입니다. 파이토치와 친숙한 코드를 제공하여, 파이토치 사용자들이 좀 더 쉽게 적대적 공격에 친숙해지는 것을 목표로 하고 있습니다.
 
 
 ## 목차
