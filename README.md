@@ -144,6 +144,7 @@ atk.set_return_type(type='float')
 </p></details>
 
 <details><summary>Save adversarial images</summary><p>
+
 ```python
 atk.save(data_loader, save_path=None, verbose=True)
 ```
@@ -173,7 +174,7 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 * Binary serach for CW
 ```python
 atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
-atk2 = torchattacks.CW(model, c=01, steps=1000, lr=0.01)
+atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
 atk = torchattacks.MultiAttack([atk1, atk2])
 ```
 
