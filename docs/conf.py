@@ -25,9 +25,9 @@ copyright = '2020, harrykim'
 author = 'harrykim'
 
 # The short X.Y version
-version = 'v2.14.5'
+version = 'v3.0'
 # The full version, including alpha/beta/rc tags
-release = 'v2.14.5'
+release = 'v3.0.0'
 
 
 # -- General configuration ---------------------------------------------------
