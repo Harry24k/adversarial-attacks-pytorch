@@ -1,9 +1,5 @@
 # Adversarial-Attacks-PyTorch
 
-|                         Clean Image                          |                      Adversarial Image                       |
-| :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
-
 <p>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?&color=brightgreen" /></a>
   <a href="https://pypi.org/project/torchattacks/"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg?&color=orange" /></a>
@@ -11,13 +7,15 @@
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
 </p>
 
---------------------------------------------------------------------------------
+|                         Clean Image                          |                      Adversarial Image                       |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
 
 [Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)).
 
-**Features:**
+### **Features:**
 
-<details><summary>Easy implementation</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Easy implementation</summary><p>
 
 ```python
 import torchattacks
@@ -26,7 +24,7 @@ adv_images = atk(images, labels)
 ```
 </p></details>
 
-<details><summary>Easy modification</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Easy modification</summary><p>
 
 ```python
 from torchattacks.attack import Attack
@@ -40,7 +38,7 @@ class CustomAttack(Attack):
 ```
 </p></details>
 
-<details><summary>Useful functions</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Useful functions</summary><p>
 
 ```python
 atk.set_mode_targeted_least_likely(kth_min)  # Targeted attack
@@ -50,7 +48,7 @@ atk.save(data_loader, save_path=None, verbose=True)  # Save adversarial images
 ```
 </p></details>
 
-<details><summary>Fast computation</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Fast computation</summary><p>
 
 Refer to [Performance Comparison](#Performance-Comparison).
 
@@ -58,7 +56,7 @@ Refer to [Performance Comparison](#Performance-Comparison).
 
 
 
-**What's New:**
+### **What's New:**
 
 * **Apr 2019:** version 0.0 (Initial commit)
 * **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
@@ -66,7 +64,11 @@ Refer to [Performance Comparison](#Performance-Comparison).
 * **July 2021:** version 3.0 (supports `torch==1.9.0`)
 * [UPDATE HISTORY.md](UPDATE_HISTORY.md)
 
+|                         Clean Image                          |                      Adversarial Image                       |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
 
+--------------------------------------------------------------------------------
 
 ## Table of Contents
 1. [Requirements and Installation](#Requirements-and-Installation)
@@ -124,7 +126,7 @@ adv_images = atk(images, labels)
 
 * Torchattacks supports following functions:
 
-<details><summary>Targeted mode</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Targeted mode</summary><p>
 
 * Random target label:
 ```python
@@ -151,7 +153,7 @@ atk.set_mode_default()
 
 </p></details>
 
-<details><summary>Return type</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Return type</summary><p>
 
 * Return adversarial images with integer value (0-255).
 ```python
@@ -165,14 +167,14 @@ atk.set_return_type(type='float')
 
 </p></details>
 
-<details><summary>Save adversarial images</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Save adversarial images</summary><p>
 ```python
 atk.save(data_loader, save_path=None, verbose=True)
 ```
 
 </p></details>
 
-<details><summary>Training/Eval during attack</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Training/Eval during attack</summary><p>
 
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
@@ -183,7 +185,7 @@ atk.set_training_mode(training=False)
 </p></details>
 
 
-<details><summary>Make a set of attacks</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Make a set of attacks</summary><p>
 
 * Strong attacks
 ```python
@@ -217,7 +219,7 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 * Torchattacks also supports collaboration with other attack packages.
 
-<details><summary>FoolBox</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>FoolBox</summary><p>
 * https://github.com/bethgelab/foolbox
 * `pip install foolbox`
 * e.g., L2BrendelBethge
@@ -256,7 +258,7 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 
 </p></details>
 
-<details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
 * https://github.com/IBM/adversarial-robustness-toolbox
 * `git clone https://github.com/IBM/adversarial-robustness-toolbox`
 * e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
