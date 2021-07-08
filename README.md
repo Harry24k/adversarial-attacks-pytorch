@@ -13,9 +13,9 @@
 
 [Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)).
 
-### **Features:**
+**Features:**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Easy implementation</summary><p>
+<details><summary>Easy implementation</summary><p>
 
 ```python
 import torchattacks
@@ -24,7 +24,7 @@ adv_images = atk(images, labels)
 ```
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Easy modification</summary><p>
+<details><summary>Easy modification</summary><p>
 
 ```python
 from torchattacks.attack import Attack
@@ -38,7 +38,7 @@ class CustomAttack(Attack):
 ```
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Useful functions</summary><p>
+<details><summary>Useful functions</summary><p>
 
 ```python
 atk.set_mode_targeted_least_likely(kth_min)  # Targeted attack
@@ -48,7 +48,7 @@ atk.save(data_loader, save_path=None, verbose=True)  # Save adversarial images
 ```
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Fast computation</summary><p>
+<details><summary>Fast computation</summary><p>
 
 Refer to [Performance Comparison](#Performance-Comparison).
 
@@ -56,17 +56,17 @@ Refer to [Performance Comparison](#Performance-Comparison).
 
 
 
-### **What's New:**
+**What's New:**
 
 * **Apr 2019:** version 0.0 (Initial commit)
-* **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
-* **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
-* **July 2021:** version 3.0 (supports `torch==1.9.0`)
-* [UPDATE HISTORY.md](UPDATE_HISTORY.md)
 
-|                         Clean Image                          |                      Adversarial Image                       |
-| :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/clean.png" width="300" height="300"> | <img src="https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/pic/pgd.png" width="300" height="300"> |
+* **Mar 2020:** version 1.0 (`FGSM`, `BIM`, `CW`, `PGD` adopted)
+
+* **Jul 2020:** verion 2.0 (`DeepFool`, `OnePixel`, `SparseFool`, `Autoattack`, `Targeted mode` adopted)
+
+* **July 2021:** version 3.0 (supports `torch==1.9.0`)
+
+* [UPDATE HISTORY.md](UPDATE_HISTORY.md)
 
 --------------------------------------------------------------------------------
 
@@ -107,14 +107,16 @@ git clone https://github.com/Harry24k/adversairal-attacks-pytorch
 ###  :warning: Precautions
 
 * **All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.** To make it easy to use adversarial attacks, a reverse-normalization is not included in the attack process. To apply an input normalization, please add a normalization layer to the model. Please refer to [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb) or [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb).
+
 * **All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.** Considering most models in _torchvision.models_ return one vector of `(N,C)`, where `N` is the number of inputs and `C` is thenumber of classes, _torchattacks_ also only supports limited forms of output.  Please check the shape of the model’s output carefully. In the case of the model returns multiple outputs, please refer to [the demo](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Model%20with%20Multiple%20Outputs.ipynb).
+
 * **`torch.backends.cudnn.deterministic = True` to get same adversarial examples with fixed random seed**. Some operations are non-deterministic with float tensors on GPU [[discuss]](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run `torch.backends.cudnn.deterministic = True`[[ref]](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch).
 
 
 
 ### :rocket: Demos
 
-* Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
+Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
 
 ```python
 import torchattacks
@@ -124,9 +126,9 @@ adv_images = atk(images, labels)
 
 
 
-* Torchattacks supports following functions:
+Torchattacks supports following functions:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Targeted mode</summary><p>
+<details><summary>Targeted mode</summary><p>
 
 * Random target label:
 ```python
@@ -153,7 +155,7 @@ atk.set_mode_default()
 
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Return type</summary><p>
+<details><summary>Return type</summary><p>
 
 * Return adversarial images with integer value (0-255).
 ```python
@@ -167,14 +169,14 @@ atk.set_return_type(type='float')
 
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Save adversarial images</summary><p>
+<details><summary>Save adversarial images</summary><p>
 ```python
 atk.save(data_loader, save_path=None, verbose=True)
 ```
 
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Training/Eval during attack</summary><p>
+<details><summary>Training/Eval during attack</summary><p>
 
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
@@ -185,7 +187,7 @@ atk.set_training_mode(training=False)
 </p></details>
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Make a set of attacks</summary><p>
+<details><summary>Make a set of attacks</summary><p>
 
 * Strong attacks
 ```python
@@ -210,16 +212,19 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 </p></details>
 
-* Here are demos of torchattacks.
-  * **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
-  * **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
-  * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
+Here are demos of torchattacks.
+
+* **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
+
+* **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
+
+* **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
   
 
-* Torchattacks also supports collaboration with other attack packages.
+Torchattacks also supports collaboration with other attack packages.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>FoolBox</summary><p>
+<details><summary>FoolBox</summary><p>
 * https://github.com/bethgelab/foolbox
 * `pip install foolbox`
 * e.g., L2BrendelBethge
@@ -258,7 +263,7 @@ atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 
 </p></details>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
+<details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
 * https://github.com/IBM/adversarial-robustness-toolbox
 * `git clone https://github.com/IBM/adversarial-robustness-toolbox`
 * e.g., SaliencyMapMethod (or Jacobian based saliency map attack)
