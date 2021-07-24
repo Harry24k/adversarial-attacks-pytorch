@@ -148,13 +148,16 @@ atk.set_return_type(type='float')
 ```python
 # Save
 atk.save(data_loader, save_path="./data/sample.pt", verbose=True)
+  
 # Load
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 adv_images, adv_labels = torch.load("./data/sample.pt")
-adv_data = TensorDataset(adv_images, adv_labels)
+  
 # If set_return_type was 'int',
 # adv_data = TensorDataset(adv_images.float()/255, adv_labels)
+# else,
+adv_data = TensorDataset(adv_images, adv_labels)
 adv_loader = DataLoader(adv_data, batch_size=128, shuffle=False)
 ```
 
