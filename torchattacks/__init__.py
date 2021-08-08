@@ -21,5 +21,9 @@ from .attacks.onepixel import OnePixel
 from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
 from .attacks.difgsm import DIFGSM
+from .clamp_methods import clamp_0_1
+from .clamp_methods import clamp_0_255
+from .clamp_methods import clamp_heuristic
+
 
 __version__ = '3.0.0'

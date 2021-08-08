@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class MIFGSM(Attack):
@@ -30,7 +31,7 @@ class MIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=1.0, clamp_function=clamp_methods.clamp_0_1):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=1.0, clamp_function=clamp_0_1):
         super().__init__("MIFGSM", model)
         self.eps = eps
         self.steps = steps

@@ -1,6 +1,7 @@
 import torch
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class GN(Attack):
@@ -22,7 +23,7 @@ class GN(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, sigma=0.1, clamp_function=clamp_methods.clamp_0_1):
+    def __init__(self, model, sigma=0.1, clamp_function=clamp_0_1):
         super().__init__("GN", model)
         self.sigma = sigma
         self._supported_mode = ['default']

@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class EOTPGD(Attack):
@@ -30,7 +31,7 @@ class EOTPGD(Attack):
 
     """
     def __init__(self, model, eps=0.3, alpha=2/255, steps=40,
-                 eot_iter=10, random_start=True, clamp_function=clamp_methods.clamp_0_1):
+                 eot_iter=10, random_start=True, clamp_function=clamp_0_1):
         super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -57,7 +58,7 @@ class EOTPGD(Attack):
         if self.random_start:
             # Starting at a uniformly random point
             adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
-            adv_images = self.clamp_function(adv_images).detach()
+            adv_images = self.clamp_function(images, adv_images).detach()
 
         for _ in range(self.steps):
             grad = torch.zeros_like(adv_images)

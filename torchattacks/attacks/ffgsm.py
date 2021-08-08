@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from ..attack import clamp_methods
+from ..clamp_methods import clamp_0_1
 from ..attack import Attack
 
 
@@ -27,7 +27,7 @@ class FFGSM(Attack):
         >>> attack = torchattacks.FFGSM(model, eps=8/255, alpha=10/255)
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, eps=8/255, alpha=10/255, clamp_function=clamp_methods.clamp_0_1):
+    def __init__(self, model, eps=8/255, alpha=10/255, clamp_function=clamp_0_1):
         super().__init__("FFGSM", model)
         self.eps = eps
         self.alpha = alpha

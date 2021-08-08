@@ -294,3 +294,4 @@ class Attack(object):
             images = self._to_uint(images)
 
         return images
+

@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class TPGD(Attack):
@@ -28,7 +29,7 @@ class TPGD(Attack):
         >>> adv_images = attack(images)
 
     """
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=7, clamp_function=clamp_methods.clamp_0_1):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=7, clamp_function=clamp_0_1):
         super().__init__("TPGD", model)
         self.eps = eps
         self.alpha = alpha

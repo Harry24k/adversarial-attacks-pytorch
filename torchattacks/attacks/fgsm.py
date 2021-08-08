@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class FGSM(Attack):
@@ -26,7 +27,7 @@ class FGSM(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.007, clamp_function=clamp_methods.clamp_0_1):
+    def __init__(self, model, eps=0.007, clamp_function=clamp_0_1):
         super().__init__("FGSM", model)
         self.eps = eps
         self._supported_mode = ['default', 'targeted']

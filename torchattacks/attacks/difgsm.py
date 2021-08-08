@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..attack import Attack, clamp_methods
+from ..attack import Attack
+from ..clamp_methods import clamp_0_1
 
 
 class DIFGSM(Attack):
@@ -35,7 +36,7 @@ class DIFGSM(Attack):
     """
 
     def __init__(self, model, eps=8/255, alpha=2/255, steps=20, decay=0.0,
-                 resize_rate=0.9, diversity_prob=0.5, random_start=False, clamp_function=clamp_methods.clamp_0_1):
+                 resize_rate=0.9, diversity_prob=0.5, random_start=False, clamp_function=clamp_0_1):
         super().__init__("DIFGSM", model)
         self.eps = eps
         self.steps = steps
