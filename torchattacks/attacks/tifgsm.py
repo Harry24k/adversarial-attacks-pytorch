@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 from scipy import stats as st
 
-from ..attack import Attack
+from ..attack import Attack, clamp_methods
 
 
 class TIFGSM(Attack):
@@ -27,6 +27,7 @@ class TIFGSM(Attack):
         resize_rate (float): resize factor used in input diversity. (Default: 0.9)
         diversity_prob (float) : the probability of applying input diversity. (Default: 0.5)
         random_start (bool): using random initialization of delta. (Default: False)
+        clamp_function (function): function to clamp the output image see clamp_methods for examples
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -39,7 +40,9 @@ class TIFGSM(Attack):
 
     """
 
-    def __init__(self, model, kernel_name='gaussian', len_kernel=15, nsig=3, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False):
+    def __init__(self, model, kernel_name='gaussian', len_kernel=15, nsig=3, eps=8/255, alpha=2/255, steps=20,
+                 decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False,
+                 clamp_function=clamp_methods.clamp_0_1):
         super().__init__("TIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -53,6 +56,7 @@ class TIFGSM(Attack):
         self.nsig = nsig
         self.stacked_kernel = torch.from_numpy(self.kernel_generation())
         self._supported_mode = ['default', 'targeted']
+        self.clamp_function = clamp_function
 
     def input_diversity(self, x):
         img_size = x.shape[-1]
@@ -117,7 +121,7 @@ class TIFGSM(Attack):
 
             adv_images = adv_images.detach() - self.alpha*grad.sign()
             delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
-            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
+            adv_images = self.clamp_function(images, images + delta).detach()
 
         return adv_images
 

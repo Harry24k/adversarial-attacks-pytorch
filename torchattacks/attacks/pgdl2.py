@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack
+from ..attack import Attack, clamp_methods
 
 
 class PGDL2(Attack):
@@ -17,6 +17,7 @@ class PGDL2(Attack):
         alpha (float): step size. (Default: 0.2)
         steps (int): number of steps. (Default: 40)
         random_start (bool): using random initialization of delta. (Default: True)
+        clamp_function (function): function to clamp the output image see clamp_methods for examples
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -37,7 +38,7 @@ class PGDL2(Attack):
         self.eps_for_division = eps_for_division
         self._supported_mode = ['default', 'targeted']
 
-    def forward(self, images, labels):
+    def forward(self, images, labels, clamp_function=clamp_methods.clamp_0_1()):
         r"""
         Overridden.
         """
@@ -51,6 +52,7 @@ class PGDL2(Attack):
 
         adv_images = images.clone().detach()
         batch_size = len(images)
+        self.clamp_function = clamp_function
 
         if self.random_start:
             # Starting at a uniformly random point
@@ -83,6 +85,6 @@ class PGDL2(Attack):
             factor = torch.min(factor, torch.ones_like(delta_norms))
             delta = delta * factor.view(-1, 1, 1, 1)
 
-            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
+            adv_images = self.clamp_function(images, images + delta).detach()
 
         return adv_images

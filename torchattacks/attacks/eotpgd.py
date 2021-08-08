@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack
+from ..attack import Attack, clamp_methods
 
 
 class EOTPGD(Attack):
@@ -17,6 +17,7 @@ class EOTPGD(Attack):
         alpha (float): step size. (Default: 2/255)
         steps (int): number of steps. (Default: 40)
         eot_iter (int) : number of models to estimate the mean gradient. (Default: 10)
+        clamp_function (function): function to clamp the output image see clamp_methods for examples
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -29,7 +30,7 @@ class EOTPGD(Attack):
 
     """
     def __init__(self, model, eps=0.3, alpha=2/255, steps=40,
-                 eot_iter=10, random_start=True):
+                 eot_iter=10, random_start=True, clamp_function=clamp_methods.clamp_0_1):
         super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -37,6 +38,7 @@ class EOTPGD(Attack):
         self.eot_iter = eot_iter
         self.random_start = random_start
         self._supported_mode = ['default', 'targeted']
+        self.clamp_function = clamp_function
 
     def forward(self, images, labels):
         r"""
@@ -55,7 +57,7 @@ class EOTPGD(Attack):
         if self.random_start:
             # Starting at a uniformly random point
             adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
-            adv_images = torch.clamp(adv_images, min=0, max=1).detach()
+            adv_images = self.clamp_function(adv_images).detach()
 
         for _ in range(self.steps):
             grad = torch.zeros_like(adv_images)
@@ -77,6 +79,6 @@ class EOTPGD(Attack):
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
             delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
-            adv_images = torch.clamp(images + delta, min=0, max=1).detach()
+            adv_images = self.clamp_function(images, images + delta).detach()
 
         return adv_images

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from ..attack import Attack
+from ..attack import Attack, clamp_methods
 
 
 class BIM(Attack):
@@ -16,6 +16,7 @@ class BIM(Attack):
         eps (float): maximum perturbation. (Default: 4/255)
         alpha (float): step size. (Default: 1/255)
         steps (int): number of steps. (Default: 0)
+        clamp_function (function): function to clamp the output image see clamp_methods for examples
 
     .. note:: If steps set to 0, steps will be automatically decided following the paper.
 
@@ -28,7 +29,7 @@ class BIM(Attack):
         >>> attack = torchattacks.BIM(model, eps=4/255, alpha=1/255, steps=0)
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, eps=4/255, alpha=1/255, steps=0):
+    def __init__(self, model, eps=4/255, alpha=1/255, steps=0, clamp_function=clamp_methods.clamp_0_1):
         super().__init__("BIM", model)
         self.eps = eps
         self.alpha = alpha
@@ -37,6 +38,7 @@ class BIM(Attack):
         else:
             self.steps = steps
         self._supported_mode = ['default', 'targeted']
+        self.clamp_function = clamp_function
 
     def forward(self, images, labels):
         r"""
@@ -73,6 +75,6 @@ class BIM(Attack):
                 + (adv_images < a).float()*a
             c = (b > ori_images+self.eps).float()*(ori_images+self.eps) \
                 + (b <= ori_images + self.eps).float()*b
-            images = torch.clamp(c, max=1).detach()
+            images = self.clamp_function(images, c).detach()
 
         return images
