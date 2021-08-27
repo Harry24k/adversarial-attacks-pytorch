@@ -17,13 +17,13 @@ class TIFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
+        eps (float): maximum perturbation. (Default: 8/255)
+        alpha (float): step size. (Default: 2/255)
+        steps (int): number of iterations. (Default: 20)
+        decay (float): momentum factor. (Default: 0.0)
         kernel_name (str): kernel name. (Default: gaussian)
         len_kernel (int): kernel length.  (Default: 15, which is the best according to the paper)
         nsig (int): radius of gaussian kernel. (Default: 3; see Section 3.2.2 in the paper for explanation)
-        eps (float): maximum perturbation. (Default: 8/255)
-        alpha (float): step size. (Default: 2/255)
-        decay (float): momentum factor. (Default: 0.0)
-        steps (int): number of iterations. (Default: 20)
         resize_rate (float): resize factor used in input diversity. (Default: 0.9)
         diversity_prob (float) : the probability of applying input diversity. (Default: 0.5)
         random_start (bool): using random initialization of delta. (Default: False)
@@ -38,8 +38,8 @@ class TIFGSM(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-
-    def __init__(self, model, kernel_name='gaussian', len_kernel=15, nsig=3, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=20, decay=0.0, kernel_name='gaussian',
+                 len_kernel=15, nsig=3, resize_rate=0.9, diversity_prob=0.5, random_start=False):
         super().__init__("TIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -110,12 +110,12 @@ class TIFGSM(Attack):
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
             # depth wise conv2d
-            grad = F.conv2d(grad, stacked_kernel, stride=1, padding=int((self.len_kernel-1)/2), groups=3)
+            grad = F.conv2d(grad, stacked_kernel, stride=1, padding='same', groups=3)
             grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 
-            adv_images = adv_images.detach() - self.alpha*grad.sign()
+            adv_images = adv_images.detach() + self.alpha*grad.sign()
             delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 

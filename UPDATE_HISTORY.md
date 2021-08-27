@@ -323,3 +323,15 @@
   * Iteration variable (e.g., `for i in range`) is replaced to `_` if it is not needed.
   * `MultiAttack` now prints the attack success rate for each attack.
   * Arguments for `super()` is erased.
+
+
+
+
+
+### v3.1.0
+
+  * `TIFGSM` is added.
+      * https://github.com/Harry24k/adversarial-attacks-pytorch/pull/29/commits
+      
+      
+ 

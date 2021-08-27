@@ -21,5 +21,6 @@ from .attacks.onepixel import OnePixel
 from .attacks.deepfool import DeepFool
 from .attacks.sparsefool import SparseFool
 from .attacks.difgsm import DIFGSM
+from .attacks.tifgsm import TIFGSM
 
-__version__ = '3.0.0'
+__version__ = '3.1.0'
