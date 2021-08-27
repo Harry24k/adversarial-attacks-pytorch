@@ -313,7 +313,7 @@ The distance measure in parentheses.
 | **OnePixel**<br />(L0) | One pixel attack for fooling deep neural networks ([Su et al., 2019](https://arxiv.org/abs/1710.08864)) |                                |
 | **SparseFool**<br />(L0) | SparseFool: a few pixels make a big difference ([Modas et al., 2019](https://arxiv.org/abs/1811.02248)) |                                  |
 | **DIFGSM**<br />(Linf) | Improving Transferability of Adversarial Examples with Input Diversity ([Xie et al., 2019](https://arxiv.org/abs/1803.06978)) | :heart_eyes: Contributor [taobai](https://github.com/tao-bai) |
-| **DIFGSM**<br />(Linf) | Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks ([Dong et al., 2019](https://arxiv.org/abs/1904.02884)) | :heart_eyes: Contributor [taobai](https://github.com/tao-bai) |
+| **TIFGSM**<br />(Linf) | Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks ([Dong et al., 2019](https://arxiv.org/abs/1904.02884)) | :heart_eyes: Contributor [taobai](https://github.com/tao-bai) |
 
 
 
