@@ -39,7 +39,7 @@ class CustomAttack(Attack):
 atk.set_mode_targeted_least_likely(kth_min)  # Targeted attack
 atk.set_return_type(type='int')  # Return values [0, 255]
 atk = torchattacks.MultiAttack([atk1, ..., atk99])  # Combine attacks
-atk.save(data_loader, save_path=None, verbose=True)  # Save adversarial images
+atk.save(data_loader, save_path=None, verbose=True, return_verbose=False)  # Save adversarial images
 ```
 </p></details>
 
@@ -168,7 +168,7 @@ adv_loader = DataLoader(adv_data, batch_size=128, shuffle=False)
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
 # Thus, it should be changed to the training mode during the attack.
-atk.set_training_mode(training=False)
+atk.set_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
 ```
 
 </p></details>
@@ -314,6 +314,7 @@ The distance measure in parentheses.
 | **SparseFool**<br />(L0) | SparseFool: a few pixels make a big difference ([Modas et al., 2019](https://arxiv.org/abs/1811.02248)) |                                  |
 | **DIFGSM**<br />(Linf) | Improving Transferability of Adversarial Examples with Input Diversity ([Xie et al., 2019](https://arxiv.org/abs/1803.06978)) | :heart_eyes: Contributor [taobai](https://github.com/tao-bai) |
 | **TIFGSM**<br />(Linf) | Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks ([Dong et al., 2019](https://arxiv.org/abs/1904.02884)) | :heart_eyes: Contributor [taobai](https://github.com/tao-bai) |
+| **Jitter**<br />(Linf) | Exploring Misclassifications of Robust Neural Networks to Enhance Adversarial Attacks ([Schwinn, Leo, et al., 2019](https://arxiv.org/abs/2105.10304)) | |
 
 
 
