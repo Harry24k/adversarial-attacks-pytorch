@@ -350,4 +350,17 @@
       * Fixed the verbose function.
       * Now supports return values of the last verbose information
 
+      
+
+      
+
+
+### v3.2.1
+
+  * `GN`: `sigma` is changed to `std`.
+
     
+
+​    
+
+​    
