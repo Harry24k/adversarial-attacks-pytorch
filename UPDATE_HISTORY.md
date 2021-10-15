@@ -332,6 +332,35 @@
 
   * `TIFGSM` is added.
       * https://github.com/Harry24k/adversarial-attacks-pytorch/pull/29/commits
+
+
+
+
+
+
+### v3.2.0
+
+  * `Jitter` is added.
+  * `Attack.*`
+    * `set_training_mode`: Now supports changing training mode of `Batchnorm` and `Dropout`.
+    * `save`: Now supports return values of the last verbose information.
+
+  * `MultiAttack`
+
+      * Fixed the verbose function.
+      * Now supports return values of the last verbose information
+
       
+
       
- 
+
+
+### v3.2.1
+
+  * `GN`: `sigma` is changed to `std`.
+
+    
+
+​    
+
+​    

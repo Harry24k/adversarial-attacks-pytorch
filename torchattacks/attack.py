@@ -25,11 +25,14 @@ class Attack(object):
         self.model_name = str(model).split("(")[0]
         self.device = next(model.parameters()).device
 
-        self._training_mode = False
         self._attack_mode = 'default'
         self._targeted = False
         self._return_type = 'float'
         self._supported_mode = ['default']
+
+        self._model_training = False
+        self._batchnorm_training = False
+        self._dropout_training = False
 
     def forward(self, *input):
         r"""
@@ -126,20 +129,24 @@ class Attack(object):
         else:
             raise ValueError(type + " is not a valid type. [Options: float, int]")
 
-    def set_training_mode(self, training=False):
+    def set_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
         r"""
         Set training mode during attack process.
 
         Arguments:
-            flag (bool): True for using training mode during attack process.
+            model_training (bool): True for using training mode for the entire model during attack process.
+            batchnorm_training (bool): True for using training mode for batchnorms during attack process.
+            dropout_training (bool): True for using training mode for dropouts during attack process.
 
         .. note::
             For RNN-based models, we cannot calculate gradients with eval mode.
             Thus, it should be changed to the training mode during the attack.
         """
-        self._training_mode = training
+        self._model_training = model_training
+        self._batchnorm_training = batchnorm_training
+        self._dropout_training = dropout_training
 
-    def save(self, data_loader, save_path=None, verbose=True):
+    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False):
         r"""
         Save adversarial images as torch.tensor from given torch.utils.data.DataLoader.
 
@@ -147,6 +154,7 @@ class Attack(object):
             save_path (str): save_path.
             data_loader (torch.utils.data.DataLoader): data loader.
             verbose (bool): True for displaying detailed information. (Default: True)
+            return_verbose (bool): True for returning detailed information. (Default: False)
 
         """
         if save_path is not None:
@@ -159,7 +167,8 @@ class Attack(object):
 
         total_batch = len(data_loader)
 
-        training_mode = self.model.training
+        given_training = self.model.training
+
         for step, (images, labels) in enumerate(data_loader):
             start = time.time()
             adv_images = self.__call__(images, labels)
@@ -175,24 +184,26 @@ class Attack(object):
 
             if verbose:
                 with torch.no_grad():
-                    if training_mode:
+                    if given_training:
                         self.model.eval()
                     outputs = self.model(adv_images)
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
                     right_idx = (predicted == labels.to(self.device))
                     correct += right_idx.sum()
-
                     end = time.time()
                     delta = (adv_images - images.to(self.device)).view(batch_size, -1)
                     l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
-                    acc = 100 * float(correct) / total
-                    print('- Save progress: %2.2f %% / Accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
-                          % ((step+1)/total_batch*100, acc, torch.cat(l2_distance).mean(), end-start), end='\r')
 
+                    rob_acc = 100 * float(correct) / total
+                    l2 = torch.cat(l2_distance).mean().item()
+                    progress = (step+1)/total_batch*100
+                    elapsed_time = end-start
+                    self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
+
+        # To avoid erasing the printed information.
         if verbose:
-            print('- Save progress: %2.2f %% / Accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
-                  % ((step+1)/total_batch*100, acc, torch.cat(l2_distance).mean(), end-start))
+            self._save_print(progress, rob_acc, l2, elapsed_time, end='\n')
 
         if save_path is not None:
             x = torch.cat(image_list, 0)
@@ -200,8 +211,15 @@ class Attack(object):
             torch.save((x, y), save_path)
             print('- Save complete!')
 
-        if training_mode:
+        if given_training:
             self.model.train()
+
+        if return_verbose:
+            return rob_acc, l2, elapsed_time
+
+    def _save_print(self, progress, rob_acc, l2, elapsed_time, end):
+        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
+              % (progress, rob_acc, l2, elapsed_time), end=end)
 
     def _get_target_label(self, images, labels=None):
         r"""
@@ -255,15 +273,6 @@ class Attack(object):
         """
         return (images*255).type(torch.uint8)
 
-    def _switch_model(self):
-        r"""
-        Function for changing the training mode of the model.
-        """
-        if self.training:
-            self.model.train()
-        else:
-            self.model.eval()
-
     def __str__(self):
         info = self.__dict__.copy()
 
@@ -282,16 +291,24 @@ class Attack(object):
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
 
     def __call__(self, *input, **kwargs):
-        training_mode = self.model.training
+        given_training = self.model.training
 
-        if self._training_mode:
+        if self._model_training:
             self.model.train()
+            for _, m in self.model.named_modules():
+                if not self._batchnorm_training:
+                    if 'BatchNorm' in m.__class__.__name__:
+                        m = m.eval()
+                if not self._dropout_training:
+                    if 'Dropout' in m.__class__.__name__:
+                        m = m.eval()
+
         else:
             self.model.eval()
 
         images = self.forward(*input, **kwargs)
 
-        if training_mode:
+        if given_training:
             self.model.train()
 
         if self._return_type == 'int':

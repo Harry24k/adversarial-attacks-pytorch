@@ -9,7 +9,7 @@ class GN(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        sigma (nn.Module): sigma (Default: 0.1).
+        std (nn.Module): standard deviation (Default: 0.1).
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -21,9 +21,9 @@ class GN(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, sigma=0.1):
+    def __init__(self, model, std=0.1):
         super().__init__("GN", model)
-        self.sigma = sigma
+        self.std = std
         self._supported_mode = ['default']
 
     def forward(self, images, labels=None):
@@ -31,7 +31,7 @@ class GN(Attack):
         Overridden.
         """
         images = images.clone().detach().to(self.device)
-        adv_images = images + self.sigma*torch.randn_like(images)
+        adv_images = images + self.std*torch.randn_like(images)
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         return adv_images

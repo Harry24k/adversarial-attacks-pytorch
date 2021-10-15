@@ -1,5 +1,4 @@
-import time
-
+import copy
 import torch
 
 from ..attack import Attack
@@ -33,18 +32,20 @@ class MultiAttack(Attack):
         super().__init__("MultiAttack", attack.model)
         self.attacks = attacks
         self.verbose = verbose
-        self._success_rates = None
+        self._accumulate_multi_atk_records = False
+        self._multi_atk_records = [0.0]
         self._supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
         Overridden.
         """
-        fails = torch.arange(images.shape[0]).to(self.device)
+        batch_size = images.shape[0]
+        fails = torch.arange(batch_size).to(self.device)
         final_images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        success_rates = []
+        multi_atk_records = [batch_size]
 
         for _, attack in enumerate(self.attacks):
             adv_images = attack(images[fails], labels[fails])
@@ -61,80 +62,60 @@ class MultiAttack(Attack):
             final_images[succeeds] = adv_images[succeeds_of_fails]
 
             fails = torch.masked_select(fails, corrects)
-            success_rates.append(len(fails))
+            multi_atk_records.append(len(fails))
 
             if len(fails) == 0:
                 break
 
         if self.verbose:
-            print("Attack success rate: "+" | ".join(["%2.2f %%"%(sr*100/images.shape[0]) for sr in success_rates]))
+            print(self._return_sr_record(multi_atk_records))
 
-        self._update(success_rates)
+        if self._accumulate_multi_atk_records:
+            self._update_multi_atk_records(multi_atk_records)
 
         return final_images
 
-    def _update(self, success_rates):
-        if self._success_rates:
-            for i, sr in enumerate(success_rates):
-                self._success_rates[i] += sr
+    def _clear_multi_atk_records(self):
+        self._multi_atk_records = [0.0]
 
-    def save(self, data_loader, save_path=None, verbose=True):
+    def _covert_to_success_rates(self, multi_atk_records):
+        sr = [((1-multi_atk_records[i]/multi_atk_records[0])*100) for i in range(1, len(multi_atk_records))]
+        return sr
+
+    def _return_sr_record(self, multi_atk_records):
+        sr = self._covert_to_success_rates(multi_atk_records)
+        return "Attack success rate: "+" | ".join(["%2.2f %%"%item for item in sr])
+
+    def _update_multi_atk_records(self, multi_atk_records):
+        for i, item in enumerate(multi_atk_records):
+            self._multi_atk_records[i] += item
+
+    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False):
         r"""
         Overridden.
         """
-        if save_path is not None:
-            image_list = []
-            label_list = []
-
-        correct = 0
-        total = 0
-        l2_distance = []
-        self._success_rates = []
+        self._clear_multi_atk_records()
+        verbose = self.verbose
+        self.verbose = False
+        self._accumulate_multi_atk_records = True
 
         for i, attack in enumerate(self.attacks):
-            self._success_rates.append(0.0)
+            self._multi_atk_records.append(0.0)
 
-        total_batch = len(data_loader)
+        rob_acc, l2, elapsed_time = super().save(data_loader, save_path, verbose, return_verbose)
+        sr = self._covert_to_success_rates(self._multi_atk_records)
 
-        training_mode = self.model.training
-        for step, (images, labels) in enumerate(data_loader):
-            start = time.time()
-            adv_images = self.__call__(images, labels)
+        self._clear_multi_atk_records()
+        self._accumulate_multi_atk_records = False
+        self.verbose = verbose
 
-            batch_size = len(images)
+        if return_verbose:
+            return rob_acc, sr, l2, elapsed_time
 
-            if save_path is not None:
-                image_list.append(adv_images.cpu())
-                label_list.append(labels.cpu())
-
-            if self._return_type == 'int':
-                adv_images = adv_images.float()/255
-
-            if verbose:
-                with torch.no_grad():
-                    if training_mode:
-                        self.model.eval()
-                    outputs = self.model(adv_images)
-                    _, predicted = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    right_idx = (predicted == labels.to(self.device))
-                    correct += right_idx.sum()
-
-                    end = time.time()
-                    delta = (adv_images - images.to(self.device)).view(batch_size, -1)
-                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
-                    acc = 100 * float(correct) / total
-                    print("- Save progress: %2.2f %% / Accuracy: %2.2f %%"%((step+1)/total_batch*100, acc)+\
-                          " / Attack success rate: "+" | ".join(["%2.2f %%"%(sr*100/total) for sr in self._success_rates])+\
-                          ' / L2: %1.5f (%2.3f it/s) \t'%(torch.cat(l2_distance).mean(), end-start), end='\r')
-
-        if save_path is not None:
-            x = torch.cat(image_list, 0)
-            y = torch.cat(label_list, 0)
-            torch.save((x, y), save_path)
-            print('\n- Save complete!')
-
-        if training_mode:
-            self.model.train()
-
-        self._success_rates = None
+    def _save_print(self, progress, rob_acc, l2, elapsed_time, end):
+        r"""
+        Overridden.
+        """
+        print("- Save progress: %2.2f %% / Robust accuracy: %2.2f %%"%(progress, rob_acc)+\
+              " / "+self._return_sr_record(self._multi_atk_records)+\
+              ' / L2: %1.5f (%2.3f it/s) \t'%(l2, elapsed_time), end=end)
