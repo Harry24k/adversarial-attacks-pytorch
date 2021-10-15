@@ -243,6 +243,10 @@ class Attack(object):
             target_labels[counter] = l[t]
 
         return target_labels.long().to(self.device)
+    
+    def random_int(self, low=0, high=1, shape=[1]):
+        t = low + (high - low) * torch.rand(shape).to(self.device)
+        return t.long()
 
     def _to_uint(self, images):
         r"""
