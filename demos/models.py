@@ -6,14 +6,14 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         
         self.layer = nn.Sequential(
-            nn.Conv2d(1,16,5),
+            nn.Conv2d(1,16,5), # 16*24*24
             nn.ReLU(),
-            nn.Conv2d(16,32,5),
+            nn.Conv2d(16,32,5), # 32*20*20
             nn.ReLU(),
-            nn.MaxPool2d(2,2),
-            nn.Conv2d(32,64,5),
+            nn.MaxPool2d(2,2), # 32*10*10
+            nn.Conv2d(32,64,5), # 64*6*6
             nn.ReLU(),
-            nn.MaxPool2d(2,2)
+            nn.MaxPool2d(2,2) #64*3*3
         )
         
         self.fc_layer = nn.Sequential(
