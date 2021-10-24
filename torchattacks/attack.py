@@ -157,6 +157,9 @@ class Attack(object):
             return_verbose (bool): True for returning detailed information. (Default: False)
 
         """
+        if (verbose==False) and (return_verbose==True):
+            raise ValueError("Verobse should be True if return_verbose==True.")
+            
         if save_path is not None:
             image_list = []
             label_list = []

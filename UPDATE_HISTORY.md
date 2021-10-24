@@ -359,8 +359,17 @@
 
   * `GN`: `sigma` is changed to `std`.
 
+      
+
+      
+
+
+### v3.2.2
+
+  * `SparseFool`: [bug fixed](https://github.com/Harry24k/adversarial-attacks-pytorch/pull/43).
+  * `MultiAttack`: [bug fixed](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/44).
+
     
 
-​    
 
-​    
+    
