@@ -97,7 +97,7 @@ class SparseFool(Attack):
         input_shape = x_0.size()
 
         plane_normal = coord_vec.clone().detach().view(-1)
-        plane_point = plane_normal.clone().detach().view(-1)
+        plane_point = boundary_point.clone().detach().view(-1)
 
         x_i = x_0.clone().detach()
 

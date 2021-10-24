@@ -92,6 +92,8 @@ class CW(Attack):
             _, pre = torch.max(outputs.detach(), 1)
             correct = (pre == labels).float()
 
+            # filter out images that get either correct predictions or non-decreasing loss, 
+            # i.e., only images that are both misclassified and loss-decreasing are left 
             mask = (1-correct)*(best_L2 > current_L2.detach())
             best_L2 = mask*current_L2.detach() + (1-mask)*best_L2
 
@@ -120,8 +122,8 @@ class CW(Attack):
     def f(self, outputs, labels):
         one_hot_labels = torch.eye(len(outputs[0]))[labels].to(self.device)
 
-        i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
-        j = torch.masked_select(outputs, one_hot_labels.bool())
+        i, _ = torch.max((1-one_hot_labels)*outputs, dim=1) # get the second largest logit
+        j = torch.masked_select(outputs, one_hot_labels.bool()) # get the largest logit
 
         if self._targeted:
             return torch.clamp((i-j), min=-self.kappa)
