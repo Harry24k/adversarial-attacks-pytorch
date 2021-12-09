@@ -24,4 +24,4 @@ from .attacks.difgsm import DIFGSM
 from .attacks.tifgsm import TIFGSM
 from .attacks.jitter import Jitter
 
-__version__ = '3.2.2'
+__version__ = '3.2.3'

@@ -372,4 +372,19 @@
     
 
 
+
+      
+
+      
+
+
+### v3.2.3
+
+  * `save`, `MultiAttack`: Now supports saving predictions.
+
+    
+
+
+    
+
     

@@ -90,7 +90,7 @@ class MultiAttack(Attack):
         for i, item in enumerate(multi_atk_records):
             self._multi_atk_records[i] += item
 
-    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False):
+    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False, save_pred=False):
         r"""
         Overridden.
         """
@@ -106,10 +106,13 @@ class MultiAttack(Attack):
             self._multi_atk_records.append(0.0)
 
         if verbose:
-            rob_acc, l2, elapsed_time = super().save(data_loader, save_path, verbose=True, return_verbose=True)
+            rob_acc, l2, elapsed_time = super().save(data_loader, save_path, 
+                                                     verbose=True, return_verbose=True,
+                                                     save_pred=save_pred)
             sr = self._covert_to_success_rates(self._multi_atk_records)
         else:
-            super().save(data_loader, save_path, verbose=False, return_verbose=False)
+            super().save(data_loader, save_path, verbose=False,
+                         return_verbose=False, save_pred=save_pred)
             
         self._clear_multi_atk_records()
         self._accumulate_multi_atk_records = False

@@ -146,7 +146,7 @@ class Attack(object):
         self._batchnorm_training = batchnorm_training
         self._dropout_training = dropout_training
 
-    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False):
+    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False, save_pred=False):
         r"""
         Save adversarial images as torch.tensor from given torch.utils.data.DataLoader.
 
@@ -155,6 +155,7 @@ class Attack(object):
             data_loader (torch.utils.data.DataLoader): data loader.
             verbose (bool): True for displaying detailed information. (Default: True)
             return_verbose (bool): True for returning detailed information. (Default: False)
+            save_pred (bool): True for saving predicted labels (Default: False)
 
         """
         if (verbose==False) and (return_verbose==True):
@@ -163,6 +164,8 @@ class Attack(object):
         if save_path is not None:
             image_list = []
             label_list = []
+            if save_pred:
+                pre_list = []
 
         correct = 0
         total = 0
@@ -171,6 +174,8 @@ class Attack(object):
         total_batch = len(data_loader)
 
         given_training = self.model.training
+        given_return_type = self._return_type
+        self._return_type = 'float'
 
         for step, (images, labels) in enumerate(data_loader):
             start = time.time()
@@ -178,21 +183,14 @@ class Attack(object):
 
             batch_size = len(images)
 
-            if save_path is not None:
-                image_list.append(adv_images.cpu())
-                label_list.append(labels.cpu())
-
-            if self._return_type == 'int':
-                adv_images = adv_images.float()/255
-
             if verbose:
                 with torch.no_grad():
                     if given_training:
                         self.model.eval()
                     outputs = self.model(adv_images)
-                    _, predicted = torch.max(outputs.data, 1)
+                    _, pred = torch.max(outputs.data, 1)
                     total += labels.size(0)
-                    right_idx = (predicted == labels.to(self.device))
+                    right_idx = (pred == labels.to(self.device))
                     correct += right_idx.sum()
                     end = time.time()
                     delta = (adv_images - images.to(self.device)).view(batch_size, -1)
@@ -204,14 +202,29 @@ class Attack(object):
                     elapsed_time = end-start
                     self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
 
+            if save_path is not None:
+                if given_return_type == 'int':
+                    adv_images = self._to_uint(adv_images.detach().cpu())
+                    image_list.append(adv_images)
+                else:
+                    image_list.append(adv_images.detach().cpu())
+                    
+                label_list.append(labels.detach().cpu())
+                if save_pred:
+                    pre_list.append(pred.detach().cpu())
+                
         # To avoid erasing the printed information.
         if verbose:
             self._save_print(progress, rob_acc, l2, elapsed_time, end='\n')
 
         if save_path is not None:
-            x = torch.cat(image_list, 0)
-            y = torch.cat(label_list, 0)
-            torch.save((x, y), save_path)
+            image_list = torch.cat(image_list, 0)
+            label_list = torch.cat(label_list, 0)
+            if save_pred:
+                pre_list = torch.cat(pre_list, 0)
+                torch.save((image_list, label_list, pre_list), save_path)
+            else:
+                torch.save((image_list, label_list), save_path)
             print('- Save complete!')
 
         if given_training:
