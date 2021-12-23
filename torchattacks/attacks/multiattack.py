@@ -93,10 +93,7 @@ class MultiAttack(Attack):
     def save(self, data_loader, save_path=None, verbose=True, return_verbose=False, save_pred=False):
         r"""
         Overridden.
-        """
-        if (verbose==False) and (return_verbose==True):
-            raise ValueError("Verobse should be True if return_verbose==True.")
-            
+        """            
         self._clear_multi_atk_records()
         prev_verbose = self.verbose
         self.verbose = False
@@ -105,10 +102,14 @@ class MultiAttack(Attack):
         for i, attack in enumerate(self.attacks):
             self._multi_atk_records.append(0.0)
 
-        if verbose:
+        if return_verbose:
             rob_acc, l2, elapsed_time = super().save(data_loader, save_path, 
-                                                     verbose=True, return_verbose=True,
+                                                     verbose, return_verbose,
                                                      save_pred=save_pred)
+            sr = self._covert_to_success_rates(self._multi_atk_records)
+        elif verbose:
+            super().save(data_loader, save_path, verbose,
+                         return_verbose, save_pred=save_pred)
             sr = self._covert_to_success_rates(self._multi_atk_records)
         else:
             super().save(data_loader, save_path, verbose=False,

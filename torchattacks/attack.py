@@ -157,10 +157,7 @@ class Attack(object):
             return_verbose (bool): True for returning detailed information. (Default: False)
             save_pred (bool): True for saving predicted labels (Default: False)
 
-        """
-        if (verbose==False) and (return_verbose==True):
-            raise ValueError("Verobse should be True if return_verbose==True.")
-            
+        """            
         if save_path is not None:
             image_list = []
             label_list = []
@@ -183,7 +180,7 @@ class Attack(object):
 
             batch_size = len(images)
 
-            if verbose:
+            if verbose or return_verbose:
                 with torch.no_grad():
                     if given_training:
                         self.model.eval()
@@ -200,7 +197,8 @@ class Attack(object):
                     l2 = torch.cat(l2_distance).mean().item()
                     progress = (step+1)/total_batch*100
                     elapsed_time = end-start
-                    self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
+                    if verbose:
+                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
 
             if save_path is not None:
                 if given_return_type == 'int':
