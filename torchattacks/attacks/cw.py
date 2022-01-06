@@ -101,7 +101,8 @@ class CW(Attack):
             best_adv_images = mask*adv_images.detach() + (1-mask)*best_adv_images
 
             # Early stop when loss does not converge.
-            if step % (self.steps//10) == 0:
+            # max(.,1) To prevent MODULO BY ZERO error in the next step.
+            if step % max(self.steps//10,1) == 0:
                 if cost.item() > prev_cost:
                     return best_adv_images
                 prev_cost = cost.item()
