@@ -23,5 +23,6 @@ from .attacks.sparsefool import SparseFool
 from .attacks.difgsm import DIFGSM
 from .attacks.tifgsm import TIFGSM
 from .attacks.jitter import Jitter
+from .attacks.pixle import Pixle
 
 __version__ = '3.2.4'
