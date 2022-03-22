@@ -14,7 +14,6 @@ DimensionType = Union[DimensionTupleType, Sequence[DimensionTupleType]]
 
 
 class Pixle(Attack):
-
     r"""
     Pixle: a fast and effective black-box attack based on rearranging pixels'
     [https://arxiv.org/abs/2202.02236]
@@ -23,10 +22,10 @@ class Pixle(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        x_dimensions (int or float, or a tuple containing a combination of those): the dimensions of the sampled patch along ther x side. The integers are considered as fixed number of pixels,
-        while the float as parcentage of the side size. A tuple is used to specify both under and upper bound of the sampled dimension. (Default: (2, 10))
-        y_dimensions (int or float, or a tuple containing a combination of those): the dimensions of the sampled patch along ther y side. The integers are considered as fixed number of pixels,
-        while the float as parcentage of the side size. A tuple is used to specify both under and upper bound of the sampled dimension. (Default: (2, 10))
+        x_dimensions (int or float, or a tuple containing a combination of those): size of the sampled patch along ther x side for each iteration. The integers are considered as fixed number of size,
+        while the float as parcentage of the size. A tuple is used to specify both under and upper bound of the size. (Default: (2, 10))
+        y_dimensions (int or float, or a tuple containing a combination of those): size of the sampled patch along ther y side for each iteration. The integers are considered as fixed number of size,
+        while the float as parcentage of the size. A tuple is used to specify both under and upper bound of the size. (Default: (2, 10))
         pixel_mapping (str): the type of mapping used to move the pixels. Can be: 'random', 'similarity', 'similarity_random', 'distance', 'distance_random' (Default: random)
         restarts (int): the number of restarts that the algortihm performs. (Default: 20)
         max_iterations (int): number of iterations to perform for each restart. (Default: 100)
@@ -37,8 +36,7 @@ class Pixle(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PixleAttack(model, x_dimensions=(0.1 , 0.2),
-        restarts=100, iteratsion=50)
+        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=100, iteratsion=50)
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model,
@@ -48,7 +46,6 @@ class Pixle(Attack):
                  restarts: int = 20,
                  max_iterations: int = 100,
                  update_each_iteration=False):
-
         super().__init__("Pixle", model)
 
         if restarts < 0 or not isinstance(restarts, int):
@@ -93,7 +90,6 @@ class Pixle(Attack):
             return self.iterative_forward(images, labels)
 
     def restart_forward(self, images, labels):
-
         assert len(images.shape) == 3 or \
                (len(images.shape) == 4 and images.size(0) == 1)
 
@@ -131,7 +127,6 @@ class Pixle(Attack):
             best_p = loss(solution=image, solution_as_perturbed=True)
             image_probs = [best_p]
 
-            tot_it = 0
             it = 0
 
             for r in range(self.restarts):
@@ -184,7 +179,6 @@ class Pixle(Attack):
         return adv_images
 
     def iterative_forward(self, images, labels):
-
         assert len(images.shape) == 3 or \
                (len(images.shape) == 4 and images.size(0) == 1)
 
@@ -229,8 +223,7 @@ class Pixle(Attack):
 
                 destinations = self.get_pixel_mapping(image, x, x_offset,
                                                       y, y_offset,
-                                                      destination_image=
-                                                      best_image)
+                                                      destination_image=best_image)
 
                 solution = [x, y, x_offset, y_offset] + destinations
 
@@ -294,7 +287,6 @@ class Pixle(Attack):
 
     def get_pixel_mapping(self, source_image, x, x_offset, y, y_offset,
                           destination_image=None):
-
         if destination_image is None:
             destination_image = source_image
 
