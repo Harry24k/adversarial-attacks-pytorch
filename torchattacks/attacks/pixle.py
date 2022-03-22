@@ -1,16 +1,10 @@
 from itertools import chain
-from typing import Tuple, Union, Sequence
 
 import numpy as np
+import torch
 from torch.nn.functional import softmax
 
-import torch
-import torch.nn as nn
-
 from ..attack import Attack
-
-DimensionTupleType = Tuple[Union[int, float], Union[int, float]]
-DimensionType = Union[DimensionTupleType, Sequence[DimensionTupleType]]
 
 
 class Pixle(Attack):
@@ -39,13 +33,9 @@ class Pixle(Attack):
         >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=100, iteratsion=50)
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model,
-                 x_dimensions: DimensionType = (2, 10),
-                 y_dimensions: DimensionType = (2, 10),
-                 pixel_mapping='random',
-                 restarts: int = 20,
-                 max_iterations: int = 100,
-                 update_each_iteration=False):
+    def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
+                 pixel_mapping='random', restarts=20,
+                 max_iterations=100, update_each_iteration=False):
         super().__init__("Pixle", model)
 
         if restarts < 0 or not isinstance(restarts, int):
