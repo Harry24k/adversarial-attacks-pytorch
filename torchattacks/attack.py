@@ -87,11 +87,12 @@ class Attack(object):
 
         self._attack_mode = "targeted(least-likely)"
         self._targeted = True
+        assert (kth_min > 0)
         self._kth_min = kth_min
         self._target_map_function = self._get_least_likely_label
         print("Attack mode is changed to 'targeted(least-likely).'")
 
-    def set_mode_targeted_random(self, n_classses=None):
+    def set_mode_targeted_random(self):
         r"""
         Set attack mode as targeted with random labels.
         Arguments:
@@ -103,7 +104,6 @@ class Attack(object):
 
         self._attack_mode = "targeted(random)"
         self._targeted = True
-        self._n_classses = n_classses
         self._target_map_function = self._get_random_target_label
         print("Attack mode is changed to 'targeted(random).'")
 
@@ -157,7 +157,7 @@ class Attack(object):
             return_verbose (bool): True for returning detailed information. (Default: False)
             save_pred (bool): True for saving predicted labels (Default: False)
 
-        """            
+        """
         if save_path is not None:
             image_list = []
             label_list = []
@@ -206,24 +206,21 @@ class Attack(object):
                     image_list.append(adv_images)
                 else:
                     image_list.append(adv_images.detach().cpu())
-                    
                 label_list.append(labels.detach().cpu())
+
+                image_list_cat = torch.cat(image_list, 0)
+                label_list_cat = torch.cat(label_list, 0)
+
                 if save_pred:
                     pre_list.append(pred.detach().cpu())
-                
+                    pre_list_cat = torch.cat(pre_list, 0)
+                    torch.save((image_list_cat, label_list_cat, pre_list_cat), save_path)
+                else:
+                    torch.save((image_list_cat, label_list_cat), save_path)
+
         # To avoid erasing the printed information.
         if verbose:
             self._save_print(progress, rob_acc, l2, elapsed_time, end='\n')
-
-        if save_path is not None:
-            image_list = torch.cat(image_list, 0)
-            label_list = torch.cat(label_list, 0)
-            if save_pred:
-                pre_list = torch.cat(pre_list, 0)
-                torch.save((image_list, label_list, pre_list), save_path)
-            else:
-                torch.save((image_list, label_list), save_path)
-            print('- Save complete!')
 
         if given_training:
             self.model.train()
@@ -235,50 +232,54 @@ class Attack(object):
         print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
               % (progress, rob_acc, l2, elapsed_time), end=end)
 
+    @torch.no_grad()
     def _get_target_label(self, images, labels=None):
         r"""
         Function for changing the attack mode.
         Return input labels.
         """
-        if self._target_map_function:
-            return self._target_map_function(images, labels)
-        raise ValueError('Please define target_map_function.')
+        if self._targeted:
+            given_training = self.model.training
+            if given_training:
+                self.model.eval()
+            target_labels = self._target_map_function(images, labels)
+            if given_training:
+                self.model.train()
+            return target_labels
+        else:
+            raise ValueError('Please define target_map_function.')
 
+    @torch.no_grad()
     def _get_least_likely_label(self, images, labels=None):
-        r"""
-        Function for changing the attack mode.
-        Return least likely labels.
-        """
         outputs = self.model(images)
-        if self._kth_min < 0:
-            pos = outputs.shape[1] + self._kth_min + 1
-        else:
-            pos = self._kth_min
-        _, target_labels = torch.kthvalue(outputs.data, pos)
-        target_labels = target_labels.detach()
-        return target_labels.long().to(self.device)
-
-    def _get_random_target_label(self, images, labels=None):
-        if self._n_classses is None:
-            outputs = self.model(images)
-            if labels is None:
-                _, labels = torch.max(outputs, dim=1)
-            n_classses = outputs.shape[-1]
-        else:
-            n_classses = self._n_classses
+        if labels is None:
+            _, labels = torch.max(outputs, dim=1)
+        n_classses = outputs.shape[-1]
 
         target_labels = torch.zeros_like(labels)
         for counter in range(labels.shape[0]):
             l = list(range(n_classses))
             l.remove(labels[counter])
-            t = self.random_int(0, len(l))
+            _, t = torch.kthvalue(outputs[counter][l], self._kth_min)
             target_labels[counter] = l[t]
 
         return target_labels.long().to(self.device)
-    
-    def random_int(self, low=0, high=1, shape=[1]):
-        t = low + (high - low) * torch.rand(shape).to(self.device)
-        return t.long()
+
+    @torch.no_grad()
+    def _get_random_target_label(self, images, labels=None):
+        outputs = self.model(images)
+        if labels is None:
+            _, labels = torch.max(outputs, dim=1)
+        n_classses = outputs.shape[-1]
+
+        target_labels = torch.zeros_like(labels)
+        for counter in range(labels.shape[0]):
+            l = list(range(n_classses))
+            l.remove(labels[counter])
+            t = (len(l)*torch.rand([1])).long().to(self.device)
+            target_labels[counter] = l[t]
+
+        return target_labels.long().to(self.device)
 
     def _to_uint(self, images):
         r"""
@@ -316,7 +317,6 @@ class Attack(object):
                 if not self._dropout_training:
                     if 'Dropout' in m.__class__.__name__:
                         m = m.eval()
-
         else:
             self.model.eval()
 
