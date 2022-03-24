@@ -130,3 +130,8 @@ Attacks
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.jitter
     :members:
+    
+   Pixle
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pixle
+    :members:
