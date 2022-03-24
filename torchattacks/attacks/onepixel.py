@@ -40,7 +40,7 @@ class OnePixel(Attack):
         self.steps = steps
         self.popsize = popsize
         self.inf_batch = inf_batch
-        self._supported_mode = ['default']
+        self._supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -96,7 +96,7 @@ class OnePixel(Attack):
     def _loss(self, image, label, delta):
         adv_images = self._perturb(image, delta)  # Mutiple delta
         prob = self._get_prob(adv_images)[:, label]
-        if (self._targeted == 1):
+        if self._targeted:
             return 1-prob  # If targeted, increase prob
         else:
             return prob  # If non-targeted, decrease prob
@@ -105,9 +105,9 @@ class OnePixel(Attack):
         adv_image = self._perturb(image, delta)  # Single delta
         prob = self._get_prob(adv_image)
         pre = np.argmax(prob)
-        if (self._targeted == 1) and (pre == label):
+        if self._targeted and (pre == label):
             return True
-        elif (self._targeted == -1) and (pre != label):
+        elif (not self._targeted) and (pre != label):
             return True
         return False
 
