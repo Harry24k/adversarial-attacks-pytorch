@@ -405,3 +405,17 @@
 ### v3.2.4
 
   * `save`, `MultiAttack`: `return_verbose` can be `True `even if `verbose=False`.
+
+    
+
+​      
+
+​      
+
+
+### v3.2.5
+
+  * `Pixle` is added.
+  * `save`: Now saving images and labels for every batch.
+  * `OnePixel`: Now supports targeted version.
+  * `_get_target_label`: Now generates target label under evaluation mode and `torch.no_grad()`.
