@@ -419,3 +419,12 @@
   * `save`: Now saving images and labels for every batch.
   * `OnePixel`: Now supports targeted version.
   * `_get_target_label`: Now generates target label under evaluation mode and `torch.no_grad()`.
+
+
+
+
+
+
+### v3.2.6
+
+  * `_differential_evolution`: [bug fixed](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/61).
