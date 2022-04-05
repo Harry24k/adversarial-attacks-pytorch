@@ -8,7 +8,7 @@ from ..attack import Attack
 
 class UPGD(Attack):
     r"""
-    Utimate PGD that supports various options of gradient-based adversarial attacks.
+    Ultimate PGD that supports various options of gradient-based adversarial attacks.
 
     Distance Measure : Linf
 
