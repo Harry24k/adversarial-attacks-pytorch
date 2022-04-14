@@ -56,19 +56,18 @@ class SINIFGSM(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            nes_image = adv_images.detach() + self.decay*self.alpha*momentum
-            nes_image.requires_grad = True
+            nes_image = adv_images + self.decay*self.alpha*momentum
             # Calculate sum the gradients over the scale copies of the input image
             adv_grad = torch.zeros_like(images).detach().to(self.device)
             for i in torch.arange(self.m):
-                nes_image = nes_image / torch.pow(2, i)
-                outputs = self.model(nes_image)
+                nes_images = nes_image / torch.pow(2, i)
+                outputs = self.model(nes_images)
                 # Calculate loss
                 if self._targeted:
                     cost = -loss(outputs, target_labels)
                 else:
                     cost = loss(outputs, labels)
-                adv_grad += torch.autograd.grad(cost, nes_image,
+                adv_grad += torch.autograd.grad(cost, adv_images,
                                                 retain_graph=False, create_graph=False)[0]
             adv_grad = adv_grad / self.m
 
