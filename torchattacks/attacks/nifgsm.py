@@ -53,9 +53,8 @@ class NIFGSM(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            nes_image = adv_images.detach() + self.decay*self.alpha*momentum
-            nes_image.requires_grad = True
-            outputs = self.model(nes_image)
+            nes_images = adv_images + self.decay*self.alpha*momentum
+            outputs = self.model(nes_images)
             # Calculate loss
             if self._targeted:
                 cost = -loss(outputs, target_labels)
@@ -63,7 +62,7 @@ class NIFGSM(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, nes_image,
+            grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
             grad = self.decay*momentum + grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
             momentum = grad
