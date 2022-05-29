@@ -26,6 +26,8 @@ class MultiAttack(Attack):
         for attack in attacks:
             ids.append(id(attack.model))
 
+        if len(attacks) == 0:
+            raise ValueError("At least one attack should be provided.")
         if len(set(ids)) != 1:
             raise ValueError("At least one of attacks is referencing a different model.")
 
