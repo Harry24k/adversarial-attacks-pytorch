@@ -80,9 +80,6 @@ class Pixle(Attack):
             return self.iterative_forward(images, labels)
 
     def restart_forward(self, images, labels):
-        assert len(images.shape) == 3 or \
-               (len(images.shape) == 4 and images.size(0) == 1)
-
         if len(images.shape) == 3:
             images = images.unsqueeze(0)
 

@@ -25,4 +25,4 @@ from .attacks.tifgsm import TIFGSM
 from .attacks.jitter import Jitter
 from .attacks.pixle import Pixle
 
-__version__ = '3.2.6'
+__version__ = '3.2.7'

@@ -59,6 +59,7 @@ class PGDL2(Attack):
             n = d_flat.norm(p=2,dim=1).view(adv_images.size(0),1,1,1)
             r = torch.zeros_like(n).uniform_(0, 1)
             delta *= r/n*self.eps
+            adv_images = torch.clamp(adv_images + delta, min=0, max=1).detach()
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
