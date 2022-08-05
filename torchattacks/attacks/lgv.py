@@ -131,7 +131,7 @@ class LGV(Attack):
 
         if not self.base_attack:
             if self.verbose:
-                print(f"Phase 2: craft adversarial examples with {self.base_attack.__name__}")
+                print(f"Phase 2: craft adversarial examples with {self.attack_class.__name__}")
             # TODO: might not support set_training_mode() correctly:
             self.list_models = [model.eval() for model in self.list_models]
             f_model = LightEnsemble(self.list_models, order='shuffle', full_grad=self.full_grad)
