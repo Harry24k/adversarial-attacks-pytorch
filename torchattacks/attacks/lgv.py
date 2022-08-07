@@ -38,14 +38,15 @@ class LGV(Attack):
     the SGD trajectory for `epochs` epochs with the constant learning rate `lr`.
 
     Shape:
-        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
+        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height`
+        and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
         - output: :math:`(N, C, H, W)`.
 
     Examples::
         >>> attack = torchattacks.LGV(model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, full_grad=False, attack_class=BIM, eps=4/255, alpha=4/255/10, steps=50, verbose=True)
         >>> attack.collect_models()
-        >>> attack.save_collected_models('./lgv_models/')
+        >>> attack.save_models('./models/lgv/')
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, full_grad=False,
@@ -95,7 +96,7 @@ class LGV(Attack):
                 optimizer.step()
             self.list_models.append(copy.deepcopy(self.model))
 
-    def load_collected_models(self, list_models):
+    def load_models(self, list_models):
         """
         Load collected models
 
