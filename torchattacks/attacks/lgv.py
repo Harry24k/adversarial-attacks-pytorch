@@ -106,7 +106,7 @@ class LGV(Attack):
             raise ValueError("list_models should be a list of pytorch models")
         self.list_models = list_models
 
-    def save_collected_models(self, path):
+    def save_models(self, path):
         """
         Save collected models to the `path` directory
 
@@ -117,8 +117,8 @@ class LGV(Attack):
             raise RuntimeError('Call collect_models() before saving collected models.')
         os.makedirs(path, exist_ok=True)
         for i, model in enumerate(self.list_models):
-            path = os.path.join(path, f'lgv_model_{i:05}.pt')
-            torch.save({'state_dict': model.state_dict()}, path)
+            path_i = os.path.join(path, f'lgv_model_{i:05}.pt')
+            torch.save({'state_dict': model.state_dict()}, path_i)
 
     def forward(self, images, labels):
         r"""
