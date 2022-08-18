@@ -77,6 +77,7 @@ class LGV(Attack):
         """
         Collect LGV models along the SGD trajectory
         """
+        given_training = self.model.training
         self.model.train()
         optimizer = torch.optim.SGD(
             self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=self.wd
@@ -95,7 +96,12 @@ class LGV(Attack):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-            self.list_models.append(copy.deepcopy(self.model))
+            model_sample = copy.deepcopy(self.model)
+            if not given_training:
+                model_sample.eval()
+            self.list_models.append(model_sample)
+        if not given_training:
+            self.model.eval()
 
     def load_models(self, list_models):
         """
@@ -134,8 +140,11 @@ class LGV(Attack):
         if not self.base_attack:
             if self.verbose:
                 print(f"Phase 2: craft adversarial examples with {self.attack_class.__name__}")
-            self.list_models = [model.eval().to(self.device) for model in self.list_models]
+            self.list_models = [model.to(self.device) for model in self.list_models]
             f_model = LightEnsemble(self.list_models, order='shuffle', full_grad=self.full_grad)
+            if self._model_training:
+                f_model.eval()
+            f_model.to(self.device)
             self.base_attack = self.attack_class(model=f_model, **self.kwargs_att)
         # set_training_mode() to base attack
         self.base_attack.set_training_mode(model_training=self._model_training,
