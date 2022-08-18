@@ -22,8 +22,9 @@ class LGV(Attack):
 
     Arguments:
         model (nn.Module): initial model to attack.
-        trainloader (torch.utils.data.DataLoader): data loader of the unnormalized train set. Must load data in [0, 1]
-        without normalization to be fed to the model.
+        trainloader (torch.utils.data.DataLoader): data loader of the unnormalized train set. Must load data in [0, 1].
+        Be aware that the batch size may impact success rate. The original paper uses a batch size of 256. A different
+        batch-size might require to tune the learning rate.
         lr (float): constant learning rate to collect models. In the paper, 0.05 is best for ResNet-50. 0.1 seems best
         for some other architectures. (Default: 0.05)
         epochs (int): number of epochs. (Default: 10)
@@ -32,7 +33,7 @@ class LGV(Attack):
         full_grad (bool): If False, every gradient is of a single collected model randomly picked without replacement
         (recommended for efficient iterative attack). If True, every gradient is of all models (should be used for
         single step attacks like FGSM). (Default: False)
-        verbose (bool): print progress. Install tqdm package for better print. (Default: True)
+        verbose (bool): print progress. Install the tqdm package for better print. (Default: True)
 
     .. note:: If a list of models is not provided to `load_models()`, the attack will start by collecting models along
     the SGD trajectory for `epochs` epochs with the constant learning rate `lr`.
@@ -133,11 +134,25 @@ class LGV(Attack):
         if not self.base_attack:
             if self.verbose:
                 print(f"Phase 2: craft adversarial examples with {self.attack_class.__name__}")
-            # TODO: might not support set_training_mode() correctly:
-            self.list_models = [model.eval() for model in self.list_models]
+            self.list_models = [model.eval().to(self.device) for model in self.list_models]
             f_model = LightEnsemble(self.list_models, order='shuffle', full_grad=self.full_grad)
-            # TODO: add support for targeted attacks
             self.base_attack = self.attack_class(model=f_model, **self.kwargs_att)
+        # set_training_mode() to base attack
+        self.base_attack.set_training_mode(model_training=self._model_training,
+                                           batchnorm_training=self._batchnorm_training,
+                                           dropout_training=self._dropout_training)
+        # set targeted to base attack
+        if self._targeted:
+            if self._attack_mode == 'targeted':
+                self.base_attack.set_mode_targeted_by_function(target_map_function=self._target_map_function)
+            elif self._attack_mode == "targeted(least-likely)":
+                self.base_attack.set_mode_targeted_least_likely(kth_min=self._kth_min)
+            elif self._attack_mode == "targeted(random)":
+                self.base_attack.set_mode_targeted_random()
+            else:
+                raise NotImplementedError('Targeted attack mode not supported by LGV.')
+        # set return type to base attack
+        self.base_attack.set_return_type(self._return_type)
 
         adv_images = self.base_attack(images, labels)
         return adv_images
