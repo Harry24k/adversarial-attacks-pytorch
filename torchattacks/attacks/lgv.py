@@ -201,7 +201,7 @@ class LightEnsemble(nn.Module):
         if self.n_grad >= self.n_models or self.n_grad < 0:
             indexes = list(range(self.n_models))
         elif self.order == 'random':
-            indexes = sample(range(self.n_models), self.order)
+            indexes = sample(range(self.n_models), self.n_grad)
         else:
             indexes = [i % self.n_models for i in list(range(self.f_count, self.f_count + self.n_grad))]
             self.f_count += self.n_grad
