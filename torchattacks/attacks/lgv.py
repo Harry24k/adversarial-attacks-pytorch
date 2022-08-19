@@ -3,7 +3,7 @@ import copy
 import itertools
 import torch
 import torch.nn as nn
-from random import randrange, shuffle
+from random import shuffle, sample
 
 from ..attack import Attack
 from .bim import BIM
@@ -29,10 +29,10 @@ class LGV(Attack):
         for some other architectures. (Default: 0.05)
         epochs (int): number of epochs. (Default: 10)
         nb_models_epoch (int): number of models to collect per epoch. (Default: 4)
-        wd (float): weight decay of SGD to collect models. (Default: 4)
-        full_grad (bool): If False, every gradient is of a single collected model randomly picked without replacement
-        (recommended for efficient iterative attack). If True, every gradient is of all models (should be used for
-        single step attacks like FGSM). (Default: False)
+        wd (float): weight decay of SGD to collect models. (Default: 1e-4)
+        n_grad (int): number of models to ensemble at each attack iteration. 1 (default) is recommended for efficient
+        iterative attacks. Higher numbers give generally better results at the expense of computations. -1 uses all
+        models (should be used for single-step attacks like FGSM).
         verbose (bool): print progress. Install the tqdm package for better print. (Default: True)
 
     .. note:: If a list of models is not provided to `load_models()`, the attack will start by collecting models along
@@ -45,13 +45,13 @@ class LGV(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.LGV(model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, full_grad=False, attack_class=BIM, eps=4/255, alpha=4/255/10, steps=50, verbose=True)
+        >>> attack = torchattacks.LGV(model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, n_grad=1, attack_class=BIM, eps=4/255, alpha=4/255/10, steps=50, verbose=True)
         >>> attack.collect_models()
         >>> attack.save_models('./models/lgv/')
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, full_grad=False,
-                 verbose=True, attack_class=BIM, **kwargs):
+    def __init__(self, model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, n_grad=1, verbose=True,
+                 attack_class=BIM, **kwargs):
         model = copy.deepcopy(model)  # deep copy the model to train it
         super().__init__("LGV", model)
         self.trainloader = trainloader
@@ -59,7 +59,8 @@ class LGV(Attack):
         self.epochs = epochs
         self.nb_models_epoch = nb_models_epoch
         self.wd = wd
-        self.full_grad = full_grad
+        self.n_grad = n_grad
+        self.order = 'shuffle'
         self.attack_class = attack_class
         self.verbose = verbose
         self.kwargs_att = kwargs
@@ -141,11 +142,10 @@ class LGV(Attack):
             if self.verbose:
                 print(f"Phase 2: craft adversarial examples with {self.attack_class.__name__}")
             self.list_models = [model.to(self.device) for model in self.list_models]
-            f_model = LightEnsemble(self.list_models, order='shuffle', full_grad=self.full_grad)
+            f_model = LightEnsemble(self.list_models, order=self.order, n_grad=self.n_grad)
             if self._model_training:
                 f_model.eval()
-            f_model.to(self.device)
-            self.base_attack = self.attack_class(model=f_model, **self.kwargs_att)
+            self.base_attack = self.attack_class(model=f_model.to(self.device), **self.kwargs_att)
         # set_training_mode() to base attack
         self.base_attack.set_training_mode(model_training=self._model_training,
                                            batchnorm_training=self._batchnorm_training,
@@ -169,21 +169,23 @@ class LGV(Attack):
 
 class LightEnsemble(nn.Module):
 
-    def __init__(self, list_models, order='shuffle', full_grad=False):
+    def __init__(self, list_models, order='shuffle', n_grad=1):
         """
         Perform a single forward pass to one of the models when call forward()
 
         Arguments:
             list_models (list of nn.Module): list of LGV models.
-            order: str, 'shuffle' draw a model without replacement (default), 'random' draw a model with replacement,
+            order (str): 'shuffle' draw a model without replacement (default), 'random' draw a model with replacement,
             None cycle in provided order.
-            full_grad (bool): if True, a forward pass is performed on all models and logits are fused and order is
-            ignored. If False, a forward pass is performed on a single model chosen according to `order` (default).
+            n_grad (int): number of models to ensemble in each forward pass (fused logits). Select models according to
+            `order`. If equal to -1, use all models and order is ignored.
         """
         super(LightEnsemble, self).__init__()
         self.n_models = len(list_models)
         if self.n_models < 1:
             raise ValueError('Empty list of models')
+        if not (n_grad > 0 or n_grad == -1):
+            raise ValueError('n_grad should be strictly positive or equal to -1')
         if order == 'shuffle':
             shuffle(list_models)
         elif order in [None, 'random']:
@@ -192,20 +194,22 @@ class LightEnsemble(nn.Module):
             raise ValueError('Not supported order')
         self.models = nn.ModuleList(list_models)
         self.order = order
-        self.full_grad = full_grad
+        self.n_grad = n_grad
         self.f_count = 0
 
     def forward(self, x):
-        if self.full_grad:
+        if self.n_grad >= self.n_models or self.n_grad < 0:
+            indexes = list(range(self.n_models))
+        elif self.order == 'random':
+            indexes = sample(range(self.n_models), self.order)
+        else:
+            indexes = [i % self.n_models for i in list(range(self.f_count, self.f_count + self.n_grad))]
+            self.f_count += self.n_grad
+        if self.n_grad == 1:
+            x = self.models[indexes[0]](x)
+        else:
             # clone to make sure x is not changed by inplace methods
-            x_list = [model(x.clone()) for model in self.models]
+            x_list = [model(x.clone()) for i, model in enumerate(self.models) if i in indexes]
             x = torch.stack(x_list)
             x = torch.mean(x, dim=0, keepdim=False)
-        else:
-            if self.order == 'random':
-                index = randrange(0, self.n_models)
-            else:
-                index = self.f_count % self.n_models
-            x = self.models[index](x)
-        self.f_count += 1
         return x
