@@ -183,7 +183,7 @@ atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=Tr
 atk = torchattacks.MultiAttack([atk1, atk2])
 ```
 
-* Binary serach for CW
+* Binary search for CW
 ```python
 atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
 atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
@@ -203,6 +203,7 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 * **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
 * **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
+* **LGV Transfer Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20combined%20with%20LGV%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20combined%20with%20LGV%20%28ImageNet%29.ipynb)):  This demo provides a comparison of several transfer-based black-box attacks. It shows that LGV has superior transferability, and that out-of-the-box attacks can be combined with LGV.
 * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
 
@@ -316,7 +317,7 @@ The distance measure in parentheses.
 |     **TIFGSM**<br />(Linf)      | Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks ([Dong et al., 2019](https://arxiv.org/abs/1904.02884))            | :heart_eyes: Contributor [taobai](https://github.com/tao-bai)                                                          |
 |     **Jitter**<br />(Linf)      | Exploring Misclassifications of Robust Neural Networks to Enhance Adversarial Attacks ([Schwinn, Leo, et al., 2021](https://arxiv.org/abs/2105.10304))    |                                                                                                                        |
 |       **Pixle**<br />(L0)       | Pixle: a fast and effective black-box attack based on rearranging pixels ([Pomponi, Jary, et al., 2022](https://arxiv.org/abs/2202.02236))                |                                                                                                                        |
-| **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | To combine with another attack. Contributor [Framartin](https://github.com/Framartin)                                 |
+| **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | To combine with another attack. Contributor [Martin Gubri](https://github.com/Framartin)                               |
 
 
 
