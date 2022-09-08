@@ -79,9 +79,6 @@ class PGD_RS(Attack):
         shape = torch.Size([images.shape[0], self.noise_batch_size]) + images.shape[1:]
         inputs_exp = images.unsqueeze(1).expand(shape)
         inputs_exp = inputs_exp.reshape(torch.Size([-1]) + inputs_exp.shape[2:])
-        shape_exp = inputs_exp.shape
-        noise_added = self.noise_func(inputs_exp.view(len(inputs_exp), -1))
-        noise_added = noise_added.view(shape_exp)
 
         delta = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device)
         delta_last = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=False, device=self.device)
@@ -94,6 +91,9 @@ class PGD_RS(Attack):
             #img_adv is the perturbed data for randmized smoothing
             img_adv = inputs_exp + delta.unsqueeze(1).repeat((1, self.noise_batch_size, 1, 1, 1)).view_as(inputs_exp)#delta.repeat(1,self.noise_batch_size,1,1).view_as(inputs_exp)
             img_adv = torch.clamp(img_adv, min=0, max=1)
+
+            noise_added = self.noise_func(img_adv.view(len(img_adv), -1))
+            noise_added = noise_added.view(img_adv.shape)
 
             adv_noise = img_adv + noise_added
             logits = self.model(adv_noise)
