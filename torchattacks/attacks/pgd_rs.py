@@ -41,7 +41,7 @@ class PGD_RS(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PGD_RS(model, eps=8/255, alpha=1/255, steps=40, noise_type = "guassian", noise_sd = "0.5", noise_batch_size = "32")
+        >>> attack = torchattacks.PGD_RS(model, eps=8/255, alpha=1/255, steps=40, noise_type = "guassian", noise_sd = 0.5, noise_batch_size = 32)
         >>> adv_images = attack(images, labels)
 
     """
