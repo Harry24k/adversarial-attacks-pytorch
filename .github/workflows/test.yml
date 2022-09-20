@@ -65,27 +65,14 @@ jobs:
           print(f"hip = {hip}")
           sys.exit(cuda or hip)
 
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-
-      - name: Pytest coverage comment
-        if: ${{ github.ref == 'refs/heads/main' }}
-        id: coverageComment
-        uses: MishaKav/pytest-coverage-comment@main
-        with:
-          hide-comment: true
-          pytest-coverage-path: ./data/pytest-coverage_4.txt
-
-      - name: Update Readme with Coverage Html
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Run pytest
         run: |
-          sed -i '/<!-- Pytest Coverage Comment:Begin -->/,/<!-- Pytest Coverage Comment:End -->/c\<!-- Pytest Coverage Comment:Begin -->\n\${{ steps.coverageComment.outputs.coverageHtml }}\n<!-- Pytest Coverage Comment:End -->' ./README.md
+          pip install pytest pytest-cov
+          pytest --cov=package_name --cov-report=xml
 
-      - name: Commit & Push changes to Readme
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: actions-js/push@master
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          message: Update coverage on Readme
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
