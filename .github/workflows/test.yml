@@ -47,7 +47,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Collect environment information
-        run: python scripts/collect_env.py
+        run: python ./.github/scripts/collect_env.py
 
       - name: Install PyTorch distributions
         run:
