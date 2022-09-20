@@ -1,3 +1,4 @@
+# Modified from https://github.com/pmeier/light-the-torch
 #!/usr/bin/env python
 
 import itertools

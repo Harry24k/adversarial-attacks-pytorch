@@ -64,3 +64,9 @@ jobs:
           hip = torch.version.hip
           print(f"hip = {hip}")
           sys.exit(cuda or hip)
+
+      - name: import torchattacks
+        shell: python
+        run: |
+          import torchattacks
+          print(f"torchattack version = {torchattack.__version__}")
