@@ -54,6 +54,10 @@ jobs:
           ltt install --pytorch-channel=${{ matrix.pytorch-channel }} torch torchvision
           torchaudio
 
+      - name: Install robustbench
+        run:
+          pip install git+https://github.com/RobustBench/robustbench.git
+
       - name: Check if CPU only
         shell: python
         run: |
