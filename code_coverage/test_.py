@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '..')
 
 
-def import_torchattacks():
+def test_import():
     import torchattacks
     print(torchattacks.__version__)
     assert True
