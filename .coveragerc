@@ -1,0 +1,3 @@
+[run]
+include = /torchattacks/*
+omit = *demos*, *pic*, *docs*
