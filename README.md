@@ -208,7 +208,6 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 * **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
 
 
-
 #### Torchattacks also supports collaboration with other attack packages.
 
 <details><summary>FoolBox</summary><p>
@@ -320,6 +319,8 @@ The distance measure in parentheses.
 |       **Pixle**<br />(L0)       | Pixle: a fast and effective black-box attack based on rearranging pixels ([Pomponi, Jary, et al., 2022](https://arxiv.org/abs/2202.02236))                |                                                                                                                        |
 | **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | To combine with another attack. Contributor [Martin Gubri](https://github.com/Framartin)                               |
 
+<!-- Pytest Coverage Comment:Begin -->
+<!-- Pytest Coverage Comment:End -->
 
 
 ## Performance Comparison
