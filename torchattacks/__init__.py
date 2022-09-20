@@ -17,7 +17,9 @@ from .attacks.multiattack import MultiAttack
 from .attacks.nifgsm import NIFGSM
 from .attacks.onepixel import OnePixel
 from .attacks.pgd import PGD
+from .attacks.pgd_rs import PGD_RS
 from .attacks.pgdl2 import PGDL2
+from .attacks.pgdl2_rs import PGDL2_RS
 from .attacks.pixle import Pixle
 from .attacks.rfgsm import RFGSM
 from .attacks.sinifgsm import SINIFGSM
