@@ -70,6 +70,11 @@ jobs:
           print(f"hip = {hip}")
           sys.exit(cuda or hip)
 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
       - name: Run pytest
         run: |
           pip install pytest pytest-cov
