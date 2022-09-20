@@ -1,3 +1,3 @@
 [run]
-include = /torchattacks/*
+branch = True
 omit = *demos*, *pic*, *docs*
