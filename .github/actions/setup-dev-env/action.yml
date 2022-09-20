@@ -43,4 +43,5 @@ runs:
     - name: Install development requirements and project
       shell: bash
       run: |
+        pip install doit
         pip install --pre light-the-torch
