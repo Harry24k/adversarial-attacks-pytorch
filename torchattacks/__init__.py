@@ -14,16 +14,20 @@ from .attacks.jitter import Jitter
 from .attacks.lgv import LGV
 from .attacks.mifgsm import MIFGSM
 from .attacks.multiattack import MultiAttack
+from .attacks.nifgsm import NIFGSM
 from .attacks.onepixel import OnePixel
 from .attacks.pgd import PGD
 from .attacks.pgdl2 import PGDL2
 from .attacks.pixle import Pixle
 from .attacks.rfgsm import RFGSM
+from .attacks.sinifgsm import SINIFGSM
 from .attacks.sparsefool import SparseFool
 from .attacks.square import Square
 from .attacks.tifgsm import TIFGSM
 from .attacks.tpgd import TPGD
 from .attacks.upgd import UPGD
 from .attacks.vanila import VANILA
+from .attacks.vmifgsm import VMIFGSM
+from .attacks.vnifgsm import VNIFGSM
 
 __version__ = '3.2.7'
