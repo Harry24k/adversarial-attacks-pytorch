@@ -8,10 +8,10 @@ def import_torchattacks():
     assert True
 
 
-def load_model():
-    from robustbench.data import load_cifar10
-    # from robustbench.utils import load_model, clean_accuracy
+# def load_model():
+#     from robustbench.data import load_cifar10
+#     # from robustbench.utils import load_model, clean_accuracy
 
-    images, labels = load_cifar10(n_examples=10)
-    device = "cpu"
-    assert True
+#     images, labels = load_cifar10(n_examples=10)
+#     device = "cpu"
+#     assert True
