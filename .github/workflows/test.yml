@@ -77,9 +77,9 @@ jobs:
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
       - name: Install PyTorch distributions
+        shell: bash -l {0} # Use miniconda
         run:
           conda install pytorch=${{ matrix.pytorch-version }} torchvision cpuonly python=${{ matrix.python-version }} -c pytorch
-
 
       ## Warning:: install requirements will overrides torch version.
       # - name: Install dependencies
@@ -88,11 +88,13 @@ jobs:
       #     pip install -r requirements.txt
 
       - name: Run pytest
+        shell: bash -l {0} # Use miniconda
         run: |
           pip install pytest pytest-cov
           pytest --cov . --cov-report=xml
 
       - name: Upload coverage reports to Codecov
+        shell: bash -l {0} # Use miniconda
         run: |
           # Replace `linux` below with the appropriate OS
           # Options are `alpine`, `linux`, `macos`, `windows`
