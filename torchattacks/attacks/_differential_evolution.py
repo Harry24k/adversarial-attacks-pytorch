@@ -14,7 +14,6 @@ from scipy.optimize import OptimizeResult, minimize
 # from scipy.optimize.optimize import _status_message % for version < 1.8
 # from scipy.optimize.optimize_ import _status_message % for version >= 1.8
 from scipy._lib._util import check_random_state
-from six import string_types
 
 
 __all__ = ['differential_evolution']
@@ -426,7 +425,7 @@ class DifferentialEvolutionSolver(object):
                                  self.parameter_count)
 
         self._nfev = 0
-        if isinstance(init, string_types):
+        if isinstance(init, str):
             if init == 'latinhypercube':
                 self.init_population_lhs()
             elif init == 'random':
