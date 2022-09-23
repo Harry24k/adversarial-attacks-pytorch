@@ -1,0 +1,12 @@
+name: Question
+description: Question about the codes for this project
+title: "[QUESTION]"
+labels: enhancement
+body:
+- type: textarea
+  attributes:
+    label: ❔ Any questions
+    description: >
+      Please describe the question.
+  validations:
+    required: true
