@@ -26,4 +26,4 @@ from .attacks.jitter import Jitter
 from .attacks.pixle import Pixle
 from .attacks.lgv import LGV
 
-__version__ = '3.2.7'
+__version__ = '3.2.8'
