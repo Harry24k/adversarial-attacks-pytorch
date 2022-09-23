@@ -1,0 +1,20 @@
+name: Feature request
+about: Suggest an idea for this project
+title: "[FEATURE]"
+labels: enhancement
+assignees: Harry24k
+body:
+- type: textarea
+  attributes:
+    label: :sparkles: Short description of the feature [tl;dr]
+    description: >
+      A description of what the bug is _within three sentences_.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: :speech_balloon: Detailed motivation and codes
+    description: >
+      Please outline the motivation and codes for the proposal.
+  validations:
+    required: true

@@ -1,0 +1,20 @@
+name: Bug report
+about: Create a report to help us improve
+title: "[BUG]"
+labels: bug
+assignees: Harry24k
+body:
+- type: textarea
+  attributes:
+    label: :sparkles: Short description of the bug [tl;dr]
+    description: >
+      A description of what the bug is _within three sentences_.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: :speech_balloon: Detailed code and results
+    description: >
+      Please paste or describe the codes and results you observe.
+  validations:
+    required: true
