@@ -45,15 +45,15 @@ class AutoAttack(Attack):
         self.verbose = verbose
         self._supported_mode = ['default']
 
-        if version == 'standard':
+        if version == 'standard':  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
             self.autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=1),
                 APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, targeted=True, n_classes=n_classes, n_restarts=1),
                 Square(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_queries=5000, n_restarts=1),
             ])
 
-        elif version == 'plus':
+        elif version == 'plus':  # ['apgd-ce', 'apgd-dlr', 'fab', 'square', 'apgd-t', 'fab-t']
             self.autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=5),
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', n_restarts=5),
@@ -63,7 +63,7 @@ class AutoAttack(Attack):
                 FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, targeted=True, n_classes=n_classes, n_restarts=1),
             ])
 
-        elif version == 'rand':
+        elif version == 'rand':  # ['apgd-ce', 'apgd-dlr']
             self.autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', eot_iter=20, n_restarts=1),
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', eot_iter=20, n_restarts=1),
