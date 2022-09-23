@@ -1,6 +1,6 @@
 # Modified from https://github.com/pmeier/light-the-torch
 # Modified from https://github.com/pytorch/ignite/blob/master/.github/workflows/pytorch-version-tests.yml
-name: test
+name: build-coverage
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
     
 
 jobs:
-  build-environment:
+  build-coverage:
     strategy:
       max-parallel: 10
       fail-fast: false
