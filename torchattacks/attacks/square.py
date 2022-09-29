@@ -56,7 +56,7 @@ class Square(Attack):
         self.verbose = verbose
         self.loss = loss
         self.rescale_schedule = resc_schedule
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -73,14 +73,14 @@ class Square(Attack):
         :param y:        correct labels if untargeted else target labels
         """
 
-        logits = self.model(x)
+        logits = self.get_logits(x)
         xent = F.cross_entropy(logits, y, reduction='none')
         u = torch.arange(x.shape[0])
         y_corr = logits[u, y].clone()
         logits[u, y] = -float('inf')
         y_others = logits.max(dim=-1)[0]
 
-        if not self._targeted:
+        if not self.targeted:
             if self.loss == 'ce':
                 return y_corr - y_others, -1. * xent
             elif self.loss == 'margin':
@@ -392,24 +392,24 @@ class Square(Attack):
 
         adv = x.clone()
         if y is None:
-            if not self._targeted:
+            if not self.targeted:
                 with torch.no_grad():
-                    output = self.model(x)
+                    output = self.get_logits(x)
                     y_pred = output.max(1)[1]
                     y = y_pred.detach().clone().long().to(self.device)
             else:
                 with torch.no_grad():
-                    y = self._get_target_label(x, None)
+                    y = self.get_target_label(x, None)
         else:
-            if not self._targeted:
+            if not self.targeted:
                 y = y.detach().clone().long().to(self.device)
             else:
-                y = self._get_target_label(x, y)
+                y = self.get_target_label(x, y)
 
-        if not self._targeted:
-            acc = self.model(x).max(1)[1] == y
+        if not self.targeted:
+            acc = self.get_logits(x).max(1)[1] == y
         else:
-            acc = self.model(x).max(1)[1] != y
+            acc = self.get_logits(x).max(1)[1] != y
 
         startt = time.time()
 
@@ -426,8 +426,8 @@ class Square(Attack):
 
                 _, adv_curr = self.attack_single_run(x_to_fool, y_to_fool)
 
-                output_curr = self.model(adv_curr)
-                if not self._targeted:
+                output_curr = self.get_logits(adv_curr)
+                if not self.targeted:
                     acc_curr = output_curr.max(1)[1] == y_to_fool
                 else:
                     acc_curr = output_curr.max(1)[1] != y_to_fool

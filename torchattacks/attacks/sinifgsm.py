@@ -36,7 +36,7 @@ class SINIFGSM(Attack):
         self.decay = decay
         self.alpha = alpha
         self.m = m
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -45,8 +45,8 @@ class SINIFGSM(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         momentum = torch.zeros_like(images).detach().to(self.device)
 
@@ -61,9 +61,9 @@ class SINIFGSM(Attack):
             adv_grad = torch.zeros_like(images).detach().to(self.device)
             for i in torch.arange(self.m):
                 nes_images = nes_image / torch.pow(2, i)
-                outputs = self.model(nes_images)
+                outputs = self.get_logits(nes_images)
                 # Calculate loss
-                if self._targeted:
+                if self.targeted:
                     cost = -loss(outputs, target_labels)
                 else:
                     cost = loss(outputs, labels)

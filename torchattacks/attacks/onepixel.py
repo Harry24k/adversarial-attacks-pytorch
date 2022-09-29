@@ -40,7 +40,7 @@ class OnePixel(Attack):
         self.steps = steps
         self.popsize = popsize
         self.inf_batch = inf_batch
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -49,8 +49,8 @@ class OnePixel(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         batch_size, channel, height, width = images.shape
 
@@ -63,7 +63,7 @@ class OnePixel(Attack):
         for idx in range(batch_size):
             image, label = images[idx:idx+1], labels[idx:idx+1]
 
-            if self._targeted:
+            if self.targeted:
                 target_label = target_labels[idx:idx+1]
 
                 def func(delta):
@@ -96,7 +96,7 @@ class OnePixel(Attack):
     def _loss(self, image, label, delta):
         adv_images = self._perturb(image, delta)  # Mutiple delta
         prob = self._get_prob(adv_images)[:, label]
-        if self._targeted:
+        if self.targeted:
             return 1-prob  # If targeted, increase prob
         else:
             return prob  # If non-targeted, decrease prob
@@ -105,9 +105,9 @@ class OnePixel(Attack):
         adv_image = self._perturb(image, delta)  # Single delta
         prob = self._get_prob(adv_image)
         pre = np.argmax(prob)
-        if self._targeted and (pre == label):
+        if self.targeted and (pre == label):
             return True
-        elif (not self._targeted) and (pre != label):
+        elif (not self.targeted) and (pre != label):
             return True
         return False
 
@@ -116,7 +116,7 @@ class OnePixel(Attack):
             batches = torch.split(images, self.inf_batch)
             outs = []
             for batch in batches:
-                out = self.model(batch)
+                out = self.get_logits(batch)
                 outs.append(out)
         outs = torch.cat(outs)
         prob = F.softmax(outs, dim=1)

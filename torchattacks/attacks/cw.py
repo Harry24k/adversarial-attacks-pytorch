@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -41,7 +42,7 @@ class CW(Attack):
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -50,8 +51,8 @@ class CW(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         # w = torch.zeros_like(images).detach() # Requires 2x times
         w = self.inverse_tanh_space(images).detach()
@@ -76,8 +77,8 @@ class CW(Attack):
                                  Flatten(images)).sum(dim=1)
             L2_loss = current_L2.sum()
 
-            outputs = self.model(adv_images)
-            if self._targeted:
+            outputs = self.get_logits(adv_images)
+            if self.targeted:
                 f_loss = self.f(outputs, target_labels).sum()
             else:
                 f_loss = self.f(outputs, labels).sum()
@@ -126,7 +127,7 @@ class CW(Attack):
         i, _ = torch.max((1-one_hot_labels)*outputs, dim=1) # get the second largest logit
         j = torch.masked_select(outputs, one_hot_labels.bool()) # get the largest logit
 
-        if self._targeted:
+        if self.targeted:
             return torch.clamp((i-j), min=-self.kappa)
         else:
             return torch.clamp((j-i), min=-self.kappa)

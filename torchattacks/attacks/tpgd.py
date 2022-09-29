@@ -32,14 +32,14 @@ class TPGD(Attack):
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels=None):
         r"""
         Overridden.
         """
         images = images.clone().detach().to(self.device)
-        logit_ori = self.model(images).detach()
+        logit_ori = self.get_logits(images).detach()
 
         adv_images = images + 0.001*torch.randn_like(images)
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
@@ -48,7 +48,7 @@ class TPGD(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            logit_adv = self.model(adv_images)
+            logit_adv = self.get_logits(adv_images)
 
             # Calculate loss
             cost = loss(F.log_softmax(logit_adv, dim=1),

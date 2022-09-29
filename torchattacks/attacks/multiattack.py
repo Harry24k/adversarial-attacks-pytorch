@@ -36,7 +36,7 @@ class MultiAttack(Attack):
         self.verbose = verbose
         self._accumulate_multi_atk_records = False
         self._multi_atk_records = [0.0]
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
@@ -52,7 +52,7 @@ class MultiAttack(Attack):
         for _, attack in enumerate(self.attacks):
             adv_images = attack(images[fails], labels[fails])
 
-            outputs = self.model(adv_images)
+            outputs = self.get_logits(adv_images)
             _, pre = torch.max(outputs.data, 1)
 
             corrects = (pre == labels[fails])

@@ -43,7 +43,7 @@ class DIFGSM(Attack):
         self.resize_rate = resize_rate
         self.diversity_prob = diversity_prob
         self.random_start = random_start
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def input_diversity(self, x):
         img_size = x.shape[-1]
@@ -73,8 +73,8 @@ class DIFGSM(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
         momentum = torch.zeros_like(images).detach().to(self.device)
@@ -88,10 +88,10 @@ class DIFGSM(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            outputs = self.model(self.input_diversity(adv_images))
+            outputs = self.get_logits(self.input_diversity(adv_images))
 
             # Calculate loss
-            if self._targeted:
+            if self.targeted:
                 cost = -loss(outputs, target_labels)
             else:
                 cost = loss(outputs, labels)

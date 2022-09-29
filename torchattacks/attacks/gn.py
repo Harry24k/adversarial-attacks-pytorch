@@ -24,7 +24,7 @@ class GN(Attack):
     def __init__(self, model, std=0.1):
         super().__init__("GN", model)
         self.std = std
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels=None):
         r"""

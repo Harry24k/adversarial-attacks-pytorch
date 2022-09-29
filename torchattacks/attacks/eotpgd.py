@@ -36,7 +36,7 @@ class EOTPGD(Attack):
         self.steps = steps
         self.eot_iter = eot_iter
         self.random_start = random_start
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -45,8 +45,8 @@ class EOTPGD(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
 
@@ -62,10 +62,10 @@ class EOTPGD(Attack):
             adv_images.requires_grad = True
 
             for j in range(self.eot_iter):
-                outputs = self.model(adv_images)
+                outputs = self.get_logits(adv_images)
 
                 # Calculate loss
-                if self._targeted:
+                if self.targeted:
                     cost = -loss(outputs, target_labels)
                 else:
                     cost = loss(outputs, labels)

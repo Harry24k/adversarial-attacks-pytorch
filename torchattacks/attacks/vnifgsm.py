@@ -40,7 +40,7 @@ class VNIFGSM(Attack):
         self.alpha = alpha
         self.N = N
         self.beta = beta
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -49,8 +49,8 @@ class VNIFGSM(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         momentum = torch.zeros_like(images).detach().to(self.device)
 
@@ -63,10 +63,10 @@ class VNIFGSM(Attack):
         for _ in range(self.steps):
             adv_images.requires_grad = True
             nes_images = adv_images + self.decay * self.alpha * momentum
-            outputs = self.model(nes_images)
+            outputs = self.get_logits(nes_images)
 
             # Calculate loss
-            if self._targeted:
+            if self.targeted:
                 cost = -loss(outputs, target_labels)
             else:
                 cost = loss(outputs, labels)
@@ -85,10 +85,10 @@ class VNIFGSM(Attack):
                 neighbor_images = adv_images.detach() + \
                                   torch.randn_like(images).uniform_(-self.eps*self.beta, self.eps*self.beta)
                 neighbor_images.requires_grad = True
-                outputs = self.model(neighbor_images)
+                outputs = self.get_logits(neighbor_images)
 
                 # Calculate loss
-                if self._targeted:
+                if self.targeted:
                     cost = -loss(outputs, target_labels)
                 else:
                     cost = loss(outputs, labels)

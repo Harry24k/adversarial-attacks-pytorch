@@ -37,7 +37,7 @@ class SparseFool(Attack):
         self.lam = lam
         self.overshoot = overshoot
         self.deepfool = DeepFool(model)
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
@@ -61,7 +61,7 @@ class SparseFool(Attack):
                 label = labels[idx:idx+1]
                 adv_image = adv_images[idx]
 
-                fs = self.model(adv_image)[0]
+                fs = self.get_logits(adv_image)[0]
                 _, pre = torch.max(fs, dim=0)
                 if pre != label:
                     correct[idx] = False
@@ -72,7 +72,7 @@ class SparseFool(Attack):
                 adv_image = image + self.lam*(adv_image - image)
 
                 adv_image.requires_grad = True
-                fs = self.model(adv_image)[0]
+                fs = self.get_logits(adv_image)[0]
                 _, pre = torch.max(fs, dim=0)
 
                 if pre == label:

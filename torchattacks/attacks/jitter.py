@@ -39,7 +39,7 @@ class Jitter(Attack):
         self.random_start = random_start
         self.scale = scale
         self.std = std
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -48,8 +48,8 @@ class Jitter(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         loss = nn.MSELoss(reduction='none')
 
@@ -62,7 +62,7 @@ class Jitter(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            logits = self.model(adv_images)
+            logits = self.get_logits(adv_images)
 
             _, pre = torch.max(logits, dim=1)
             wrong = (pre != labels)
@@ -74,7 +74,7 @@ class Jitter(Attack):
                 hat_z = hat_z + self.std*torch.randn_like(hat_z)
 
             # Calculate loss
-            if self._targeted:
+            if self.targeted:
                 target_Y = F.one_hot(target_labels, num_classes=logits.shape[-1]).float()
                 cost = -loss(hat_z, target_Y).mean(dim=1)
             else:

@@ -70,7 +70,7 @@ class LGV(Attack):
             raise ValueError('epochs should be a non-negative integer')
         if not isinstance(nb_models_epoch, int) or nb_models_epoch < 0:
             raise ValueError('nb_models_epoch should be a non-negative integer')
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
         self.list_models = []
         self.base_attack = None  # will be initialized after model collection
 
@@ -92,7 +92,7 @@ class LGV(Attack):
                 if torch.cuda.is_available():
                     input = input.to('cuda', non_blocking=True)
                     target = target.to('cuda', non_blocking=True)
-                pred = self.model(input)
+                pred = self.get_logits(input)
                 loss = loss_fn(pred, target)
                 optimizer.zero_grad()
                 loss.backward()
@@ -151,17 +151,17 @@ class LGV(Attack):
                                            batchnorm_training=self._batchnorm_training,
                                            dropout_training=self._dropout_training)
         # set targeted to base attack
-        if self._targeted:
-            if self._attack_mode == 'targeted':
+        if self.targeted:
+            if self.attack_mode == 'targeted':
                 self.base_attack.set_mode_targeted_by_function(target_map_function=self._target_map_function)
-            elif self._attack_mode == "targeted(least-likely)":
+            elif self.attack_mode == "targeted(least-likely)":
                 self.base_attack.set_mode_targeted_least_likely(kth_min=self._kth_min)
-            elif self._attack_mode == "targeted(random)":
+            elif self.attack_mode == "targeted(random)":
                 self.base_attack.set_mode_targeted_random()
             else:
                 raise NotImplementedError('Targeted attack mode not supported by LGV.')
         # set return type to base attack
-        self.base_attack.set_return_type(self._return_type)
+        self.base_attack.set_return_type(self.return_type)
 
         adv_images = self.base_attack(images, labels)
         return adv_images

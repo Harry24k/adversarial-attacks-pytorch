@@ -50,7 +50,7 @@ class FAB(Attack):
     """
     def __init__(self, model, norm='Linf', eps=None, steps=100, n_restarts=1,
                  alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
-                 targeted=False, n_classes=10):
+                 n_classes=10):
         super().__init__("FAB", model)
         self.norm = norm
         self.n_restarts = n_restarts
@@ -60,12 +60,11 @@ class FAB(Attack):
         self.eta = eta
         self.beta = beta
         self.steps = steps
-        self.targeted = False
         self.verbose = verbose
         self.seed = seed
         self.target_class = None
         self.n_target_classes = n_classes - 1
-        self._supported_mode = ['default']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -79,7 +78,7 @@ class FAB(Attack):
 
     def _get_predicted_label(self, x):
         with torch.no_grad():
-            outputs = self.model(x)
+            outputs = self.get_logits(x)
         _, y = torch.max(outputs, dim=1)
         return y
 
@@ -89,7 +88,7 @@ class FAB(Attack):
     def get_diff_logits_grads_batch(self, imgs, la):
         im = imgs.clone().requires_grad_()
         with torch.enable_grad():
-            y = self.model(im)
+            y = self.get_logits(im)
 
         g2 = torch.zeros([y.shape[-1], *imgs.size()]).to(self.device)
         grad_mask = torch.zeros_like(y)
@@ -101,7 +100,7 @@ class FAB(Attack):
             g2[counter] = im.grad.data
 
         g2 = torch.transpose(g2, 0, 1).detach()
-        # y2 = self.model(imgs).detach()
+        # y2 = self.get_logits(imgs).detach()
         y2 = y.detach()
         df = y2 - y2[torch.arange(imgs.shape[0]), la].unsqueeze(1)
         dg = g2 - g2[torch.arange(imgs.shape[0]), la].unsqueeze(1)
@@ -113,7 +112,7 @@ class FAB(Attack):
         u = torch.arange(imgs.shape[0])
         im = imgs.clone().requires_grad_()
         with torch.enable_grad():
-            y = self.model(im)
+            y = self.get_logits(im)
             diffy = -(y[u, la] - y[u, la_target])
             sumdiffy = diffy.sum()
 
@@ -330,8 +329,8 @@ class FAB(Attack):
             return x
         pred = self.check_shape(pred.nonzero().squeeze())
 
-        output = self.model(x)
-        la_target = output.sort(dim=-1)[1][:, -self.target_class]
+        output = self.get_logits(x)
+        la_target = self.target_class # output.sort(dim=-1)[1][:, -self.target_class]
 
         startt = time.time()
         # runs the attack only on correctly classified points
@@ -490,7 +489,7 @@ class FAB(Attack):
     def perturb(self, x, y):
         adv = x.clone()
         with torch.no_grad():
-            acc = self.model(x).max(1)[1] == y
+            acc = self.get_logits(x).max(1)[1] == y
 
             startt = time.time()
 
@@ -505,7 +504,7 @@ class FAB(Attack):
                         x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()
                         adv_curr = self.attack_single_run(x_to_fool, y_to_fool, use_rand_start=(counter > 0))
 
-                        acc_curr = self.model(adv_curr).max(1)[1] == y_to_fool
+                        acc_curr = self.get_logits(adv_curr).max(1)[1] == y_to_fool
                         if self.norm == 'Linf':
                             res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]
                         elif self.norm == 'L2':
@@ -521,29 +520,28 @@ class FAB(Attack):
                                 counter, acc.float().mean(), self.eps, time.time() - startt))
 
             else:
-                for target_class in range(2, self.n_target_classes + 2):
-                    self.target_class = target_class
-                    for counter in range(self.n_restarts):
-                        ind_to_fool = acc.nonzero().squeeze()
-                        if len(ind_to_fool.shape) == 0: ind_to_fool = ind_to_fool.unsqueeze(0)
-                        if ind_to_fool.numel() != 0:
-                            x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()
-                            adv_curr = self.attack_single_run_targeted(x_to_fool, y_to_fool, use_rand_start=(counter > 0))
+                self.target_class = self.get_target_label(x, y)
+                for counter in range(self.n_restarts):
+                    ind_to_fool = acc.nonzero().squeeze()
+                    if len(ind_to_fool.shape) == 0: ind_to_fool = ind_to_fool.unsqueeze(0)
+                    if ind_to_fool.numel() != 0:
+                        x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()
+                        adv_curr = self.attack_single_run_targeted(x_to_fool, y_to_fool, use_rand_start=(counter > 0))
 
-                            acc_curr = self.model(adv_curr).max(1)[1] == y_to_fool
-                            if self.norm == 'Linf':
-                                res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]
-                            elif self.norm == 'L2':
-                                res = ((x_to_fool - adv_curr) ** 2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()
-                            acc_curr = torch.max(acc_curr, res > self.eps)
+                        acc_curr = self.get_logits(adv_curr).max(1)[1] == y_to_fool
+                        if self.norm == 'Linf':
+                            res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]
+                        elif self.norm == 'L2':
+                            res = ((x_to_fool - adv_curr) ** 2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()
+                        acc_curr = torch.max(acc_curr, res > self.eps)
 
-                            ind_curr = (acc_curr == 0).nonzero().squeeze()
-                            acc[ind_to_fool[ind_curr]] = 0
-                            adv[ind_to_fool[ind_curr]] = adv_curr[ind_curr].clone()
+                        ind_curr = (acc_curr == 0).nonzero().squeeze()
+                        acc[ind_to_fool[ind_curr]] = 0
+                        adv[ind_to_fool[ind_curr]] = adv_curr[ind_curr].clone()
 
-                            if self.verbose:
-                                print('restart {} - target_class {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s'.format(
-                                    counter, self.target_class, acc.float().mean(), self.eps, time.time() - startt))
+                        if self.verbose:
+                            print('restart {} - target_class {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s'.format(
+                                counter, self.target_class, acc.float().mean(), self.eps, time.time() - startt))
 
         return adv
 

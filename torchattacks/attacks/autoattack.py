@@ -43,7 +43,7 @@ class AutoAttack(Attack):
         self.n_classes = n_classes
         self.seed = seed
         self.verbose = verbose
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
         if version == 'standard':  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
             self.autoattack = MultiAttack([

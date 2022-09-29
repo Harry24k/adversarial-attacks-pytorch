@@ -52,7 +52,7 @@ class TIFGSM(Attack):
         self.len_kernel = len_kernel
         self.nsig = nsig
         self.stacked_kernel = torch.from_numpy(self.kernel_generation())
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -61,8 +61,8 @@ class TIFGSM(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
         momentum = torch.zeros_like(images).detach().to(self.device)
@@ -77,10 +77,10 @@ class TIFGSM(Attack):
 
         for _ in range(self.steps):
             adv_images.requires_grad = True
-            outputs = self.model(self.input_diversity(adv_images))
+            outputs = self.get_logits(self.input_diversity(adv_images))
 
             # Calculate loss
-            if self._targeted:
+            if self.targeted:
                 cost = -loss(outputs, target_labels)
             else:
                 cost = loss(outputs, labels)

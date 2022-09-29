@@ -42,7 +42,7 @@ class UPGD(Attack):
         self.loss = loss
         self.decay = decay
         self.eot_iter = eot_iter
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -51,8 +51,8 @@ class UPGD(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         momentum = torch.zeros_like(images).detach().to(self.device)
 
@@ -69,7 +69,7 @@ class UPGD(Attack):
 
             for j in range(self.eot_iter):
                 # Calculate loss
-                if self._targeted:
+                if self.targeted:
                     cost = self.get_loss(adv_images, labels, target_labels)
                 else:
                     cost = self.get_loss(adv_images, labels)
@@ -101,18 +101,18 @@ class UPGD(Attack):
 
     def ce_loss(self, images, labels, target_labels):
         loss = nn.CrossEntropyLoss()
-        outputs = self.model(images)
+        outputs = self.get_logits(images)
 
-        if self._targeted:
+        if self.targeted:
             cost = -loss(outputs, target_labels)
         else:
             cost = loss(outputs, labels)
         return cost
 
     def dlr_loss(self, images, labels, target_labels):
-        outputs = self.model(images)
+        outputs = self.get_logits(images)
         outputs_sorted, ind_sorted = outputs.sort(dim=1)
-        if self._targeted:
+        if self.targeted:
             cost = -(outputs[np.arange(outputs.shape[0]), labels] - outputs[np.arange(outputs.shape[0]), target_labels]) \
                 / (outputs_sorted[:, -1] - .5 * outputs_sorted[:, -3] - .5 * outputs_sorted[:, -4] + 1e-12)
         else:
@@ -123,8 +123,8 @@ class UPGD(Attack):
 
     # f-function in the paper
     def margin_loss(self, images, labels, target_labels):
-        outputs = self.model(images)
-        if self._targeted:
+        outputs = self.get_logits(images)
+        if self.targeted:
             one_hot_labels = torch.eye(len(outputs[0]))[target_labels].to(self.device)
             i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
             j = torch.masked_select(outputs, one_hot_labels.bool())

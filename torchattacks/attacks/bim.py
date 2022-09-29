@@ -36,7 +36,7 @@ class BIM(Attack):
             self.steps = int(min(eps*255 + 4, 1.25*eps*255))
         else:
             self.steps = steps
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -45,8 +45,8 @@ class BIM(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
 
@@ -54,10 +54,10 @@ class BIM(Attack):
 
         for _ in range(self.steps):
             images.requires_grad = True
-            outputs = self.model(images)
+            outputs = self.get_logits(images)
 
             # Calculate loss
-            if self._targeted:
+            if self.targeted:
                 cost = -loss(outputs, target_labels)
             else:
                 cost = loss(outputs, labels)

@@ -51,7 +51,7 @@ class APGDT(Attack):
         self.verbose = verbose
         self.target_class = None
         self.n_target_classes = n_classes - 1
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels):
         r"""
@@ -99,14 +99,14 @@ class APGDT(Attack):
         loss_best_steps = torch.zeros([self.steps + 1, x.shape[0]])
         acc_steps = torch.zeros_like(loss_best_steps)
         
-        output = self.model(x)
+        output = self.get_logits(x)
         y_target = output.sort(dim=1)[1][:, -self.target_class]
         
         x_adv.requires_grad_()
         grad = torch.zeros_like(x)
         for _ in range(self.eot_iter):
             with torch.enable_grad():
-                logits = self.model(x_adv) # 1 forward pass (eot_iter = 1)
+                logits = self.get_logits(x_adv) # 1 forward pass (eot_iter = 1)
                 loss_indiv = self.dlr_loss_targeted(logits, y, y_target)
                 loss = loss_indiv.sum()
             
@@ -159,7 +159,7 @@ class APGDT(Attack):
             grad = torch.zeros_like(x)
             for _ in range(self.eot_iter):
                 with torch.enable_grad():
-                    logits = self.model(x_adv) # 1 forward pass (eot_iter = 1)
+                    logits = self.get_logits(x_adv) # 1 forward pass (eot_iter = 1)
                     loss_indiv = self.dlr_loss_targeted(logits, y, y_target)
                     loss = loss_indiv.sum()
                 
@@ -213,7 +213,7 @@ class APGDT(Attack):
         y = y_in.clone() if len(y_in.shape) == 1 else y_in.clone().unsqueeze(0)
         
         adv = x.clone()
-        acc = self.model(x).max(1)[1] == y
+        acc = self.get_logits(x).max(1)[1] == y
         loss = -1e10 * torch.ones_like(acc).float()
         if self.verbose:
             print('-------------------------- running {}-attack with epsilon {:.4f} --------------------------'.format(self.norm, self.eps))

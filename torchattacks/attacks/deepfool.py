@@ -30,7 +30,7 @@ class DeepFool(Attack):
         super().__init__("DeepFool", model)
         self.steps = steps
         self.overshoot = overshoot
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels, return_target_labels=False):
         r"""
@@ -68,7 +68,7 @@ class DeepFool(Attack):
 
     def _forward_indiv(self, image, label):
         image.requires_grad = True
-        fs = self.model(image)[0]
+        fs = self.get_logits(image)[0]
         _, pre = torch.max(fs, dim=0)
         if pre != label:
             return (True, pre, image)

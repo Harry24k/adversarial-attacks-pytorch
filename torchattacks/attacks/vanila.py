@@ -21,7 +21,7 @@ class VANILA(Attack):
     """
     def __init__(self, model):
         super().__init__("VANILA", model)
-        self._supported_mode = ['default']
+        self.supported_mode = ['default']
 
     def forward(self, images, labels=None):
         r"""

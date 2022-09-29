@@ -10,7 +10,7 @@ class Attack(object):
     .. note::
         It automatically set device to the device where given model is.
         It basically changes training mode to eval during attack process.
-        To change this, please see `set_training_mode`.
+        To change this, please see `set_model_training_mode`.
     """
     def __init__(self, name, model):
         r"""
@@ -24,46 +24,82 @@ class Attack(object):
         self.attack = name
         self.model = model
         self.model_name = str(model).split("(")[0]
+
         self.device = next(model.parameters()).device
+        self.return_type = 'float'
 
-        self._attack_mode = 'default'
-        self._targeted = False
+        # Controls attack mode.
+        self.attack_mode = 'default'
+        self.supported_mode = ['default']
+        self.targeted = False
         self._target_map_function = None
-        self._return_type = 'float'
-        self._supported_mode = ['default']
 
+        # Controls when normalization is used.
+        self.normalization_used = None
+
+        # Controls model mode during attack.
         self._model_training = False
         self._batchnorm_training = False
         self._dropout_training = False
 
-    def forward(self, *input, **kwargs):
+    def forward(self, inputs, labels=None, *args, **kwargs):
         r"""
         It defines the computation performed at every call.
         Should be overridden by all subclasses.
         """
         raise NotImplementedError
 
+    def get_logits(self, inputs, labels=None, *args, **kwargs):
+        inputs = self.normalize(inputs)
+        logits = self.model(inputs)
+        return logits
+
+    def set_device(self, device):
+        self.device = device
+
+    def set_normalization_used(self, mean, std):
+        self.normalization_used = {}
+        n_channels = len(mean)
+        mean = torch.tensor(mean).reshape(1, n_channels, 1, 1)
+        std = torch.tensor(std).reshape(1, n_channels, 1, 1)
+        self.normalization_used['mean'] = mean
+        self.normalization_used['std'] = std
+
+    def normalize(self, inputs):
+        if self.normalization_used is not None:
+            mean = self.normalization_used['mean'].to(inputs.device)
+            std = self.normalization_used['std'].to(inputs.device)
+            return (inputs - mean) / std
+        return inputs
+
+    def inverse_normalize(self, inputs):
+        if self.normalization_used is not None:
+            mean = self.normalization_used['mean'].to(inputs.device)
+            std = self.normalization_used['std'].to(inputs.device)
+            return inputs*std + mean
+        return inputs
+
     def get_mode(self):
         r"""
         Get attack mode.
 
         """
-        return self._attack_mode
+        return self.attack_mode
 
     def set_mode_default(self):
         r"""
         Set attack mode as default mode.
 
         """
-        self._attack_mode = 'default'
-        self._targeted = False
+        self.attack_mode = 'default'
+        self.targeted = False
         print("Attack mode is changed to 'default.'")
 
     def _set_mode_targeted(self, mode):
-        if "targeted" not in self._supported_mode:
+        if "targeted" not in self.supported_mode:
             raise ValueError("Targeted mode is not supported.")
-        self._targeted = True
-        self._attack_mode = mode
+        self.targeted = True
+        self.attack_mode = mode
         print("Attack mode is changed to '%s'."%mode)
 
     def set_mode_targeted_by_function(self, target_map_function):
@@ -117,9 +153,9 @@ class Attack(object):
 
         """
         if type == 'float':
-            self._return_type = 'float'
+            self.return_type = 'float'
         elif type == 'int':
-            self._return_type = 'int'
+            self.return_type = 'int'
         else:
             raise ValueError(type + " is not a valid type. [Options: float, int]")
 
@@ -127,9 +163,9 @@ class Attack(object):
         r"""
         Get the return type of adversarial images: `int` or `float`.
         """
-        return self._return_type
+        return self.return_type
 
-    def set_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
+    def set_model_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
         r"""
         Set training mode during attack process.
 
@@ -145,6 +181,23 @@ class Attack(object):
         self._model_training = model_training
         self._batchnorm_training = batchnorm_training
         self._dropout_training = dropout_training
+
+    def _change_model_mode(self, given_training):
+        if self._model_training:
+            self.model.train()
+            for _, m in self.model.named_modules():
+                if not self._batchnorm_training:
+                    if 'BatchNorm' in m.__class__.__name__:
+                        m = m.eval()
+                if not self._dropout_training:
+                    if 'Dropout' in m.__class__.__name__:
+                        m = m.eval()
+        else:
+            self.model.eval()
+
+    def _recover_model_mode(self, given_training):
+        if given_training:
+            self.model.train()
 
     def save(self, data_loader, save_path=None, verbose=True, return_verbose=False,
              save_predictions=False, save_clean_images=False, save_type='float'):
@@ -266,7 +319,7 @@ class Attack(object):
         given_training = self.model.training
         if given_training:
             self.model.eval()
-        outputs = self.model(images)
+        outputs = self.get_logits(images)
         if given_training:
             self.model.train()
         return outputs
@@ -328,10 +381,23 @@ class Attack(object):
             raise ValueError(type + " is not a valid type. [Options: float, int]")
         return images
 
-    def __str__(self):
+    def __call__(self, inputs, labels, *args, **kwargs):
+        given_training = self.model.training
+        self._change_model_mode(given_training)
+
+        inputs = self.inverse_normalize(inputs)
+        adv_images = self.forward(inputs, labels, *args, **kwargs)
+        adv_images = self.to_type(adv_images, self.return_type)
+        adv_images = self.normalize(adv_images)
+
+        self._recover_model_mode(given_training)
+
+        return adv_images
+
+    def __repr__(self):
         info = self.__dict__.copy()
 
-        del_keys = ['model', 'attack']
+        del_keys = ['model', 'attack', 'supported_mode']
 
         for key in info.keys():
             if key[0] == "_":
@@ -340,31 +406,8 @@ class Attack(object):
         for key in del_keys:
             del info[key]
 
-        info['attack_mode'] = self._attack_mode
-        info['return_type'] = self._return_type
+        info['attack_mode'] = self.attack_mode
+        info['return_type'] = self.return_type
+        info['normalization_used'] = True if self.normalization_used is not None else False
 
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
-
-    def __call__(self, *input, **kwargs):
-        given_training = self.model.training
-
-        if self._model_training:
-            self.model.train()
-            for _, m in self.model.named_modules():
-                if not self._batchnorm_training:
-                    if 'BatchNorm' in m.__class__.__name__:
-                        m = m.eval()
-                if not self._dropout_training:
-                    if 'Dropout' in m.__class__.__name__:
-                        m = m.eval()
-        else:
-            self.model.eval()
-
-        adv_images = self.forward(*input, **kwargs)
-
-        if given_training:
-            self.model.train()
-
-        adv_images = self.to_type(adv_images, self._return_type)
-
-        return adv_images

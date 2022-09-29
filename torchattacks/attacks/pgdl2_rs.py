@@ -56,7 +56,7 @@ class PGDL2_RS(Attack):
         self.noise_func = Noise(noise_type, noise_sd)
         self.noise_batch_size = noise_batch_size
         self.eps_for_division = eps_for_division
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
         self.batch_max = batch_max
 
     def forward(self, inputs: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
@@ -87,8 +87,8 @@ class PGDL2_RS(Attack):
         delta = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device)
         delta_last = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=False, device=self.device)
 
-        if self._targeted:
-            target_labels = self._get_target_label(images, labels)
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
 
         for _ in range(self.steps):
             delta.requires_grad = True
@@ -100,13 +100,13 @@ class PGDL2_RS(Attack):
             noise_added = noise_added.view(img_adv.shape)
 
             adv_noise = img_adv + noise_added
-            logits = self.model(adv_noise)
+            logits = self.get_logits(adv_noise)
 
             softmax = F.softmax(logits, dim=1)
             # average the probabilities across noise
             average_softmax = softmax.reshape(-1, self.noise_batch_size, logits.shape[-1]).mean(1, keepdim=True).squeeze(1)
             logsoftmax = torch.log(average_softmax.clamp(min=1e-20))
-            ce_loss = F.nll_loss(logsoftmax, labels) if not self._targeted else -F.nll_loss(logsoftmax, target_labels)
+            ce_loss = F.nll_loss(logsoftmax, labels) if not self.targeted else -F.nll_loss(logsoftmax, target_labels)
 
             grad = torch.autograd.grad(ce_loss, delta, retain_graph=False, create_graph=False)[0]
             grad_norms = torch.norm(grad.view(data_batch_size, -1), p=2, dim=1) + self.eps_for_division

@@ -71,7 +71,7 @@ class Pixle(Attack):
         self.p1_x_dimensions = x_dimensions
         self.p1_y_dimensions = y_dimensions
 
-        self._supported_mode = ['default', 'targeted']
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         if not self.update_each_iteration:
@@ -83,8 +83,8 @@ class Pixle(Attack):
         if len(images.shape) == 3:
             images = images.unsqueeze(0)
 
-        if self._targeted:
-            labels = self._get_target_label(images, labels)
+        if self.targeted:
+            labels = self.get_target_label(images, labels)
 
         x_bounds = tuple(
             [max(1, d if isinstance(d, int) else round(images.size(3) * d))
@@ -108,7 +108,7 @@ class Pixle(Attack):
             pert_image = image.clone()
 
             loss, callback = self._get_fun(image, label,
-                                           target_attack=self._targeted)
+                                           target_attack=self.targeted)
             best_solution = None
 
             best_p = loss(solution=image, solution_as_perturbed=True)
@@ -172,8 +172,8 @@ class Pixle(Attack):
         if len(images.shape) == 3:
             images = images.unsqueeze(0)
 
-        if self._targeted:
-            labels = self._get_target_label(images, labels)
+        if self.targeted:
+            labels = self.get_target_label(images, labels)
 
         x_bounds = tuple(
             [max(1, d if isinstance(d, int) else round(images.size(3) * d))
@@ -196,7 +196,7 @@ class Pixle(Attack):
             best_image = image.clone()
 
             loss, callback = self._get_fun(image, label,
-                                           target_attack=self._targeted)
+                                           target_attack=self.targeted)
 
             best_p = loss(solution=image, solution_as_perturbed=True)
             image_probs = [best_p]
@@ -237,7 +237,7 @@ class Pixle(Attack):
         return adv_images
 
     def _get_prob(self, image):
-        out = self.model(image.to(self.device))
+        out = self.get_logits(image.to(self.device))
         prob = softmax(out, dim=1)
         return prob.detach().cpu().numpy()
 
