@@ -1,13 +1,13 @@
+__pycache__
+.ipynb_checkpoints/*
+
 build/*
 dist/*
 autoattack/*
 torchattacks.egg-info/*
 data/*
 models/*
-demos/data/MNIST/*
-demos/data/cifar*
 */.*
-__pycache__
 _build
 MENIFEST.in
 setup.cfg
@@ -19,10 +19,9 @@ debug.log
 _*
 sample.pth
 _old/*
-.ipynb_checkpoints/*
-TODO.txt
+
 demos/_*
-Performance Comparison (CIFAR10).ipynb
-utils.py
+demos/data/MNIST/*
+demos/data/cifar*
 demos/models/*
-a.pt
+TODO.txt
