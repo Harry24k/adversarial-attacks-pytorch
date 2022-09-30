@@ -1,2 +1,3 @@
 # torch>=1.4.0  # It forces to update torch to LTS version.
 scipy>=1.6.2
+tqdm~=4.56.1
