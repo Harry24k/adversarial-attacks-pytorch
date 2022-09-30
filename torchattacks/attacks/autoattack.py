@@ -49,7 +49,7 @@ class AutoAttack(Attack):
             self.autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=1),
                 APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, targeted=True, n_classes=n_classes, n_restarts=1),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
                 Square(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_queries=5000, n_restarts=1),
             ])
 
@@ -60,7 +60,7 @@ class AutoAttack(Attack):
                 FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=5),
                 Square(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_queries=5000, n_restarts=1),
                 APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, targeted=True, n_classes=n_classes, n_restarts=1),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
             ])
 
         elif version == 'rand':  # ['apgd-ce', 'apgd-dlr']
