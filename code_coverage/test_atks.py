@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import torchattacks
 from robustbench.data import load_cifar10
-from robustbench.data import load_model, clean_accuracy
+from robustbench.utils import load_model, clean_accuracy
 
 def get_model(model_name='Standard', device="cpu"):
     model = load_model(model_name, norm='Linf')
