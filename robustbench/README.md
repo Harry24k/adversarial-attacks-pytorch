@@ -7,3 +7,5 @@ For faster coverage computation, remove some modules.
     * Remove sodef_layers.
     
     * Remove xcit.
+
+    * Disable eval.py for removing autoattack.
