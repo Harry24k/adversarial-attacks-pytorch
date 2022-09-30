@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2104.01086",
+  "name": "Defending Against Image Corruptions Through Adversarial Augmentations",
+  "authors": "Dan A. Calian, Florian Stimberg, Olivia Wiles, Sylvestre-Alvise Rebuffi, Andras Gyorgy, Timothy Mann, Sven Gowal",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Apr 2021",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "94.93",
+  "reported": "92.17",
+  "corruptions_acc": "92.17",
+  "footnote": "Uses extra data indirectly via a super resolution and autoencoder networks that were pre-trained on other datasets."
+}

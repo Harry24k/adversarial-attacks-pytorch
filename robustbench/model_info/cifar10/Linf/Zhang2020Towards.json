@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/1906.06316",
+  "name": "Towards Stable and Efficient Training of Verifiably Robust Neural Networks",
+  "authors": "Huan Zhang, Hongge Chen, Chaowei Xiao, Sven Gowal, Robert Stanforth, Bo Li, Duane Boning, Cho-Jui Hsieh",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2020",
+  "architecture": "5-layer-CNN",
+  "eps": "8/255",
+  "clean_acc": "44.73",
+  "reported": "34.29",
+  "autoattack_acc": "32.64",
+  "footnote": "Verifiably robust model with 32.24% provable robust accuracy"
+}

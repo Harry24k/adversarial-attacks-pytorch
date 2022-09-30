@@ -1,0 +1,16 @@
+{
+    "link": "https://arxiv.org/abs/2104.09425",
+    "name": "Robust Learning Meets Generative Models: Can Proxy Distributions Improve Adversarial Robustness?",
+    "authors": "Vikash Sehwag, Saeed Mahloujifar, Tinashe Handina, Sihui Dai, Chong Xiang, Mung Chiang, Prateek Mittal",
+    "additional_data": false,
+    "number_forward_passes": 1,
+    "dataset": "cifar10",
+    "venue": "ICLR 2022",
+    "architecture": "ResNest152",
+    "eps": "8/255",
+    "clean_acc": "87.30",
+    "reported": "62.79",
+    "autoattack_acc": "62.79",
+    "footnote": "It uses additional 10M synthetic images in training.",
+    "unreliable": false
+}

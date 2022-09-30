@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2110.03825",
+  "name": "Exploring Architectural Ingredients of Adversarially Robust Deep Neural Networks",
+  "authors": "Hanxun Huang, Yisen Wang, Sarah Monazam Erfani, Quanquan Gu, James Bailey, Xingjun Ma",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2021",
+  "architecture": "WideResNet-34-R",
+  "eps": "8/255",
+  "clean_acc": "90.56",
+  "reported": "61.56",
+  "autoattack_acc": "61.56",
+  "unreliable": false
+
+}

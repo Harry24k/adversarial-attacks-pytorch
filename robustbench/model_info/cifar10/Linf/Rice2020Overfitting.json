@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2002.11569",
+  "name": "Overfitting in adversarially robust deep learning",
+  "authors": "Leslie Rice, Eric Wong, J. Zico Kolter",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICML 2020",
+  "architecture": "WideResNet-34-20",
+  "eps": "8/255",
+  "clean_acc": "85.34",
+  "reported": "58",
+  "autoattack_acc": "53.42",
+  "unreliable": false
+}

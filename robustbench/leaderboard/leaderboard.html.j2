@@ -1,0 +1,82 @@
+<table id="{{ dataset }}_leaderboard_{{ threat_model }}" class="datatable" style="width: 100%">
+    <thead>
+    <tr>
+        <th class="rank">Rank</th>
+        <th class="method">Method</th>
+        <th class="ca">
+            Standard<br/>
+            accuracy
+        </th>
+        {% if threat_model != "corruptions" %}
+        <th class="aa">
+            AutoAttack<br/>
+            robust<br/>
+            accuracy
+        </th>
+        <th class="aa-ext">
+            Best known<br/>
+            robust<br/>
+            accuracy
+        </th>
+        <th class="aa-ext">
+            AA eval.<br/>
+            potentially<br/>
+            unreliable
+        </th>
+        {% endif %}
+        {% if threat_model == "corruptions" %}
+        <th class="aa">
+            Robust <br/>
+            accuracy
+        </th>
+        {% endif %}
+        <th class="extra-data">Extra <br/>data</th>
+        <th class="arch">Architecture</th>
+        <th class="venue">Venue</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for model in models %}
+    <tr>
+        <td class="ranktd">{{ loop.index }}</td>
+        <td class="methoddt">
+            <a href="{{ model.link }}" target="_blank">{{ model.name }}</a>
+            {% if model.footnote is defined and model.footnote != None %}
+            <br>
+            <span class="td-footer">
+                {{ model.footnote }}
+            </span>
+            {% endif %}
+        </td>
+        <td class="catd">{{ model.clean_acc }}%</td>
+        <td class="aatd">{{ model[acc_field] }}%</td>
+        {% if threat_model != "corruptions" %}
+        <td class="aa-extd">{{ model.external if model.external is defined and model.external else model[acc_field]}}%</td>
+        <td class="flagsd">{{ "Unknown" if model.unreliable is not defined else ("<div class=\"flagsd-emoji\">&#9745;</div>" if model.unreliable else "<div class=\"flagsd-emoji\">&#215;</div>") }}</td>
+        {% endif %}
+        <td class="datatd">{{ "&#9745;" if model.additional_data else "&#215;" }}</td>
+        <td class="archtd">{{ model.architecture }}</td>
+        <td class="venuetd">{{ model.venue }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $("#{{ dataset }}_leaderboard_{{ threat_model }}").DataTable({
+            lengthMenu: [15, 25, 50, 75, 100],
+            "drawCallback": function (settings) {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            },
+            language: {
+                searchPlaceholder: "Papers, architectures, venues"
+            },
+            {% if threat_model != "corruptions" %}
+            columnDefs: [
+                { width: "15%", targets: 4 },
+                { width: "15%", targets: 5 }
+            ]
+            {% endif %}
+        });
+    });
+</script>

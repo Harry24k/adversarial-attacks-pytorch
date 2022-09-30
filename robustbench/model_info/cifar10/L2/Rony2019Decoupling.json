@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/1811.09600",
+  "name": "Decoupling Direction and Norm for Efficient Gradient-Based L2 Adversarial Attacks and Defenses",
+  "authors": "J\u00e9r\u00f4me Rony, Luiz G. Hafemann, Luiz S. Oliveira, Ismail Ben Ayed, Robert Sabourin, Eric Granger",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "CVPR 2019",
+  "architecture": "WideResNet-28-10",
+  "eps": "0.5",
+  "clean_acc": "89.05",
+  "reported": "67.6",
+  "autoattack_acc": "66.44"
+}

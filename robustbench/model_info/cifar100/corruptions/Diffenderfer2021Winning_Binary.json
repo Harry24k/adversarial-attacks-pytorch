@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2106.09129",
+  "name": "A Winning Hand: Compressing Deep Networks Can Improve Out-Of-Distribution Robustness",
+  "authors": "James Diffenderfer, Brian R. Bartoldson, Shreya Chaganti, Jize Zhang, Bhavya Kailkhura",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "NeurIPS 2021",
+  "architecture": "WideResNet-18-2",
+  "eps": null,
+  "clean_acc": "77.69",
+  "reported": "65.26",
+  "corruptions_acc": "65.26",
+  "footnote": "Binary weight network trained with AugMix and pruned to 95% sparsity"
+}

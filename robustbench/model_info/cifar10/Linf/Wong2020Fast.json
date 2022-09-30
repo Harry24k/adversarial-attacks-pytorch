@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2001.03994",
+  "name": "Fast is better than free: Revisiting adversarial training",
+  "authors": "Eric Wong, Leslie Rice, J. Zico Kolter",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2020",
+  "architecture": "PreActResNet-18",
+  "eps": "8/255",
+  "clean_acc": "83.34",
+  "reported": "46.06",
+  "footnote": "Focuses on fast adversarial training.",
+  "autoattack_acc": "43.21"
+}

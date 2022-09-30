@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2011.11164",
+  "name": "Learnable Boundary Guided Adversarial Training",
+  "authors": "Jiequan Cui, Shu Liu, Liwei Wang, Jiaya Jia",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "ICCV 2021",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "70.25",
+  "reported": "27.16",
+  "autoattack_acc": "27.16",
+  "footnote": "Uses \\(\\ell_{\\infty} \\) = 0.031 \u2248 7.9/255 instead of 8/255",
+  "unreliable": false
+}

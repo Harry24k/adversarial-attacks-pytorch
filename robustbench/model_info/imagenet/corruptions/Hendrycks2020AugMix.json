@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/1912.02781",
+  "name": "AugMix: A Simple Data Processing Method to Improve Robustness and Uncertainty",
+  "authors": "Dan Hendrycks, Norman Mu, Ekin D. Cubuk, Barret Zoph, Justin Gilmer, Balaji Lakshminarayanan",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "ICLR 2020",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "76.98",
+  "reported": "",
+  "corruptions_acc_2d": "48.31",
+  "corruptions_acc_2d": "51.35",
+  "corruptions_acc_2d": "65.33",
+  "corruptions_acc_2d": "64.51"
+}

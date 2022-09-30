@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2002.11242",
+  "name": "Attacks Which Do Not Kill Training Make Adversarial Learning Stronger",
+  "authors": "Jingfeng Zhang, Xilie Xu, Bo Han, Gang Niu, Lizhen Cui, Masashi Sugiyama, Mohan Kankanhalli",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICML 2020",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "84.52",
+  "reported": "54.36",
+  "autoattack_acc": "53.51",
+  "unreliable": false
+}

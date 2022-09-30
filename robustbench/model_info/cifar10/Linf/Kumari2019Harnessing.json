@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/1905.05186",
+  "name": "Harnessing the Vulnerability of Latent Layers in Adversarially Trained Models",
+  "authors": "Mayank Singh, Abhishek Sinha, Nupur Kumari, Harshitha Machiraju, Balaji Krishnamurthy, Vineeth N Balasubramanian",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "IJCAI 2019",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "87.80",
+  "reported": "53.04",
+  "autoattack_acc": "49.12"
+}

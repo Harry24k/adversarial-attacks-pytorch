@@ -1,0 +1,14 @@
+{
+  "link": "http://openaccess.thecvf.com/content_ICCV_2019/html/Wang_Bilateral_Adversarial_Training_Towards_Fast_Training_of_More_Robust_Models_ICCV_2019_paper.html",
+  "name": "Bilateral Adversarial Training: Towards Fast Training of More Robust Models Against Adversarial Attacks",
+  "authors": "Jianyu Wang, Haichao Zhang",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICCV 2019",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "92.80",
+  "reported": "58.6",
+  "autoattack_acc": "29.35"
+}

@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/2112.13547",
+  "name": "PRIME: A Few Primitives Can Boost Robustness to Common Corruptions",
+  "authors": "Apostolos Modas, Rahul Rade, Guillermo Ortiz-Jiménez, Seyed-Mohsen Moosavi-Dezfooli, Pascal Frossard",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Dec 2021",
+  "architecture": "ResNet-18",
+  "eps": null,
+  "clean_acc": "93.06",
+  "reported": "89.05",
+  "corruptions_acc": "89.05"
+}

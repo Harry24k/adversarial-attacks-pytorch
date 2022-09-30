@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2010.01279",
+  "name": "Do Wider Neural Networks Really Help Adversarial Robustness?",
+  "authors": "Boxi Wu and Jinghui Chen and Deng Cai and Xiaofei He and Quanquan Gu",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Oct 2020",
+  "architecture": "WideResNet-34-15",
+  "eps": "8/255",
+  "clean_acc": "87.67",
+  "reported": "60.65",
+  "footnote": "",
+  "autoattack_acc": "60.65"
+}

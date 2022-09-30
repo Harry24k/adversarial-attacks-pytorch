@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2010.03593",
+  "name": "Uncovering the Limits of Adversarial Training against Norm-Bounded Adversarial Examples",
+  "authors": "Sven Gowal, Chongli Qin, Jonathan Uesato, Timothy Mann, Pushmeet Kohli",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Oct 2020",
+  "architecture": "WideResNet-70-16",
+  "eps": "0.5",
+  "clean_acc": "94.74",
+  "reported": "80.53",
+  "autoattack_acc": "80.53",
+  "unreliable": false
+}

@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2103.02325",
+  "name": "On the effectiveness of adversarial training against common corruptions",
+  "authors": "Klim Kireev, Maksym Andriushchenko, Nicolas Flammarion",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Mar 2021",
+  "architecture": "ResNet-18",
+  "eps": null,
+  "clean_acc": "94.75",
+  "reported": "88.5",
+  "corruptions_acc": "89.60",
+  "footnote": "Trained with RLAT and AugMix."
+}

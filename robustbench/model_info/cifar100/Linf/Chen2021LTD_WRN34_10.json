@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2111.02331",
+  "name": "LTD: Low Temperature Distillation for Robust Adversarial Training",
+  "authors": "Erh-Chung Chen, Che-Rung Lee",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "arXiv, Nov 2021",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "64.07",
+  "reported": "30.59",
+  "footnote": "",
+  "autoattack_acc": "30.59",
+  "unreliable": false
+}

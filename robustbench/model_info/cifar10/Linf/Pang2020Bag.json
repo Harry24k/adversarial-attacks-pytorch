@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2010.00467",
+  "name": "Bag of Tricks for Adversarial Training",
+  "authors": "Tianyu Pang and Xiao Yang and Yinpeng Dong and Hang Su and Jun Zhu",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2021",
+  "architecture": "WideResNet-34-20",
+  "eps": "8/255",
+  "clean_acc": "86.43",
+  "reported": "54.39",
+  "footnote": "",
+  "autoattack_acc": "54.39"
+}
