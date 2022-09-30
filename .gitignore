@@ -1,24 +1,22 @@
 __pycache__
 .ipynb_checkpoints/*
+debug.log
 
 build/*
+_build
 dist/*
-autoattack/*
 torchattacks.egg-info/*
 data/*
 models/*
 */.*
-_build
 MENIFEST.in
 setup.cfg
 setup.py
 _commit.bat
-_PGD BIM.pptx
-_deepfool.py
-debug.log
+
 _*
-sample.pth
-_old/*
+
+autoattack/*
 
 demos/_*
 demos/data/MNIST/*
