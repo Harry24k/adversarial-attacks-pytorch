@@ -14,8 +14,6 @@ setup.cfg
 setup.py
 _commit.bat
 
-_*
-
 autoattack/*
 
 demos/_*
