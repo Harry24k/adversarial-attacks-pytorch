@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/1905.10510",
+  "name": "Enhancing Adversarial Defense by k-Winners-Take-All",
+  "authors": "Chang Xiao, Peilin Zhong, Changxi Zheng",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2020",
+  "architecture": "DenseNet-121",
+  "eps": "0.031",
+  "clean_acc": "79.28",
+  "reported": "52.4",
+  "footnote": "Uses \\(\\ell_{\\infty} \\) = 0.031 \u2248 7.9/255 instead of 8/255.<br>7.40% robust accuracy is due to 1 restart of APGD-CE and 30 restarts of Square Attack<br>Note: <a href=\"https://arxiv.org/abs/2002.08347\">this adaptive evaluation</a> (Section 5) reports 0.16% robust accuracy on a different model (adversarially trained ResNet-18).",
+  "autoattack_acc": "18.50",
+  "external": "7.40",
+  "unreliable": true
+}

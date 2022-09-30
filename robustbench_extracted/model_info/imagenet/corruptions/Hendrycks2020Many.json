@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/2006.16241",
+  "name": "The Many Faces of Robustness: A Critical Analysis of Out-of-Distribution Generalization",
+  "authors": "Dan Hendrycks, Steven Basart, Norman Mu, Saurav Kadavath, Frank Wang, Evan Dorundo, Rahul Desai, Tyler Zhu, Samyak Parajuli, Mike Guo, Dawn Song, Jacob Steinhardt, Justin Gilmer",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "ICCV 2021",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "76.88",
+  "reported": "",
+  "corruptions_acc_2d": "52.65",
+  "corruptions_acc_3d": "54.13",
+  "corruptions_mce_2d": "60.32",
+  "corruptions_mce_3d": "61.02"
+}

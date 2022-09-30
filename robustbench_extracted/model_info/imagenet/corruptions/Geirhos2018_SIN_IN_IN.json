@@ -1,0 +1,18 @@
+{
+  "link": "https://arxiv.org/abs/1811.12231",
+  "name": "ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness",
+  "authors": "Robert Geirhos, Patricia Rubisch, Claudio Michaelis, Matthias Bethge, Felix A. Wichmann, Wieland Brendel",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "ICLR 2019",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "77.44",
+  "reported": "",
+  "corruptions_acc_2d": "41.72",
+  "corruptions_acc_3d": "46.92",
+  "corruptions_mce_2d": "73.52",
+  "corruptions_mce_3d": "70.11",
+  "footnote": "Model C: trained on Stylized ImageNet and standard ImageNet, then fine-tuned on standard ImageNet."
+}

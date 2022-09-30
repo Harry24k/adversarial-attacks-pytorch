@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/1905.11911",
+  "name": "Controlling Neural Level Sets",
+  "authors": "Matan Atzmon, Niv Haim, Lior Yariv, Ofer Israelov, Haggai Maron, Yaron Lipman",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2019",
+  "architecture": "ResNet-18",
+  "eps": "0.031",
+  "clean_acc": "81.30",
+  "reported": "43.17",
+  "footnote": "Uses \\(\\ell_{\\infty} \\) = 0.031 \u2248 7.9/255 instead of 8/255.",
+  "autoattack_acc": "40.22"
+}

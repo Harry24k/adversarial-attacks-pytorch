@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/2110.12976",
+  "name": "Stable Neural ODE with Lyapunov-Stable Equilibrium Points for Defending Against Adversarial Attacks",
+  "authors": "Qiyu Kang, Yang Song, Qinxu Ding, Wee Peng Tay",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2021",
+  "architecture": "WideResNet-70-16, Neural ODE block",
+  "eps": "8/255",
+  "clean_acc": "93.73",
+  "reported": "71.28",
+  "autoattack_acc": "71.28",
+  "external": "64.20",
+  "footnote": "Based on the model Rebuffi2021Fixing_70_16_cutmix_extra. 64.20% robust accuracy is due to AutoAttack + transfer APGD from Rebuffi2021Fixing_70_16_cutmix_extra",
+  "unreliable": true
+}

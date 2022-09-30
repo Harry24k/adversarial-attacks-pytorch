@@ -1,0 +1,15 @@
+{
+  "link": "https://openreview.net/forum?id=SHB_znlW5G7",
+  "name": "Towards Achieving Adversarial Robustness Beyond Perceptual Limits",
+  "authors": "Sravanti Addepalli, Samyak Jain, Gaurang Sriramanan, Shivangi Khare, Venkatesh Babu Radhakrishnan",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "OpenReview, Jun 2021",
+  "architecture": "ResNet-18",
+  "eps": "8/255",
+  "clean_acc": "80.24",
+  "reported": "51.06",
+  "autoattack_acc": "51.06",
+  "unreliable": false
+}

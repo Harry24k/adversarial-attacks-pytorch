@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2209.07399",
+  "name": "A Light Recipe to Train Robust Vision Transformers",
+  "authors": "Edoardo Debenedetti, Vikash Sehwag, Prateek Mittal",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "arXiv, Sep 2022",
+  "architecture": "XCiT-M12",
+  "eps": "8/255",
+  "clean_acc": "69.21",
+  "reported": "34.21",
+  "autoattack_acc": "34.21",
+  "unreliable": false
+}

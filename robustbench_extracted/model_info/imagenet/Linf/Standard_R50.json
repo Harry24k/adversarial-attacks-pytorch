@@ -1,0 +1,15 @@
+{
+  "link": "https://github.com/RobustBench/robustbench/",
+  "name": "Standardly trained model",
+  "authors": "Torchvision",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "N/A",
+  "architecture": "ResNet-50",
+  "eps": "4/255",
+  "clean_acc": "76.52",
+  "reported": "0.0",
+  "autoattack_acc": "0.0",
+  "unreliable": false
+}

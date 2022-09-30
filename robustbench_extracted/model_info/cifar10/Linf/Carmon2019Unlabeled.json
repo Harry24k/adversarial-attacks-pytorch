@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/1905.13736",
+  "name": "Unlabeled Data Improves Adversarial Robustness",
+  "authors": "Yair Carmon, Aditi Raghunathan, Ludwig Schmidt, Percy Liang, John C. Duchi",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2019",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "89.69",
+  "reported": "62.5",
+  "autoattack_acc": "59.53",
+  "unreliable": false
+}

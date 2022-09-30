@@ -1,0 +1,14 @@
+{
+  "link": "https://github.com/RobustBench/robustbench/",
+  "name": "Standardly trained model",
+  "authors": "",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "N/A",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "94.78",
+  "reported": "0.0",
+  "autoattack_acc": "0.0"
+}

@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/1904.00887",
+  "name": "Adversarial Defense by Restricting the Hidden Space of Deep Neural Networks",
+  "authors": "Aamir Mustafa, Salman Khan, Munawar Hayat, Roland Goecke, Jianbing Shen, Ling Shao",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICCV 2019",
+  "architecture": "ResNet-110",
+  "eps": "8/255",
+  "clean_acc": "89.16",
+  "reported": "32.32",
+  "autoattack_acc": "0.28"
+}

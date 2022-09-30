@@ -1,0 +1,14 @@
+{
+  "link": "https://openreview.net/forum?id=HkeryxBtPB",
+  "name": "MMA Training: Direct Input Space Margin Maximization through Adversarial Training",
+  "authors": "Gavin Weiguang Ding, Yash Sharma, Kry Yik Chau Lui, Ruitong Huang",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2020",
+  "architecture": "WideResNet-28-4",
+  "eps": "8/255",
+  "clean_acc": "84.36",
+  "reported": "47.18",
+  "autoattack_acc": "41.44"
+}

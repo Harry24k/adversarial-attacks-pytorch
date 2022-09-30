@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/2103.01946",
+  "name": "Fixing Data Augmentation to Improve Adversarial Robustness",
+  "authors": "Sylvestre-Alvise Rebuffi, Sven Gowal, Dan A. Calian, Florian Stimberg, Olivia Wiles, Timothy Mann",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Mar 2021",
+  "architecture": "WideResNet-70-16",
+  "eps": "8/255",
+  "clean_acc": "88.54",
+  "reported": "64.20",
+  "autoattack_acc": "64.25",
+  "external": "64.20",
+  "footnote": "It uses additional 1M synthetic images in training. 64.20% robust accuracy is due to the original evaluation (AutoAttack + MultiTargeted)",
+  "unreliable": false
+}

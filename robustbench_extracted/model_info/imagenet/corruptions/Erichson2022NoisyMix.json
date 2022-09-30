@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/pdf/2202.01263.pdf",
+  "name": "NoisyMix: Boosting Robustness by Combining Data Augmentations, Stability Training, and Noise Injections",
+  "authors": "N. Benjamin Erichson, Soon Hoe Lim, Francisco Utrera, Winnie Xu, Ziang Cao, and Michael W. Mahoney",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "arXiv, Feb 2022",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "77.14",
+  "reported": "52.25",
+  "corruptions_acc_2d": "52.25",
+  "corruptions_acc_3d": "53.10",
+  "corruptions_mce_2d": "60.70",
+  "corruptions_mce_3d": "62.33"
+}

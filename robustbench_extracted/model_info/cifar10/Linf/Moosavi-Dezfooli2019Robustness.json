@@ -1,0 +1,14 @@
+{
+  "link": "http://openaccess.thecvf.com/content_CVPR_2019/html/Moosavi-Dezfooli_Robustness_via_Curvature_Regularization_and_Vice_Versa_CVPR_2019_paper",
+  "name": "Robustness via Curvature Regularization, and Vice Versa",
+  "authors": "Seyed-Mohsen Moosavi-Dezfooli, Alhussein Fawzi, Jonathan Uesato, Pascal Frossard",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "CVPR 2019",
+  "architecture": "ResNet-18",
+  "eps": "8/255",
+  "clean_acc": "83.11",
+  "reported": "41.4",
+  "autoattack_acc": "38.50"
+}

@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2003.09461",
+  "name": "Adversarial Robustness on In- and Out-Distribution Improves Explainability",
+  "authors": "Maximilian Augustin, Alexander Meinke, Matthias Hein",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ECCV 2020",
+  "architecture": "WideResNet-34-10",
+  "eps": "0.5",
+  "clean_acc": "92.23",
+  "reported": "76.25",
+  "autoattack_acc": "76.25",
+  "footnote": "Extra data used only as OOD dataset.",
+  "unreliable": false
+}

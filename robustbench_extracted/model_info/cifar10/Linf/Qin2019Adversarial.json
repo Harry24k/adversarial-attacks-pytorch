@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/1907.02610v2",
+  "name": "Adversarial Robustness through Local Linearization",
+  "authors": "Chongli Qin, James Martens, Sven Gowal, Dilip Krishnan, Krishnamurthy Dvijotham, Alhussein Fawzi, Soham De, Robert Stanforth, Pushmeet Kohli",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2019",
+  "architecture": "WideResNet-40-8",
+  "eps": "8/255",
+  "clean_acc": "86.28",
+  "reported": "52.81",
+  "autoattack_acc": "52.84",
+  "external": "52.84"
+}

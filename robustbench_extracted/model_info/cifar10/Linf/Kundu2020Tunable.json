@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2011.03083",
+  "name": "A Tunable Robust Pruning Framework Through Dynamic Network Rewiring of DNNs",
+  "authors": "Kundu, Souvik and Nazemi, Mahdi and Beerel, Peter A and Pedram, Massoud",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ASP-DAC 2021",
+  "architecture": "ResNet-18",
+  "eps": "8/255",
+  "clean_acc": "87.32",
+  "reported": "47.35",
+  "footnote": "Compressed model",
+  "autoattack_acc": "40.41",
+  "unreliable": false
+}

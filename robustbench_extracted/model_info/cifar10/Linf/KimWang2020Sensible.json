@@ -1,0 +1,14 @@
+{
+  "link": "https://openreview.net/forum?id=rJlf_RVKwr",
+  "name": "Sensible adversarial learning",
+  "authors": "Jungeum Kim, Xiao Wang",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "OpenReview, Sep 2019",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "91.51",
+  "reported": "57.23",
+  "autoattack_acc": "34.22"
+}
