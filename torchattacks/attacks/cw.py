@@ -15,11 +15,11 @@ class CW(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        c (float): c in the paper. parameter for box-constraint. (Default: 1e-4)    
+        c (float): c in the paper. parameter for box-constraint. (Default: 1)    
             :math:`minimize \Vert\frac{1}{2}(tanh(w)+1)-x\Vert^2_2+c\cdot f(\frac{1}{2}(tanh(w)+1))`
         kappa (float): kappa (also written as 'confidence') in the paper. (Default: 0)
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
-        steps (int): number of steps. (Default: 1000)
+        steps (int): number of steps. (Default: 100)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
@@ -30,13 +30,13 @@ class CW(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.CW(model, c=1e-4, kappa=0, steps=1000, lr=0.01)
+        >>> attack = torchattacks.CW(model, c=1, kappa=0, steps=100, lr=0.01)
         >>> adv_images = attack(images, labels)
 
     .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
 
     """
-    def __init__(self, model, c=1e-4, kappa=0, steps=1000, lr=0.01):
+    def __init__(self, model, c=1, kappa=0, steps=100, lr=0.01):
         super().__init__("CW", model)
         self.c = c
         self.kappa = kappa
