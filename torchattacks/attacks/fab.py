@@ -331,7 +331,10 @@ class FAB(Attack):
         pred = self.check_shape(pred.nonzero().squeeze())
 
         output = self.get_logits(x)
-        la_target = self.target_class # output.sort(dim=-1)[1][:, -self.target_class]
+        if self.multi_targeted:
+            la_target = output.sort(dim=-1)[1][:, -self.target_class]
+        else:
+            la_target = self.target_class
 
         startt = time.time()
         # runs the attack only on correctly classified points
