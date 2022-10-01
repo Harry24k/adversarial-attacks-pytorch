@@ -23,6 +23,6 @@ def test_atks_on_cifar10(device="cpu"):
         atk = eval("torchattacks."+atk_class)(model)
         adv_images = atk(images, labels)
         robust_acc = clean_accuracy(model, adv_images, labels)
-        print('{}: clean_acc={} robust_acc={}'.format(atk_class, fname_save, gdrive_id))
+        print('{}: clean_acc={} robust_acc={}'.format(clean_acc, robust_acc))
 
     assert clean_acc >= robust_acc
