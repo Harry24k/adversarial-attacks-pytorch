@@ -1,7 +1,7 @@
 import time
 
 from ..attack import Attack
-from .multiattack import MultiAttack
+from ..wrappers.multiattack import MultiAttack
 from .apgd import APGD
 from .apgdt import APGDT
 from .fab import FAB
@@ -46,7 +46,7 @@ class AutoAttack(Attack):
         self.supported_mode = ['default']
 
         if version == 'standard':  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
-            self.autoattack = MultiAttack([
+            self._autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=1),
                 APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
                 FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
@@ -54,7 +54,7 @@ class AutoAttack(Attack):
             ])
 
         elif version == 'plus':  # ['apgd-ce', 'apgd-dlr', 'fab', 'square', 'apgd-t', 'fab-t']
-            self.autoattack = MultiAttack([
+            self._autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=5),
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', n_restarts=5),
                 FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=5),
@@ -64,7 +64,7 @@ class AutoAttack(Attack):
             ])
 
         elif version == 'rand':  # ['apgd-ce', 'apgd-dlr']
-            self.autoattack = MultiAttack([
+            self._autoattack = MultiAttack([
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', eot_iter=20, n_restarts=1),
                 APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', eot_iter=20, n_restarts=1),
             ])
@@ -78,7 +78,7 @@ class AutoAttack(Attack):
         """
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-        adv_images = self.autoattack(images, labels)
+        adv_images = self._autoattack(images, labels)
 
         return adv_images
 
