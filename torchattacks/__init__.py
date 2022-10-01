@@ -32,10 +32,10 @@ from .attacks.pixle import Pixle
 from .attacks.fab import FAB
 from .attacks.autoattack import AutoAttack
 from .attacks.square import Square
-from .attacks.lgv import LGV
 
-# MultiAttack
-from .attacks.multiattack import MultiAttack
+# Wrapper Class
+from .wrappers.lgv import LGV
+from .wrappers.multiattack import MultiAttack
 
 __version__ = '3.3.0'
 __all__ = [
@@ -49,7 +49,10 @@ __all__ = [
 
     "SparseFool", "OnePixel", "Pixle",
 
-    "FAB", "AutoAttack", "Square", "LGV",
+    "FAB", "AutoAttack", "Square",
 
-    "MultiAttack",
+    "LGV", "MultiAttack",
+]
+__wrapper__ = [
+    "LGV", "MultiAttack",
 ]
