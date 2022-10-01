@@ -461,7 +461,7 @@ class Attack(object):
         def get_all_values(items, stack=[]):
             if (items not in stack):
                 stack.append(items)
-                if isinstance(items, Iterable):
+                if isinstance(items, list) or isinstance(items, dict):
                     if isinstance(items, dict):
                         items = (list(items.keys())+list(items.values()))
                     for item in items:
