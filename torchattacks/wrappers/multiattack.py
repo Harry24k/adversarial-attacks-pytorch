@@ -1,8 +1,8 @@
-import copy
+import logging
+
 import torch
 
 from ..attack import Attack
-
 
 class MultiAttack(Attack):
     r"""
@@ -20,23 +20,23 @@ class MultiAttack(Attack):
 
     """
     def __init__(self, attacks, verbose=False):
-
-        # Check validity
-        ids = []
-        for attack in attacks:
-            ids.append(id(attack.model))
-
-        if len(attacks) == 0:
-            raise ValueError("At least one attack should be provided.")
-        if len(set(ids)) != 1:
-            raise ValueError("At least one of attacks is referencing a different model.")
-
-        super().__init__("MultiAttack", attack.model)
+        super().__init__("MultiAttack", attacks[0].model)
         self.attacks = attacks
         self.verbose = verbose
+        self.supported_mode = ['default']
+
+        self.check_validity()
+
         self._accumulate_multi_atk_records = False
         self._multi_atk_records = [0.0]
-        self.supported_mode = ['default']
+        
+    def check_validity(self):
+        if len(self.attacks) < 2:
+            raise ValueError("More than two attacks should be given.")
+
+        ids = [id(attack.model) for attack in self.attacks]
+        if len(set(ids)) != 1:
+            raise ValueError("At least one of attacks is referencing a different model.")
 
     def forward(self, images, labels):
         r"""

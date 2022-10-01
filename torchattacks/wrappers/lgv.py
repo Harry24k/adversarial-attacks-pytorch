@@ -6,7 +6,7 @@ import torch.nn as nn
 from random import shuffle, sample
 
 from ..attack import Attack
-from .bim import BIM
+from ..attacks.bim import BIM
 # fail-safe import of tqdm
 try:
     from tqdm import tqdm
