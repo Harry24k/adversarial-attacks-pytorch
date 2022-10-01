@@ -11,7 +11,7 @@ def get_model(model_name='Standard', device="cpu"):
     return model.to(device)
     
 def get_data(data_name='CIFAR10', device="cpu"):
-    images, labels = load_cifar10(n_examples=50)
+    images, labels = load_cifar10(n_examples=5)
     return images.to(device), labels.to(device)
 
 def test_atks_on_cifar10(device="cpu"):
@@ -23,5 +23,6 @@ def test_atks_on_cifar10(device="cpu"):
         atk = eval("torchattacks."+atk_class)(model)
         adv_images = atk(images, labels)
         robust_acc = clean_accuracy(model, adv_images, labels)
+        print('{}: clean_acc={} robust_acc={}'.format(atk_class, fname_save, gdrive_id))
 
-    assert clean_acc <= robust_acc
+    assert clean_acc >= robust_acc
