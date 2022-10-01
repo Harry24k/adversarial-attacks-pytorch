@@ -428,3 +428,39 @@
 ### v3.2.6
 
   * `_differential_evolution`: [bug fixed](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/61).
+
+
+
+
+
+
+### v3.2.7
+
+  * `PGDL2`: [bug fixed](https://github.com/Harry24k/adversarial-attacks-pytorch/issues/83).
+
+
+
+
+
+
+### v3.3.0
+
+  * Add and update coverage.
+  * Update issue templates.
+  * `Attack.targeted` is unified over all attacks.
+    * `Attack.targeted` is used instead of `Attack._targeted`
+    * All methods generating targeted label is now becomes public methods
+      * `Attack.get_target_label`, `Attack.get_least_likely_label`, `Attack.get_random_target_label`.
+    * `FAB`: Now supports targeted version. Previous `targeted` argument is changed to `multi-targted`.
+      * `Autoattack`: `FAB` arugment is changed.
+  * `Attack`
+    * Now supports normalization.
+      * `Attack.set_normalization_used()` added.
+      * `Attack.get_logits()` added. Instead of `Attack.model()`, `Attack.get_logits()` is recommanded.
+      * `Attack.normalize()` and `inverse_normalize()` added.
+    * Names of arguments and methods are unified.
+      * `images` changed to `inputs`.
+      * `Attack._change_model_mode()` and `Attack._recover_model_mode()` added.
+    * `Attack.save()` now supports saving clean inputs too.
+    * `Attack.load()` added.
+    * `Attack.to_type()` added.
