@@ -40,8 +40,8 @@ from .attacks.autoattack import AutoAttack
 from .attacks.square import Square
 
 # Wrapper Class
-from .wrappers.lgv import LGV
 from .wrappers.multiattack import MultiAttack
+from .wrappers.lgv import LGV
 
 __version__ = '3.3.0'
 __all__ = [
@@ -58,7 +58,7 @@ __all__ = [
 
     "FAB", "AutoAttack", "Square",
 
-    "LGV", "MultiAttack",
+    "MultiAttack", "LGV",
 ]
 __wrapper__ = [
     "LGV", "MultiAttack",

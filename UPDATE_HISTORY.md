@@ -458,6 +458,8 @@
       * `Attack.set_normalization_used()` added.
       * `Attack.get_logits()` added. Instead of `Attack.model()`, `Attack.get_logits()` is recommanded.
       * `Attack.normalize()` and `inverse_normalize()` added.
+    * `_attack` attirubte have all subattacks that are in list or dictionary.
+    * `wrapper_method()` added to support applying class method to its subattacks.
     * Names of arguments and methods are unified.
       * `images` changed to `inputs`.
       * `Attack._change_model_mode()` and `Attack._recover_model_mode()` added.
