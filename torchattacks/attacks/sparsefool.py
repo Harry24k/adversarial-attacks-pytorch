@@ -17,7 +17,7 @@ class SparseFool(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        steps (int): number of steps. (Default: 20)
+        steps (int): number of steps. (Default: 10)
         lam (float): parameter for scaling DeepFool noise. (Default: 3)
         overshoot (float): parameter for enhancing the noise. (Default: 0.02)
 
@@ -27,11 +27,11 @@ class SparseFool(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.SparseFool(model, steps=20, lam=3, overshoot=0.02)
+        >>> attack = torchattacks.SparseFool(model, steps=10, lam=3, overshoot=0.02)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, steps=20, lam=3, overshoot=0.02):
+    def __init__(self, model, steps=10, lam=3, overshoot=0.02):
         super().__init__("SparseFool", model)
         self.steps = steps
         self.lam = lam
