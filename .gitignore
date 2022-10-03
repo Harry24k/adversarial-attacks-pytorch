@@ -17,7 +17,6 @@ _commit.bat
 autoattack/*
 
 demos/_*
-demos/data/MNIST/*
-demos/data/cifar*
+demos/data/*
 demos/models/*
 TODO.txt
