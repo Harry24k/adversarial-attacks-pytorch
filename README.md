@@ -10,48 +10,16 @@
  <img src="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch/branch/master/graph/badge.svg?token=00CQ79UTC2"/> 
  </a>
 </p>
-
 [Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*. It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks ([README [KOR]](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/README_KOR.md)).
 
-
-<details><summary>Easy implementation</summary><p>
 
 ```python
 import torchattacks
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+# If, images are normalized:
+# atk.set_normalization_used(mean=[...], std=[...])
 adv_images = atk(images, labels)
 ```
-</p></details>
-
-<details><summary>Easy modification</summary><p>
-
-```python
-from torchattacks.attack import Attack
-class CustomAttack(Attack):
-    def __init__(self, model):
-        super().__init__("CustomAttack", model)
-
-    def forward(self, images, labels=None):
-        adv_images = # Custom attack method
-        return adv_images
-```
-</p></details>
-
-<details><summary>Useful functions</summary><p>
-
-```python
-atk.set_mode_targeted_least_likely(kth_min)  # Targeted attack
-atk.set_return_type(type='int')  # Return values [0, 255]
-atk = torchattacks.MultiAttack([atk1, ..., atk99])  # Combine attacks
-atk.save(data_loader, save_path=None, verbose=True, return_verbose=False)  # Save adversarial images
-```
-</p></details>
-
-<details><summary>Fast computation</summary><p>
-
-Refer to [Performance Comparison](#Performance-Comparison).
-
-</p></details>
 
 
 
@@ -85,23 +53,16 @@ pip install torchattacks
 ## Getting Started
 
 ###  :warning: Precautions
-
-* **All images should be scaled to [0, 1] with transform[to.Tensor()] before used in attacks.** To make it easy to use adversarial attacks, a reverse-normalization is not included in the attack process. To apply an input normalization, please add a normalization layer to the model. Please refer to [code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb) or [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb).
-* **All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.** Considering most models in _torchvision.models_ return one vector of `(N,C)`, where `N` is the number of inputs and `C` is thenumber of classes, _torchattacks_ also only supports limited forms of output.  Please check the shape of the model’s output carefully. In the case of the model returns multiple outputs, please refer to [the demo](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Model%20with%20Multiple%20Outputs.ipynb).
+* **All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.** Considering most models in _torchvision.models_ return one vector of `(N,C)`, where `N` is the number of inputs and `C` is thenumber of classes, _torchattacks_ also only supports limited forms of output.  Please check the shape of the model’s output carefully. 
 * **`torch.backends.cudnn.deterministic = True` to get same adversarial examples with fixed random seed**. Some operations are non-deterministic with float tensors on GPU [[discuss]](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run `torch.backends.cudnn.deterministic = True`[[ref]](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch).
 
 
 
 ### :rocket: Demos
 
-#### Given _model_, _images_ and _labels_, adversarial image can be generated as follows:
-
-```python
-import torchattacks
-atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
-adv_images = atk(images, labels)
-```
-
+* **White-box Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
+* **White-box Attack on ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
+* **Transfer Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb))
 
 
 #### Torchattacks supports following functions:
@@ -151,18 +112,10 @@ atk.set_return_type(type='float')
 
 ```python
 # Save
-atk.save(data_loader, save_path="./data/sample.pt", verbose=True)
+atk.save(data_loader, save_path="./data.pt", verbose=True)
   
 # Load
-import torch
-from torch.utils.data import DataLoader, TensorDataset
-adv_images, labels = torch.load("./data/sample.pt")
-  
-# If set_return_type was 'int',
-# adv_data = TensorDataset(adv_images.float()/255, labels)
-# else,
-adv_data = TensorDataset(adv_images, labels)
-adv_loader = DataLoader(adv_data, batch_size=128, shuffle=False)
+adv_loader = atk.load(load_path="./data.pt")
 ```
 
 </p></details>
@@ -203,13 +156,6 @@ atk = torchattacks.MultiAttack([atk1, atk2])
 
 </p></details>
 
-#### Here are demos of torchattacks.
-
-* **White Box Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb)):  Using _torchattacks_ to make adversarial examples with [the ImageNet dataset](http://www.image-net.org/) to fool ResNet-18.
-* **Transfer Attack with CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb)):  This demo provides an example of black box attack with two different models. First, make adversarial datasets from a holdout model with CIFAR10 and save it as torch dataset. Second, use the adversarial datasets to attack a target model.
-* **LGV Transfer Attack with ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20combined%20with%20LGV%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20combined%20with%20LGV%20%28ImageNet%29.ipynb)):  This demo provides a comparison of several transfer-based black-box attacks. It shows that LGV has superior transferability, and that out-of-the-box attacks can be combined with LGV.
-* **Adversairal Training with MNIST** ([code](https://github.com/Harry24k/adversairal-attacks-pytorch/blob/master/demos/Adversairal%20Training%20(MNIST).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Adversairal%20Training%20%28MNIST%29.ipynb)):  This code shows how to do adversarial training with this repository. The MNIST dataset and a custom model are used in this code. The adversarial training is performed with PGD, and then FGSM is applied to evaluate the model.
-
 
 
 #### Torchattacks also supports collaboration with other attack packages.
@@ -248,7 +194,6 @@ class L2BrendelBethge(Attack):
         return adv_images
 
 atk = L2BrendelBethge(model)
-atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 ```
 
 </p></details>
@@ -287,7 +232,6 @@ class JSMA(Attack):
         return torch.tensor(adv_images).to(self.device)
 
 atk = JSMA(model)
-atk.save(data_loader=test_loader, save_path="_temp.pt", verbose=True)
 ```
 
 </p></details>
@@ -319,9 +263,13 @@ The distance measure in parentheses.
 |    **SparseFool**<br />(L0)     | SparseFool: a few pixels make a big difference ([Modas et al., 2019](https://arxiv.org/abs/1811.02248))                                                   |                                                                                                                        |
 |     **DIFGSM**<br />(Linf)      | Improving Transferability of Adversarial Examples with Input Diversity ([Xie et al., 2019](https://arxiv.org/abs/1803.06978))                             | :heart_eyes: Contributor [taobai](https://github.com/tao-bai)                                                          |
 |     **TIFGSM**<br />(Linf)      | Evading Defenses to Transferable Adversarial Examples by Translation-Invariant Attacks ([Dong et al., 2019](https://arxiv.org/abs/1904.02884))            | :heart_eyes: Contributor [taobai](https://github.com/tao-bai)                                                          |
+| **NIFGSM**<br />(Linf) | Nesterov Accelerated Gradient and Scale Invariance for Adversarial Attacks ([Lin, et al., 2022](https://arxiv.org/abs/1908.06281))                 | :heart_eyes: Contributor [Zhijin-Ge](https://github.com/Zhijin-Ge)                               |
+| **SINIFGSM**<br />(Linf) | Nesterov Accelerated Gradient and Scale Invariance for Adversarial Attacks ([Lin, et al., 2022](https://arxiv.org/abs/1908.06281))                 | :heart_eyes: Contributor [Zhijin-Ge](https://github.com/Zhijin-Ge)                               |
+| **VMIFGSM**<br />(Linf) | Enhancing the Transferability of Adversarial Attacks through Variance Tuning ([Wang, et al., 2022](https://arxiv.org/abs/2103.15571))                 | :heart_eyes: Contributor [Zhijin-Ge](https://github.com/Zhijin-Ge)                               |
+| **VNIFGSM**<br />(Linf) | Enhancing the Transferability of Adversarial Attacks through Variance Tuning ([Wang, et al., 2022](https://arxiv.org/abs/2103.15571))                 | :heart_eyes: Contributor [Zhijin-Ge](https://github.com/Zhijin-Ge)                               |
 |     **Jitter**<br />(Linf)      | Exploring Misclassifications of Robust Neural Networks to Enhance Adversarial Attacks ([Schwinn, Leo, et al., 2021](https://arxiv.org/abs/2105.10304))    |                                                                                                                        |
 |       **Pixle**<br />(L0)       | Pixle: a fast and effective black-box attack based on rearranging pixels ([Pomponi, Jary, et al., 2022](https://arxiv.org/abs/2202.02236))                |                                                                                                                        |
-| **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | To combine with another attack. Contributor [Martin Gubri](https://github.com/Framartin)                               |
+| **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | :heart_eyes: Contributor [Martin Gubri](https://github.com/Framartin)                               |
 
 
 
@@ -329,8 +277,8 @@ The distance measure in parentheses.
 
 For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench) is used. As for the comparison packages, currently updated and the most cited methods were selected:
 
-* **Foolbox**: [242](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2021.06.
-* **ART**: [96](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2021.06.
+* **Foolbox**: [505](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2022.10.
+* **ART**: [262](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2022.10.
 
 Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. All experiments were done on GeForce RTX 2080. For the latest version, please refer to here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
 
@@ -369,15 +317,6 @@ If you use this package, please cite the following BibTex ([SemanticScholar](htt
 
 
 
-
-## Contribution
-
-All kind of contributions are always welcome! :blush:
-
-If you are interested in adding a new attack to this repo or fixing some issues, please have a look at [CONTRIBUTING.md](CONTRIBUTING.md).
-
-
-
 ##  Recommended Sites and Packages
 
 * **Adversarial Attack Packages:**
@@ -406,12 +345,3 @@ If you are interested in adding a new attack to this repo or fixing some issues,
   
     * https://nicholas.carlini.com/writing/2019/all-adversarial-example-papers.html: A Complete List of All (arXiv) Adversarial Example Papers made by Nicholas Carlini.
     * https://github.com/chawins/Adversarial-Examples-Reading-List: Adversarial Examples Reading List made by Chawin Sitawarin.
-
-
-
-* **ETC**:
-
-  * https://github.com/Harry24k/gnn-meta-attack: Adversarial Poisoning Attack on Graph Neural Network.
-  * https://github.com/ChandlerBang/awesome-graph-attack-papers: Graph Neural Network Attack papers.
-
-  
