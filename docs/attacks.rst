@@ -31,12 +31,7 @@ Attacks
    .. automodule:: torchattacks.attacks.bim
     :members:
     
-   CW
-   ~~~~~~~~~
-   .. automodule:: torchattacks.attacks.cw
-    :members:
-    
-   R+FGSM
+   RFGSM
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.rfgsm
     :members:
@@ -45,15 +40,15 @@ Attacks
    ~~~~~~~~~
    .. automodule:: torchattacks.attacks.pgd
     :members:
-    
-   PGDL2
-   ~~~~~~~~~
-   .. automodule:: torchattacks.attacks.pgdl2
-    :members:
 
    EOTPGD (EOT + PGD)
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.eotpgd
+    :members:
+
+   FFGSM (Fast's FGSM)
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.ffgsm
     :members:
     
    TPGD (TRADES' PGD)
@@ -61,44 +56,79 @@ Attacks
    .. automodule:: torchattacks.attacks.tpgd
     :members:
 
-   FFGSM (Fast's FGSM)
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.ffgsm
-    :members:
-
    MIFGSM
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.mifgsm
     :members:
-    
+
+   UPGD
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.upgd
+    :members:
+
    APGD
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgd
     :members:
-    
+
    APGDT
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.apgdt
     :members:
-    
-   FAB
+
+   DIFGSM
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.fab
+   .. automodule:: torchattacks.attacks.difgsm
+    :members:
+
+   TIFGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.tifgsm
+    :members:
+
+   Jitter
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.jitter
+    :members:
+
+   NIFGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.nifgsm
+    :members:
+
+   PGDRS
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pgdrs
+    :members:
+
+   SINIFGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.sinifgsm
+    :members:
+
+   VMIFGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.vmifgsm
+    :members:
+
+   VNIFGSM
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.vnifgsm
     :members:
     
-   Square
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.square
+   CW
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.cw
     :members:
     
-   AutoAttack
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.autoattack
+   PGDL2
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pgdl2
     :members:
     
-   OnePixel
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.onepixel
+   PGDRSL2
+   ~~~~~~~~~
+   .. automodule:: torchattacks.attacks.pgdrsl2
     :members:
     
    DeepFool
@@ -111,27 +141,27 @@ Attacks
    .. automodule:: torchattacks.attacks.sparsefool
     :members:
     
-   DIFGSM
+   OnePixel
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.difgsm
-    :members:
-    
-   UPGD
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.upgd
-    :members:
-    
-   TIFGSM
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.tifgsm
-    :members:
-    
-   Jitter
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   .. automodule:: torchattacks.attacks.jitter
+   .. automodule:: torchattacks.attacks.onepixel
     :members:
     
    Pixle
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.pixle
+    :members:
+    
+   FAB
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.fab
+    :members:
+    
+   AutoAttack
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.autoattack
+    :members:
+    
+   Square
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.square
     :members:
