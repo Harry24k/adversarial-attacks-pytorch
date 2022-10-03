@@ -16,7 +16,7 @@ _commit.bat
 
 autoattack/*
 
-demos/_*
-demos/data/*
-demos/models/*
+demo/_*
+demo/data/*
+demo/models/*
 TODO.txt
