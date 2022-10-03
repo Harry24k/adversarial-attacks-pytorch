@@ -19,8 +19,8 @@ class APGDT(Attack):
     Arguments:
         model (nn.Module): model to attack.
         norm (str): Lp-norm of the attack. ['Linf', 'L2'] (Default: 'Linf')
-        eps (float): maximum perturbation. (Default: None)
-        steps (int): number of steps. (Default: 100)
+        eps (float): maximum perturbation. (Default: 8/255)
+        steps (int): number of steps. (Default: 10)
         n_restarts (int): number of random restarts. (Default: 1)
         seed (int): random seed for the starting point. (Default: 0)
         eot_iter (int): number of iteration for EOT. (Default: 1)
@@ -34,11 +34,11 @@ class APGDT(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.APGDT(model, norm='Linf', eps=8/255, steps=100, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10)
+        >>> attack = torchattacks.APGDT(model, norm='Linf', eps=8/255, steps=10, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, norm='Linf', eps=8/255, steps=100, n_restarts=1,
+    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1,
                  seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10):
         super().__init__("APGDT", model)
         self.eps = eps

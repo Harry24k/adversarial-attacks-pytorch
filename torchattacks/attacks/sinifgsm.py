@@ -2,11 +2,13 @@ import torch
 import torch.nn as nn
 
 from ..attack import Attack
+
+
 class SINIFGSM(Attack):
     r"""
     SI-NI-FGSM in the paper 'NESTEROV ACCELERATED GRADIENT AND SCALEINVARIANCE FOR ADVERSARIAL ATTACKS'
     [https://arxiv.org/abs/1908.06281], Published as a conference paper at ICLR 2020
-    Modified from "https://github.com/JHL-HUST/SI-NI-FGSM"
+    Modified from "https://githuba.com/JHL-HUST/SI-NI-FGSM"
 
     Distance Measure : Linf
 
@@ -14,8 +16,8 @@ class SINIFGSM(Attack):
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
+        steps (int): number of iterations. (Default: 10)
         decay (float): momentum factor. (Default: 1.0)
-        steps (int): number of iterations. (Default: 5)
         m (int): number of scale copies. (Default: 5)
 
     Shape:
@@ -24,12 +26,12 @@ class SINIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.SINIFGSM(model, eps=8/255, alpha=2/255, steps=5, decay=1.0, m=5)
+        >>> attack = torchattacks.SINIFGSM(model, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=1.0, m=5):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5):
         super().__init__("SINIFGSM", model)
         self.eps = eps
         self.steps = steps

@@ -13,9 +13,9 @@ class BIM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 4/255)
-        alpha (float): step size. (Default: 1/255)
-        steps (int): number of steps. (Default: 0)
+        eps (float): maximum perturbation. (Default: 8/255)
+        alpha (float): step size. (Default: 2/255)
+        steps (int): number of steps. (Default: 10)
 
     .. note:: If steps set to 0, steps will be automatically decided following the paper.
 
@@ -25,10 +25,10 @@ class BIM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.BIM(model, eps=4/255, alpha=1/255, steps=0)
+        >>> attack = torchattacks.BIM(model, eps=8/255, alpha=2/255, steps=10)
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, eps=4/255, alpha=1/255, steps=0):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
         super().__init__("BIM", model)
         self.eps = eps
         self.alpha = alpha

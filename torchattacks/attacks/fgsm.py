@@ -13,7 +13,7 @@ class FGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 0.007)
+        eps (float): maximum perturbation. (Default: 8/255)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -21,11 +21,11 @@ class FGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.FGSM(model, eps=0.007)
+        >>> attack = torchattacks.FGSM(model, eps=8/255)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.007):
+    def __init__(self, model, eps=8/255):
         super().__init__("FGSM", model)
         self.eps = eps
         self.supported_mode = ['default', 'targeted']

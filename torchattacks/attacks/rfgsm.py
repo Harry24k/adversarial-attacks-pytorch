@@ -13,9 +13,9 @@ class RFGSM(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): strength of the attack or maximum perturbation. (Default: 16/255)
-        alpha (float): step size. (Default: 8/255)
-        steps (int): number of steps. (Default: 1)
+        eps (float): strength of the attack or maximum perturbation. (Default: 8/255)
+        alpha (float): step size. (Default: 2/255)
+        steps (int): number of steps. (Default: 10)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -23,10 +23,10 @@ class RFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.RFGSM(model, eps=16/255, alpha=8/255, steps=1)
+        >>> attack = torchattacks.RFGSM(model, eps=8/255, alpha=2/255, steps=10)
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, eps=16/255, alpha=8/255, steps=1):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
         super().__init__("RFGSM", model)
         self.eps = eps
         self.alpha = alpha

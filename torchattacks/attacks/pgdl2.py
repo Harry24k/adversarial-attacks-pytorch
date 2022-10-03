@@ -15,7 +15,7 @@ class PGDL2(Attack):
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 1.0)
         alpha (float): step size. (Default: 0.2)
-        steps (int): number of steps. (Default: 40)
+        steps (int): number of steps. (Default: 10)
         random_start (bool): using random initialization of delta. (Default: True)
 
     Shape:
@@ -24,11 +24,12 @@ class PGDL2(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PGDL2(model, eps=1.0, alpha=0.2, steps=40, random_start=True)
+        >>> attack = torchattacks.PGDL2(model, eps=1.0, alpha=0.2, steps=10, random_start=True)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=40, random_start=True, eps_for_division=1e-10):
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, 
+                 random_start=True, eps_for_division=1e-10):
         super().__init__("PGDL2", model)
         self.eps = eps
         self.alpha = alpha

@@ -13,9 +13,9 @@ class PGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 0.3)
+        eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
-        steps (int): number of steps. (Default: 40)
+        steps (int): number of steps. (Default: 10)
         random_start (bool): using random initialization of delta. (Default: True)
 
     Shape:
@@ -24,12 +24,12 @@ class PGD(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PGD(model, eps=8/255, alpha=1/255, steps=40, random_start=True)
+        >>> attack = torchattacks.PGD(model, eps=8/255, alpha=1/255, steps=10, random_start=True)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.3,
-                 alpha=2/255, steps=40, random_start=True):
+    def __init__(self, model, eps=8/255,
+                 alpha=2/255, steps=10, random_start=True):
         super().__init__("PGD", model)
         self.eps = eps
         self.alpha = alpha

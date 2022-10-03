@@ -22,7 +22,7 @@ class Pixle(Attack):
         while the float as parcentage of the size. A tuple is used to specify both under and upper bound of the size. (Default: (2, 10))
         pixel_mapping (str): the type of mapping used to move the pixels. Can be: 'random', 'similarity', 'similarity_random', 'distance', 'distance_random' (Default: random)
         restarts (int): the number of restarts that the algortihm performs. (Default: 20)
-        max_iterations (int): number of iterations to perform for each restart. (Default: 100)
+        max_iterations (int): number of iterations to perform for each restart. (Default: 10)
         update_each_iteration (bool): if the attacked images must be modified after each iteration (True) or after each restart (False).  (Default: False)
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -30,12 +30,12 @@ class Pixle(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=100, iteratsion=50)
+        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, iteratsion=50)
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
                  pixel_mapping='random', restarts=20,
-                 max_iterations=100, update_each_iteration=False):
+                 max_iterations=10, update_each_iteration=False):
         super().__init__("Pixle", model)
 
         if restarts < 0 or not isinstance(restarts, int):

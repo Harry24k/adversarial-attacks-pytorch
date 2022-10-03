@@ -23,7 +23,7 @@ class Square(Attack):
     Arguments:
         model (nn.Module): model to attack.
         norm (str): Lp-norm of the attack. ['Linf', 'L2'] (Default: 'Linf')
-        eps (float): maximum perturbation. (Default: None)
+        eps (float): maximum perturbation. (Default: 8/255)
         n_queries (int): max number of queries (each restart). (Default: 5000)
         n_restarts (int): number of random restarts. (Default: 1)
         p_init (float): parameter to control size of squares. (Default: 0.8)
@@ -39,11 +39,11 @@ class Square(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.Square(model, model, norm='Linf', n_queries=5000, n_restarts=1, eps=None, p_init=.8, seed=0, verbose=False, targeted=False, loss='margin', resc_schedule=True)
+        >>> attack = torchattacks.Square(model, model, norm='Linf', eps=8/255, n_queries=5000, n_restarts=1, eps=None, p_init=.8, seed=0, verbose=False, targeted=False, loss='margin', resc_schedule=True)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, norm='Linf', eps=None, n_queries=5000, n_restarts=1,
+    def __init__(self, model, norm='Linf', eps=8/255, n_queries=5000, n_restarts=1,
                  p_init=.8, loss='margin', resc_schedule=True,
                  seed=0, verbose=False):
         super().__init__("Square", model)

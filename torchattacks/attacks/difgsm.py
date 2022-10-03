@@ -17,7 +17,7 @@ class DIFGSM(Attack):
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
         decay (float): momentum factor. (Default: 0.0)
-        steps (int): number of iterations. (Default: 20)
+        steps (int): number of iterations. (Default: 10)
         resize_rate (float): resize factor used in input diversity. (Default: 0.9)
         diversity_prob (float) : the probability of applying input diversity. (Default: 0.5)
         random_start (bool): using random initialization of delta. (Default: False)
@@ -28,12 +28,12 @@ class DIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.DIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
+        >>> attack = torchattacks.DIFGSM(model, eps=8/255, alpha=2/255, steps=10, decay=0.0, resize_rate=0.9, diversity_prob=0.5, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=20, decay=0.0,
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=0.0,
                  resize_rate=0.9, diversity_prob=0.5, random_start=False):
         super().__init__("DIFGSM", model)
         self.eps = eps

@@ -14,9 +14,9 @@ class Jitter(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 0.3)
+        eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
-        steps (int): number of steps. (Default: 40)
+        steps (int): number of steps. (Default: 10)
         random_start (bool): using random initialization of delta. (Default: True)
 
     Shape:
@@ -25,12 +25,12 @@ class Jitter(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.Jitter(model, eps=0.3, alpha=2/255, steps=40,
+        >>> attack = torchattacks.Jitter(model, eps=8/255, alpha=2/255, steps=10,
                  scale=10, std=0.1, random_start=True)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40,
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
                  scale=10, std=0.1, random_start=True):
         super().__init__("Jitter", model)
         self.eps = eps

@@ -16,7 +16,7 @@ class MIFGSM(Attack):
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
         decay (float): momentum factor. (Default: 1.0)
-        steps (int): number of iterations. (Default: 5)
+        steps (int): number of iterations. (Default: 10)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -24,12 +24,12 @@ class MIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.MIFGSM(model, eps=8/255, steps=5, decay=1.0)
+        >>> attack = torchattacks.MIFGSM(model, eps=8/255, steps=10, decay=1.0)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=1.0):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
         super().__init__("MIFGSM", model)
         self.eps = eps
         self.steps = steps

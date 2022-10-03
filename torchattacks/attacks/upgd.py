@@ -16,7 +16,7 @@ class UPGD(Attack):
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
-        steps (int): number of steps. (Default: 40)
+        steps (int): number of steps. (Default: 10)
         random_start (bool): using random initialization of delta. (Default: False)
         loss (str): loss function. ['ce', 'margin', 'dlr'] (Default: 'ce')
         decay (float): momentum factor. (Default: 1.0)
@@ -28,11 +28,11 @@ class UPGD(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.UPGD(model, eps=8/255, alpha=1/255, steps=40, random_start=False)
+        >>> attack = torchattacks.UPGD(model, eps=8/255, alpha=2/255, steps=10, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=40,
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
                  random_start=False, loss='ce', decay=1.0, eot_iter=1):
         super().__init__("UPGD", model)
         self.eps = eps

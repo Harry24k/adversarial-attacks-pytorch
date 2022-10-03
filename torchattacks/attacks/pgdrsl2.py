@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from ..attack import Attack
 import copy
 
+
 class Noise():
     def __init__(self, noise_type, noise_sd):
         self.noise_type = noise_type
@@ -17,22 +18,22 @@ class Noise():
         return noise
 
 
-class PGDL2_RS(Attack):
+class PGDRSL2(Attack):
     r"""
     PGD for randmized smoothing in the paper 'Provably Robust Deep Learning via Adversarially Trained Smoothed Classifiers'
     [https://arxiv.org/abs/1906.04584]
     Modification of the code from https://github.com/Hadisalman/smoothing-adversarial/blob/master/code/attacks.py
 
-    Distance Measure : Linf
+    Distance Measure : L2
 
     Arguments:
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 1.0)
         alpha (float): step size. (Default: 0.2)
-        steps (int): number of steps. (Default: 40)
+        steps (int): number of steps. (Default: 10)
         noise_type (str): guassian or uniform. (Default: guassian)
         noise_sd (float): standard deviation for normal distributio, or range for . (Default: 0.5)
-        noise_batch_size (int): guassian or uniform. (Default: 32)
+        noise_batch_size (int): guassian or uniform. (Default: 5)
         batch_max (int): split data into small chunk if the total number of augmented data points, len(inputs)*noise_batch_size, are larger than batch_max, in case GPU memory is insufficient. (Default: 2048)
         random_start (bool): using random initialization of delta. (Default: True)
 
@@ -42,14 +43,14 @@ class PGDL2_RS(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PGDL2_RS(model, eps=1.0, alpha=0.2, steps=40, noise_type = "guassian", noise_sd = 0.5, noise_batch_size = 32)
+        >>> attack = torchattacks.PGDRSL2(model, eps=1.0, alpha=0.2, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=40,
-                 noise_type = "guassian", noise_sd = 0.5, noise_batch_size = 32, batch_max = 2048,
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10,
+                 noise_type = "guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048,
                  eps_for_division=1e-10):
-        super().__init__("PGDL2_RS", model)
+        super().__init__("PGDRSL2", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
@@ -61,10 +62,12 @@ class PGDL2_RS(Attack):
 
     def forward(self, inputs: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
         if inputs.shape[0]*self.noise_batch_size > self.batch_max:
-            size_comp = len(self.model.device_ids) if hasattr(self.model, 'device_ids') else 1
             img_list = []
-            inputs_split = torch.split(inputs, split_size_or_sections = int(self.batch_max/self.noise_batch_size*size_comp))
-            labels_split = torch.split(labels, split_size_or_sections = int(self.batch_max/self.noise_batch_size*size_comp))
+            split_num = int(self.batch_max/self.noise_batch_size)
+            inputs_split = torch.split(inputs,
+                                       split_size_or_sections=split_num)
+            labels_split = torch.split(labels,
+                                       split_size_or_sections=split_num)
             for img_sub, lab_sub in zip(inputs_split, labels_split):
                 img_adv = self._forward(img_sub, lab_sub)
                 img_list.append(img_adv)

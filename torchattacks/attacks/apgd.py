@@ -19,8 +19,8 @@ class APGD(Attack):
     Arguments:
         model (nn.Module): model to attack.
         norm (str): Lp-norm of the attack. ['Linf', 'L2'] (Default: 'Linf')
-        eps (float): maximum perturbation. (Default: None)
-        steps (int): number of steps. (Default: 100)
+        eps (float): maximum perturbation. (Default: 8/255)
+        steps (int): number of steps. (Default: 10)
         n_restarts (int): number of random restarts. (Default: 1)
         seed (int): random seed for the starting point. (Default: 0)
         loss (str): loss function optimized. ['ce', 'dlr'] (Default: 'ce')
@@ -34,11 +34,11 @@ class APGD(Attack):
         - output: :math:`(N, C, H, W)`.
         
     Examples::
-        >>> attack = torchattacks.APGD(model, norm='Linf', eps=8/255, steps=100, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False)
+        >>> attack = torchattacks.APGD(model, norm='Linf', eps=8/255, steps=10, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, norm='Linf', eps=8/255, steps=100, n_restarts=1, 
+    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1, 
                  seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False):
         super().__init__("APGD", model)
         self.eps = eps

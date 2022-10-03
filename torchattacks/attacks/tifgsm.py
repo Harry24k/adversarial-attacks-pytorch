@@ -19,7 +19,7 @@ class TIFGSM(Attack):
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
-        steps (int): number of iterations. (Default: 20)
+        steps (int): number of iterations. (Default: 10)
         decay (float): momentum factor. (Default: 0.0)
         kernel_name (str): kernel name. (Default: gaussian)
         len_kernel (int): kernel length.  (Default: 15, which is the best according to the paper)
@@ -34,11 +34,11 @@ class TIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=20, decay=1.0, resize_rate=0.9, diversity_prob=0.7, random_start=False)
+        >>> attack = torchattacks.TIFGSM(model, eps=8/255, alpha=2/255, steps=10, decay=1.0, resize_rate=0.9, diversity_prob=0.7, random_start=False)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=20, decay=0.0, kernel_name='gaussian',
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=0.0, kernel_name='gaussian',
                  len_kernel=15, nsig=3, resize_rate=0.9, diversity_prob=0.5, random_start=False):
         super().__init__("TIFGSM", model)
         self.eps = eps

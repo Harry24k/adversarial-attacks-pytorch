@@ -27,8 +27,8 @@ class FAB(Attack):
     Arguments:
         model (nn.Module): model to attack.
         norm (str) : Lp-norm to minimize. ['Linf', 'L2', 'L1'] (Default: 'Linf')
-        eps (float): maximum perturbation. (Default: None)
-        steps (int): number of steps. (Default: 100)
+        eps (float): maximum perturbation. (Default: 8/255)
+        steps (int): number of steps. (Default: 10)
         n_restarts (int): number of random restarts. (Default: 1)
         alpha_max (float): alpha_max. (Default: 0.1)
         eta (float): overshooting. (Default: 1.05)
@@ -44,11 +44,11 @@ class FAB(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.FAB(model, norm='Linf', steps=100, eps=None, n_restarts=1, alpha_max=0.1, eta=1.05, beta=0.9, loss_fn=None, verbose=False, seed=0, targeted=False, n_classes=10)
+        >>> attack = torchattacks.FAB(model, norm='Linf', steps=10, eps=8/255, n_restarts=1, alpha_max=0.1, eta=1.05, beta=0.9, loss_fn=None, verbose=False, seed=0, targeted=False, n_classes=10)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, norm='Linf', eps=None, steps=100, n_restarts=1,
+    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1,
                  alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
                  multi_targeted=False, n_classes=10):
         super().__init__("FAB", model)

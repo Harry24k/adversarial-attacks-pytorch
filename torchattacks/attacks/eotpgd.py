@@ -13,10 +13,10 @@ class EOTPGD(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 0.3)
+        eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
-        steps (int): number of steps. (Default: 40)
-        eot_iter (int) : number of models to estimate the mean gradient. (Default: 10)
+        steps (int): number of steps. (Default: 10)
+        eot_iter (int) : number of models to estimate the mean gradient. (Default: 2)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`, `H = height` and `W = width`. It must have a range [0, 1].
@@ -24,12 +24,12 @@ class EOTPGD(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.EOTPGD(model, eps=4/255, alpha=8/255, steps=40, eot_iter=10)
+        >>> attack = torchattacks.EOTPGD(model, eps=8/255, alpha=2/255, steps=10, eot_iter=2)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40,
-                 eot_iter=10, random_start=True):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
+                 eot_iter=2, random_start=True):
         super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha

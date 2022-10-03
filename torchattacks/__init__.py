@@ -17,10 +17,16 @@ from .attacks.apgdt import APGDT
 from .attacks.difgsm import DIFGSM
 from .attacks.tifgsm import TIFGSM
 from .attacks.jitter import Jitter
+from .attacks.nifgsm import NIFGSM
+from .attacks.pgdrs import PGDRS
+from .attacks.sinifgsm import SINIFGSM
+from .attacks.vmifgsm import VMIFGSM
+from .attacks.vnifgsm import VNIFGSM
 
 # L2 attacks
 from .attacks.cw import CW
 from .attacks.pgdl2 import PGDL2
+from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
 
 # L0 attacks
@@ -43,9 +49,10 @@ __all__ = [
 
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
-    "TIFGSM", "Jitter",
+    "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
+    "VMIFGSM", "VNIFGSM",
 
-    "CW", "PGDL2", "DeepFool",
+    "CW", "PGDL2", "DeepFool", "PGDRSL2",
 
     "SparseFool", "OnePixel", "Pixle",
 

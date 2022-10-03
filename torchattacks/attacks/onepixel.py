@@ -20,8 +20,8 @@ class OnePixel(Attack):
     Arguments:
         model (nn.Module): model to attack.
         pixels (int): number of pixels to change (Default: 1)
-        steps (int): number of steps. (Default: 75)
-        popsize (int): population size, i.e. the number of candidate agents or "parents" in differential evolution (Default: 400)
+        steps (int): number of steps. (Default: 10)
+        popsize (int): population size, i.e. the number of candidate agents or "parents" in differential evolution (Default: 10)
         inf_batch (int): maximum batch size during inference (Default: 128)
 
     Shape:
@@ -30,11 +30,11 @@ class OnePixel(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.OnePixel(model, pixels=1, steps=75, popsize=400, inf_batch=128)
+        >>> attack = torchattacks.OnePixel(model, pixels=1, steps=10, popsize=10, inf_batch=128)
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, pixels=1, steps=75, popsize=400, inf_batch=128):
+    def __init__(self, model, pixels=1, steps=10, popsize=10, inf_batch=128):
         super().__init__("OnePixel", model)
         self.pixels = pixels
         self.steps = steps

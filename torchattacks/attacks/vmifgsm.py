@@ -15,10 +15,10 @@ class VMIFGSM(Attack):
     Arguments:
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
+        steps (int): number of iterations. (Default: 10)
         alpha (float): step size. (Default: 2/255)
         decay (float): momentum factor. (Default: 1.0)
-        steps (int): number of iterations. (Default: 5)
-        N (int): the number of sampled examples in the neighborhood. (Default: 20)
+        N (int): the number of sampled examples in the neighborhood. (Default: 5)
         beta (float): the upper bound of neighborhood. (Default: 3/2)
 
     Shape:
@@ -27,12 +27,12 @@ class VMIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.VMIFGSM(model, eps=8/255, steps=5, decay=1.0, N=20, beta=3/2)
+        >>> attack = torchattacks.VMIFGSM(model, eps=8/255, alpha=2/255, steps=10, decay=1.0, N=5, beta=3/2)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=5, decay=1.0, N=20, beta=3/2):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, N=5, beta=3/2):
         super().__init__("VMIFGSM", model)
         self.eps = eps
         self.steps = steps
