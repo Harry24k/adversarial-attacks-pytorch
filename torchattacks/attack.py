@@ -75,7 +75,6 @@ class Attack(object):
     @wrapper_method
     def _set_normalization_applied(self, flag):
         self._normalization_applied = flag
-        print(self.__class__.__name__, flag)
     
     @wrapper_method
     def set_device(self, device):
