@@ -61,9 +61,9 @@ pip install torchattacks
 
 ### :rocket: Demos
 
-* **White-box Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
-* **White-box Attack on ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
-* **Transfer Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Transfer%20Attack%20%28CIFAR10%29.ipynb))
+* **White-box Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20CIFAR10.ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20CIFAR10.ipynb))
+* **White-box Attack on ImageNet** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb))
+* **Transfer Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/Transfer%20Attack%20on%20CIFAR10.ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demo/Transfer%20Attack%20on%20CIFAR10.ipynb))
 
 
 #### Torchattacks supports following functions:
