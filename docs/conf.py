@@ -25,9 +25,9 @@ copyright = '2020, harrykim'
 author = 'harrykim'
 
 # The short X.Y version
-version = 'v3.0'
+version = 'v3.3'
 # The full version, including alpha/beta/rc tags
-release = 'v3.0.0'
+release = 'v3.3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -76,7 +76,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
-autodoc_mock_imports = ['scipy', 'numpy']
+autodoc_mock_imports = ['torch', 'scipy', 'numpy']
 
 # -- Options for HTML output -------------------------------------------------
 
