@@ -9,6 +9,7 @@ Attacks
 .. automodule:: torchattacks 
    :members:
    :undoc-members:
+   :ignore-module-all:
    :show-inheritance:
 
    VANILA

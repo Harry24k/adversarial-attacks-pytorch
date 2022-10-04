@@ -9,6 +9,7 @@ Attack
 .. automodule:: torchattacks 
    :members:
    :undoc-members:
+   :ignore-module-all:
    :show-inheritance:
 
    Modules
