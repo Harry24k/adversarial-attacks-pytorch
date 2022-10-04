@@ -3,12 +3,14 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import time
+import pytest
 
 import torch
 import torchattacks
 from robustbench.data import load_cifar10
 from robustbench.utils import load_model, clean_accuracy
 
+CACHE = {}
 
 def get_model(model_name='Standard', device="cpu", model_dir='./models'):
     model = load_model(model_name, model_dir=model_dir, norm='Linf')
@@ -22,8 +24,20 @@ def get_data(data_name='CIFAR10', device="cpu", n_examples=5, data_dir='./data')
     
 @pytest.mark.parametrize("atk_class", [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./models', data_dir='./data'):
-    model = get_model(device=device, model_dir=model_dir)
-    images, labels = get_data(device=device, n_examples=n_examples, data_dir=data_dir)
+    if CACHE.get('model') is None:
+        model = get_model(device=device, model_dir=model_dir)
+        CACHE['model'] = model
+    else:
+        model = CACHE['model']
+        
+    if CACHE.get('images') is None:
+        images, labels = get_data(device=device, n_examples=n_examples, data_dir=data_dir)
+        CACHE['images'] = images
+        CACHE['labels'] = labels
+    else:
+        images = CACHE['images']
+        labels = CACHE['labels']
+    
     clean_acc = clean_accuracy(model, images, labels)
 
     try:
