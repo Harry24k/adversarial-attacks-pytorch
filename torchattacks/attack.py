@@ -412,7 +412,7 @@ class Attack(object):
             raise ValueError(type + " is not a valid type. [Options: float, int]")
         return inputs
 
-    def __call__(self, inputs, labels, *args, **kwargs):
+    def __call__(self, inputs, labels=None, *args, **kwargs):
         given_training = self.model.training
         self._change_model_mode(given_training)
 
