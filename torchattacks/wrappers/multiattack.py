@@ -1,8 +1,7 @@
-import logging
-
 import torch
 
 from ..attack import Attack
+
 
 class MultiAttack(Attack):
     r"""
@@ -29,7 +28,7 @@ class MultiAttack(Attack):
 
         self._accumulate_multi_atk_records = False
         self._multi_atk_records = [0.0]
-        
+
     def check_validity(self):
         if len(self.attacks) < 2:
             raise ValueError("More than two attacks should be given.")
