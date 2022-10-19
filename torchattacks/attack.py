@@ -1,4 +1,5 @@
 import time
+import logging
 from collections import OrderedDict
 from collections.abc import Iterable
 
@@ -48,6 +49,7 @@ class Attack(object):
         # Controls when normalization is used.
         self.normalization_used = None
         self._normalization_applied = None
+        self._set_auto_normalization_used(model)
 
         # Controls model mode during attack.
         self._model_training = False
@@ -79,6 +81,19 @@ class Attack(object):
     @wrapper_method
     def set_device(self, device):
         self.device = device
+
+    @wrapper_method
+    def _set_auto_normalization_used(self, model):
+        mean = getattr(model, 'mean', None)
+        std = getattr(model, 'std', None)
+        if (mean is not None) and (std is not None):
+            if isinstance(mean, torch.Tensor):
+                mean = mean.cpu().numpy()
+            if isinstance(std, torch.Tensor):
+                std = std.cpu().numpy()
+            if (mean != 0).all() or (std != 1).all():
+                self.set_normalization_used(mean, std)
+                logging.warning("Normalization automatically loaded from `model.mean` and `model.std`.")
 
     @wrapper_method
     def set_normalization_used(self, mean, std):
