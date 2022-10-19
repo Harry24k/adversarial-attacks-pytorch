@@ -93,7 +93,7 @@ class Attack(object):
                 std = std.cpu().numpy()
             if (mean != 0).all() or (std != 1).all():
                 self.set_normalization_used(mean, std)
-                logging.warning("Normalization automatically loaded from `model.mean` and `model.std`.")
+#                 logging.info("Normalization automatically loaded from `model.mean` and `model.std`.")
 
     @wrapper_method
     def set_normalization_used(self, mean, std):
