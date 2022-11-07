@@ -29,7 +29,7 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./mod
         CACHE['model'] = model
     else:
         model = CACHE['model']
-        
+
     if CACHE.get('images') is None:
         images, labels = get_data(device=device, n_examples=n_examples, data_dir=data_dir)
         CACHE['images'] = images
@@ -37,8 +37,12 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./mod
     else:
         images = CACHE['images']
         labels = CACHE['labels']
-    
-    clean_acc = clean_accuracy(model, images, labels)
+
+    if CACHE.get('clean_acc') is None:
+        clean_acc = clean_accuracy(model, images, labels)
+        CACHE['clean_acc'] = clean_acc
+    else:
+        clean_acc = CACHE['clean_acc']
 
     try:
         atk = eval("torchattacks."+atk_class)(model)
