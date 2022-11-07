@@ -114,7 +114,7 @@ class Square(Attack):
         t = low + (high - low) * torch.rand(shape).to(self.device)
         return t.long()
 
-    def normalize(self, x):
+    def normalize_delta(self, x):
         if self.norm == 'Linf':
             t = x.abs().view(x.shape[0], -1).max(1)[0]
             return x / (t.view(-1, *([1] * self.ndims)) + 1e-12)
@@ -276,7 +276,7 @@ class Square(Attack):
                         vw += s
                     vh += s
 
-                x_best = torch.clamp(x + self.normalize(delta_init
+                x_best = torch.clamp(x + self.normalize_delta(delta_init
                     ) * self.eps, 0., 1.)
                 margin_min, loss_min = self.margin_and_loss(x_best, y)
                 n_queries = torch.ones(x.shape[0]).to(self.device)
@@ -333,7 +333,7 @@ class Square(Attack):
                     delta_curr[:, :, vh2:vh2 + s, vw2:vw2 + s] = 0.
                     delta_curr[:, :, vh:vh + s, vw:vw + s] = new_deltas + 0
 
-                    x_new = torch.clamp(x_curr + self.normalize(delta_curr
+                    x_new = torch.clamp(x_curr + self.normalize_delta(delta_curr
                         ) * self.eps, 0. ,1.)
                     x_new = self.check_shape(x_new)
                     norms_image = self.lp_norm(x_new - x_curr)
