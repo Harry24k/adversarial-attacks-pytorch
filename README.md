@@ -9,7 +9,7 @@
   <a href="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch" > 
  <img src="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch/branch/master/graph/badge.svg?token=00CQ79UTC2"/> 
   <a href="https://pepy.tech/project/torchattacks" > 
- <img src="https://static.pepy.tech/personalized-badge/torchattacks?period=month&units=international_system&left_color=black&right_color=lightgrey&left_text=Downloads"/> 
+ <img src="https://static.pepy.tech/personalized-badge/torchattacks?period=total&units=international_system&left_color=black&right_color=red&left_text=Downloads"/> 
  </a>
 </p>
 
