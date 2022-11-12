@@ -11,7 +11,7 @@
   <a href="https://lgtm.com/projects/g/Harry24k/adversarial-attacks-pytorch/" > 
  <img src="https://img.shields.io/lgtm/grade/python/github/Harry24k/adversarial-attacks-pytorch?label=code%20quality"/> 
   <a href="https://pepy.tech/project/torchattacks" > 
- <img src="https://static.pepy.tech/personalized-badge/torchattacks?period=total&units=international_system&left_color=grey&right_color=red&left_text=downloads"/> 
+ <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
  </a>
 </p>
 
