@@ -38,7 +38,6 @@ class Attack(object):
         
         self.set_model(model)
         self.device = next(model.parameters()).device
-        self.return_type = 'float'
 
         # Controls attack mode.
         self.attack_mode = 'default'
@@ -179,35 +178,6 @@ class Attack(object):
         self._target_map_function = self.get_least_likely_label
 
     @wrapper_method
-    def set_return_type(self, type):
-        r"""
-        Set the return type of adversarial inputs: `int` or `float`.
-
-        Arguments:
-            type (str): 'float' or 'int'. (Default: 'float')
-
-        .. note::
-            If 'int' is used for the return type, the file size of 
-            adversarial inputs can be reduced (about 1/4 for CIFAR10).
-            However, if the attack originally outputs float adversarial inputs
-            (e.g. using small step-size than 1/255), it might reduce the attack
-            success rate of the attack.
-
-        """
-        if type == 'float':
-            self.return_type = 'float'
-        elif type == 'int':
-            self.return_type = 'int'
-        else:
-            raise ValueError(type + " is not a valid type. [Options: float, int]")
-
-    def get_return_type(self):
-        r"""
-        Get the return type of adversarial inputs: `int` or `float`.
-        """
-        return self.return_type
-
-    @wrapper_method
     def set_model_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
         r"""
         Set training mode during attack process.
@@ -280,8 +250,7 @@ class Attack(object):
 
             if verbose or return_verbose:
                 with torch.no_grad():
-                    adv_inputs_type_changed = self.to_type(adv_inputs, 'float')
-                    outputs = self.get_output_with_eval_nograd(adv_inputs_type_changed)
+                    outputs = self.get_output_with_eval_nograd(adv_inputs)
 
                     # Calculate robust accuracy
                     _, pred = torch.max(outputs.data, 1)
@@ -291,7 +260,7 @@ class Attack(object):
                     rob_acc = 100 * float(correct) / total
 
                     # Calculate l2 distance
-                    delta = (adv_inputs_type_changed - inputs.to(self.device)).view(batch_size, -1)
+                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)
                     l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
                     l2 = torch.cat(l2_distance).mean().item()
 
@@ -304,11 +273,12 @@ class Attack(object):
                         self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
 
             if save_path is not None:
-                adv_input_list.append(self.to_type(adv_inputs.detach().cpu(), save_type))
+                adv_input_list.append(adv_inputs.detach().cpu())
                 label_list.append(labels.detach().cpu())
 
                 adv_input_list_cat = torch.cat(adv_input_list, 0)
                 label_list_cat = torch.cat(label_list, 0)
+                
                 save_dict = {'adv_inputs':adv_input_list_cat, 'labels':label_list_cat}
 
                 if save_predictions:
@@ -317,9 +287,19 @@ class Attack(object):
                     save_dict['preds'] = pred_list_cat
 
                 if save_clean_inputs:
-                    input_list.append(self.to_type(inputs.detach().cpu(), save_type))
+                    input_list.append(inputs.detach().cpu())
                     input_list_cat = torch.cat(input_list, 0)
                     save_dict['clean_inputs'] = input_list_cat
+                    
+                if self.normalization_used is not None:
+                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])
+                    if save_clean_inputs:
+                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])
+
+                if save_type == 'int':
+                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')
+                    if save_clean_inputs:
+                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')
 
                 save_dict['save_type'] = save_type
                 torch.save(save_dict, save_path)
@@ -335,12 +315,27 @@ class Attack(object):
             return rob_acc, l2, elapsed_time
 
     @staticmethod
+    def to_type(inputs, type):
+        r"""
+        Return inputs as int if float is given.
+        """
+        if type == 'int':
+            if isinstance(inputs, torch.FloatTensor) or isinstance(inputs, torch.cuda.FloatTensor):
+                return (inputs*255).type(torch.uint8)
+        elif type == 'float':
+            if isinstance(inputs, torch.ByteTensor) or isinstance(inputs, torch.cuda.ByteTensor):
+                return inputs.float()/255
+        else:
+            raise ValueError(type + " is not a valid type. [Options: float, int]")
+        return inputs
+
+    @staticmethod
     def _save_print(progress, rob_acc, l2, elapsed_time, end):
         print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
               % (progress, rob_acc, l2, elapsed_time), end=end)
 
     @staticmethod
-    def load(load_path, batch_size=128, shuffle=False,
+    def load(load_path, batch_size=128, shuffle=False, normalize=None,
              load_predictions=False, load_clean_inputs=False):
         save_dict = torch.load(load_path)
         keys = ['adv_inputs', 'labels']
@@ -354,6 +349,14 @@ class Attack(object):
             save_dict['adv_inputs'] = save_dict['adv_inputs'].float()/255
             if load_clean_inputs:
                 save_dict['clean_inputs'] = save_dict['clean_inputs'].float()/255
+                
+        if normalize is not None:
+            n_channels = len(normalize['mean'])
+            mean = torch.tensor(normalize['mean']).reshape(1, n_channels, 1, 1)
+            std = torch.tensor(normalize['std']).reshape(1, n_channels, 1, 1)
+            save_dict['adv_inputs'] = (save_dict['adv_inputs'] - mean) / std
+            if load_clean_inputs:
+                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std
 
         adv_data = TensorDataset(*[save_dict[key] for key in keys])
         adv_loader = DataLoader(adv_data, batch_size=batch_size, shuffle=shuffle)
@@ -412,21 +415,6 @@ class Attack(object):
 
         return target_labels.long().to(self.device)
 
-    @staticmethod
-    def to_type(inputs, type):
-        r"""
-        Return inputs as int if float is given.
-        """
-        if type == 'int':
-            if isinstance(inputs, torch.FloatTensor) or isinstance(inputs, torch.cuda.FloatTensor):
-                return (inputs*255).type(torch.uint8)
-        elif type == 'float':
-            if isinstance(inputs, torch.ByteTensor) or isinstance(inputs, torch.cuda.ByteTensor):
-                return inputs.float()/255
-        else:
-            raise ValueError(type + " is not a valid type. [Options: float, int]")
-        return inputs
-
     def __call__(self, inputs, labels=None, *args, **kwargs):
         given_training = self.model.training
         self._change_model_mode(given_training)
@@ -436,13 +424,10 @@ class Attack(object):
             self._set_normalization_applied(False)
 
             adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-            adv_inputs = self.to_type(adv_inputs, self.return_type)
-
             adv_inputs = self.normalize(adv_inputs)
             self._set_normalization_applied(True)
         else:
             adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-            adv_inputs = self.to_type(adv_inputs, self.return_type)
 
         self._recover_model_mode(given_training)
 
@@ -461,7 +446,6 @@ class Attack(object):
             del info[key]
 
         info['attack_mode'] = self.attack_mode
-        info['return_type'] = self.return_type
         info['normalization_used'] = True if self.normalization_used is not None else False
 
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
