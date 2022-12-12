@@ -99,20 +99,6 @@ atk.set_mode_default()
 
 </p></details>
 
-<details><summary>Return type</summary><p>
-
-* Return adversarial images with integer value (0-255).
-```python
-atk.set_return_type(type='int')
-```
-
-* Return adversarial images with float value (0-1).
-```python
-atk.set_return_type(type='float')
-```
-
-</p></details>
-
 <details><summary>Save adversarial images</summary><p>
 
 ```python
