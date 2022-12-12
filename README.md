@@ -8,6 +8,10 @@
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
   <a href="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch" > 
  <img src="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch/branch/master/graph/badge.svg?token=00CQ79UTC2"/> 
+  <a href="https://lgtm.com/projects/g/Harry24k/adversarial-attacks-pytorch/" > 
+ <img src="https://img.shields.io/lgtm/grade/python/github/Harry24k/adversarial-attacks-pytorch?label=code%20quality"/> 
+  <a href="https://pepy.tech/project/torchattacks" > 
+ <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
  </a>
 </p>
 
