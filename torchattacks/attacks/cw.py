@@ -122,7 +122,7 @@ class CW(Attack):
 
     # f-function in the paper
     def f(self, outputs, labels):
-        one_hot_labels = torch.eye(len(outputs[0]))[labels].to(self.device)
+        one_hot_labels = torch.eye(len(outputs[0])).to(self.device)[labels]
 
         i, _ = torch.max((1-one_hot_labels)*outputs, dim=1) # get the second largest logit
         j = torch.masked_select(outputs, one_hot_labels.bool()) # get the largest logit
