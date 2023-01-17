@@ -29,7 +29,7 @@ class EOTPGD(Attack):
 
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
-                 eot_iter=2, random_start=True):
+                 eot_iter=2, random_start=True, loss_func=None):
         super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -37,6 +37,10 @@ class EOTPGD(Attack):
         self.eot_iter = eot_iter
         self.random_start = random_start
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -48,7 +52,7 @@ class EOTPGD(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

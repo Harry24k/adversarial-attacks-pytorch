@@ -31,7 +31,7 @@ class Jitter(Attack):
 
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
-                 scale=10, std=0.1, random_start=True):
+                 scale=10, std=0.1, random_start=True, loss_func=None):
         super().__init__("Jitter", model)
         self.eps = eps
         self.alpha = alpha
@@ -40,6 +40,10 @@ class Jitter(Attack):
         self.scale = scale
         self.std = std
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.MSELoss(reduction='none')
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -51,7 +55,7 @@ class Jitter(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.MSELoss(reduction='none')
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

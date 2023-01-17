@@ -27,13 +27,17 @@ class NIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, loss_func=None):
         super().__init__("NIFGSM", model)
         self.eps = eps
         self.steps = steps
         self.decay = decay
         self.alpha = alpha
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -47,7 +51,7 @@ class NIFGSM(Attack):
 
         momentum = torch.zeros_like(images).detach().to(self.device)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

@@ -32,7 +32,7 @@ class VMIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, N=5, beta=3/2):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, N=5, beta=3/2, loss_func=None):
         super().__init__("VMIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -41,6 +41,10 @@ class VMIFGSM(Attack):
         self.N = N
         self.beta = beta
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -56,7 +60,7 @@ class VMIFGSM(Attack):
 
         v = torch.zeros_like(images).detach().to(self.device)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

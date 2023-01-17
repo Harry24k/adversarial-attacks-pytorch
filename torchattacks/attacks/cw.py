@@ -36,13 +36,17 @@ class CW(Attack):
     .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
 
     """
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01):
+    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, loss_func=None):
         super().__init__("CW", model)
         self.c = c
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.MSELoss(reduction='none')
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -63,7 +67,7 @@ class CW(Attack):
         prev_cost = 1e10
         dim = len(images.shape)
 
-        MSELoss = nn.MSELoss(reduction='none')
+        loss = self.loss_func
         Flatten = nn.Flatten()
 
         optimizer = optim.Adam([w], lr=self.lr)
@@ -73,7 +77,7 @@ class CW(Attack):
             adv_images = self.tanh_space(w)
 
             # Calculate loss
-            current_L2 = MSELoss(Flatten(adv_images),
+            current_L2 = loss(Flatten(adv_images),
                                  Flatten(images)).sum(dim=1)
             L2_loss = current_L2.sum()
 

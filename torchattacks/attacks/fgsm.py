@@ -25,10 +25,14 @@ class FGSM(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=8/255):
+    def __init__(self, model, eps=8/255, loss_func=None):
         super().__init__("FGSM", model)
         self.eps = eps
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -40,7 +44,7 @@ class FGSM(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         images.requires_grad = True
         outputs = self.get_logits(images)

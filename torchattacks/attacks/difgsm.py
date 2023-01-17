@@ -34,7 +34,7 @@ class DIFGSM(Attack):
     """
 
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=0.0,
-                 resize_rate=0.9, diversity_prob=0.5, random_start=False):
+                 resize_rate=0.9, diversity_prob=0.5, random_start=False, loss_func=None):
         super().__init__("DIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -44,6 +44,10 @@ class DIFGSM(Attack):
         self.diversity_prob = diversity_prob
         self.random_start = random_start
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def input_diversity(self, x):
         img_size = x.shape[-1]
@@ -76,7 +80,7 @@ class DIFGSM(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
         momentum = torch.zeros_like(images).detach().to(self.device)
 
         adv_images = images.clone().detach()

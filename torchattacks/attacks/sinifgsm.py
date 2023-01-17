@@ -31,7 +31,7 @@ class SINIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5, loss_func=None):
         super().__init__("SINIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -39,6 +39,10 @@ class SINIFGSM(Attack):
         self.alpha = alpha
         self.m = m
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -52,7 +56,7 @@ class SINIFGSM(Attack):
 
         momentum = torch.zeros_like(images).detach().to(self.device)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

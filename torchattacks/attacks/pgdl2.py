@@ -29,7 +29,7 @@ class PGDL2(Attack):
 
     """
     def __init__(self, model, eps=1.0, alpha=0.2, steps=10, 
-                 random_start=True, eps_for_division=1e-10):
+                 random_start=True, eps_for_division=1e-10, loss_func=None):
         super().__init__("PGDL2", model)
         self.eps = eps
         self.alpha = alpha
@@ -37,6 +37,10 @@ class PGDL2(Attack):
         self.random_start = random_start
         self.eps_for_division = eps_for_division
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -48,7 +52,7 @@ class PGDL2(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
         batch_size = len(images)

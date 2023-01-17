@@ -33,7 +33,7 @@ class UPGD(Attack):
 
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
-                 random_start=False, loss='ce', decay=1.0, eot_iter=1):
+                 random_start=False, loss='ce', decay=1.0, eot_iter=1, loss_func=None):
         super().__init__("UPGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -43,6 +43,10 @@ class UPGD(Attack):
         self.decay = decay
         self.eot_iter = eot_iter
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -100,7 +104,7 @@ class UPGD(Attack):
             raise ValueError(self.loss + " is not valid.")
 
     def ce_loss(self, images, labels, target_labels):
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
         outputs = self.get_logits(images)
 
         if self.targeted:

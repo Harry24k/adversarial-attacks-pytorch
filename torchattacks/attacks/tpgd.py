@@ -27,12 +27,16 @@ class TPGD(Attack):
         >>> adv_images = attack(images)
 
     """
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, loss_func=None):
         super().__init__("TPGD", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.supported_mode = ['default']
+        if loss_func is None:
+            self.loss_func = nn.KLDivLoss(reduction='sum')
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels=None):
         r"""
@@ -44,7 +48,7 @@ class TPGD(Attack):
         adv_images = images + 0.001*torch.randn_like(images)
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
-        loss = nn.KLDivLoss(reduction='sum')
+        loss = self.loss_func
 
         for _ in range(self.steps):
             adv_images.requires_grad = True

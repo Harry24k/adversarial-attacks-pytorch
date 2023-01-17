@@ -29,13 +29,17 @@ class PGD(Attack):
 
     """
     def __init__(self, model, eps=8/255,
-                 alpha=2/255, steps=10, random_start=True):
+                 alpha=2/255, steps=10, random_start=True, loss_func=None):
         super().__init__("PGD", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.random_start = random_start
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -47,7 +51,7 @@ class PGD(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
 
         adv_images = images.clone().detach()
 

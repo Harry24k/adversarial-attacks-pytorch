@@ -39,7 +39,7 @@ class TIFGSM(Attack):
 
     """
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=0.0, kernel_name='gaussian',
-                 len_kernel=15, nsig=3, resize_rate=0.9, diversity_prob=0.5, random_start=False):
+                 len_kernel=15, nsig=3, resize_rate=0.9, diversity_prob=0.5, random_start=False, loss_func=None):
         super().__init__("TIFGSM", model)
         self.eps = eps
         self.steps = steps
@@ -53,6 +53,10 @@ class TIFGSM(Attack):
         self.nsig = nsig
         self.stacked_kernel = torch.from_numpy(self.kernel_generation())
         self.supported_mode = ['default', 'targeted']
+        if loss_func is None:
+            self.loss_func = nn.CrossEntropyLoss()
+        else:
+            self.loss_func = loss_func
 
     def forward(self, images, labels):
         r"""
@@ -64,7 +68,7 @@ class TIFGSM(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+        loss = self.loss_func
         momentum = torch.zeros_like(images).detach().to(self.device)
         stacked_kernel = self.stacked_kernel.to(self.device)
 
