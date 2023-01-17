@@ -11,7 +11,7 @@ What kind of change does this PR introduce?
 	- [ ] Classname should be given as CamelCase.
 	- [ ] Python file name should be SMALL letters of the classname.
 	- [ ] Add attack in [__init__.py](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/torchattacks/__init__.py)
-	- [ ] Check `supported_mode` wheter the attack supports targeted mode.
+	- [ ] Check `supported_mode` whether the attack supports targeted mode.
 	- [ ] [README.md](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/README.md)  should be updated.
 	- [ ] Check [WORFLOW](https://github.com/Harry24k/adversarial-attacks-pytorch/actions) result  after PR.
 - [ ] Other... Please describe:
