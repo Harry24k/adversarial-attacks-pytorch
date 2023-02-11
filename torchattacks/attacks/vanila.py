@@ -27,6 +27,10 @@ class VANILA(Attack):
         r"""
         Overridden.
         """
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            print('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+            return torch.zeros(images.shape)
+
         adv_images = images.clone().detach().to(self.device)
 
         return adv_images

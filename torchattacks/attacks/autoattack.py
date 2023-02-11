@@ -1,4 +1,5 @@
 import time
+import torch
 
 from ..attack import Attack
 from ..wrappers.multiattack import MultiAttack
@@ -76,6 +77,10 @@ class AutoAttack(Attack):
         r"""
         Overridden.
         """
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            print('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+            return torch.zeros(images.shape)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         adv_images = self._autoattack(images, labels)

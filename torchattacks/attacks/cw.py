@@ -48,6 +48,10 @@ class CW(Attack):
         r"""
         Overridden.
         """
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            print('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+            return torch.zeros(images.shape)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
@@ -115,7 +119,8 @@ class CW(Attack):
 
     def inverse_tanh_space(self, x):
         # torch.atanh is only for torch >= 1.7.0
-        return self.atanh(x*2-1)
+        # atanh is defined in the range -1 to 1
+        return self.atanh(torch.clamp(x*2-1, min=-1, max=1))
 
     def atanh(self, x):
         return 0.5*torch.log((1+x)/(1-x))

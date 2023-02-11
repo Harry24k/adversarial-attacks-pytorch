@@ -74,6 +74,10 @@ class Pixle(Attack):
         self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            print('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+            return torch.zeros(images.shape)
+
         if not self.update_each_iteration:
             return self.restart_forward(images, labels)
         else:
