@@ -393,7 +393,6 @@ class Attack(object):
         """
         if self._target_map_function is None:
             raise ValueError('target_map_function is not initialized by set_mode_targeted.')
-        print(self.attack_mode)
         if self.attack_mode == 'targeted(label)':
             target_labels = labels
         else:
