@@ -54,6 +54,12 @@ adv_images = atk(images, labels)
 pip install torchattacks
 ```
 
+**or install from source**
+
+```
+pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
+```
+
 
 ## Getting Started
 
@@ -70,9 +76,9 @@ pip install torchattacks
 * **Transfer Attack on CIFAR10** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/Transfer%20Attack%20on%20CIFAR10.ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demo/Transfer%20Attack%20on%20CIFAR10.ipynb))
 
 
-#### Torchattacks supports following functions:
+### Torchattacks supports following functions:
 
-<details><summary>Targeted mode</summary><p>
+**Targeted mode**
 
 * Random target label:
 ```python
@@ -92,14 +98,22 @@ atk.set_mode_targeted_least_likely(kth_min)
 atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
 ```
 
+* By labels:
+```python
+# label from user provide.
+atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
+atk.set_mode_targeted_by_label()
+# shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
+target_labels = (labels + 1) % 10
+adv_images = atk(images, target_labels)
+```
+
 * Return to default:
 ```python
 atk.set_mode_default()
 ```
 
-</p></details>
-
-<details><summary>Save adversarial images</summary><p>
+**Save adversarial images**
 
 ```python
 # Save
@@ -109,9 +123,7 @@ atk.save(data_loader, save_path="./data.pt", verbose=True)
 adv_loader = atk.load(load_path="./data.pt")
 ```
 
-</p></details>
-
-<details><summary>Training/Eval during attack</summary><p>
+**Training/Eval during attack**
 
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
@@ -119,10 +131,8 @@ adv_loader = atk.load(load_path="./data.pt")
 atk.set_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
 ```
 
-</p></details>
 
-
-<details><summary>Make a set of attacks</summary><p>
+**Make a set of attacks**
 
 * Strong attacks
 ```python
@@ -145,13 +155,11 @@ atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=Tr
 atk = torchattacks.MultiAttack([atk1, atk2])
 ```
 
-</p></details>
 
 
+### Torchattacks also supports collaboration with other attack packages.
 
-#### Torchattacks also supports collaboration with other attack packages.
-
-<details><summary>FoolBox</summary><p>
+**FoolBox**
 
 https://github.com/bethgelab/foolbox
 
@@ -187,9 +195,7 @@ class L2BrendelBethge(Attack):
 atk = L2BrendelBethge(model)
 ```
 
-</p></details>
-
-<details><summary>Adversarial-Robustness-Toolbox (ART)</summary><p>
+**Adversarial-Robustness-Toolbox (ART)**
 
 https://github.com/IBM/adversarial-robustness-toolbox
 
@@ -224,10 +230,6 @@ class JSMA(Attack):
 
 atk = JSMA(model)
 ```
-
-</p></details>
-
-
 
 ### :fire: List of implemented papers
 
