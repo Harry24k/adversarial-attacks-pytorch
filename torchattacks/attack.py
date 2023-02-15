@@ -63,6 +63,11 @@ class Attack(object):
         raise NotImplementedError
         
     @wrapper_method
+    def _check_inputs(self, images):
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            raise ValueError('input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+
+    @wrapper_method
     def set_model(self, model):
         self.model = model
         self.model_name = str(model).split("(")[0]

@@ -64,6 +64,7 @@ class PGDRS(Attack):
                                        split_size_or_sections=split_num)
             labels_split = torch.split(labels,
                                        split_size_or_sections=split_num)
+            img_list = []
             for img_sub, lab_sub in zip(inputs_split, labels_split):
                 img_adv = self._forward(img_sub, lab_sub)
                 img_list.append(img_adv)
@@ -75,9 +76,7 @@ class PGDRS(Attack):
         r"""
         Overridden.
         """
-        if torch.max(images) > 1 or torch.min(images) < 0:
-            print('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
-            return torch.zeros(images.shape)
+        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
