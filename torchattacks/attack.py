@@ -190,7 +190,7 @@ class Attack(object):
         Set attack mode as targeted.
         
         .. note::
-            The `labels` parameter can be used to specify a user-supplied label for the target of the attack.
+            Use user-supplied labels as target labels.
         """
         self._set_mode_targeted('targeted(label)')
         self._target_map_function = 'function is a string'
