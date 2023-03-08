@@ -137,15 +137,16 @@ class Attack(object):
         print("Attack mode is changed to 'default.'")
 
     @wrapper_method
-    def _set_mode_targeted(self, mode):
+    def _set_mode_targeted(self, mode, quiet):
         if "targeted" not in self.supported_mode:
             raise ValueError("Targeted mode is not supported.")
         self.targeted = True
         self.attack_mode = mode
-        print("Attack mode is changed to '%s'."%mode)
+        if not quiet:
+            print("Attack mode is changed to '%s'."%mode)
 
     @wrapper_method
-    def set_mode_targeted_by_function(self, target_map_function):
+    def set_mode_targeted_by_function(self, target_map_function, quiet=False):
         r"""
         Set attack mode as targeted.
 
@@ -155,11 +156,11 @@ class Attack(object):
                 None for using input labels as targeted labels. (Default)
 
         """
-        self._set_mode_targeted('targeted(custom)')
+        self._set_mode_targeted('targeted(custom)', quiet)
         self._target_map_function = target_map_function
 
     @wrapper_method
-    def set_mode_targeted_random(self):
+    def set_mode_targeted_random(self, quiet=False):
         r"""
         Set attack mode as targeted with random labels.
 
@@ -167,11 +168,11 @@ class Attack(object):
             num_classses (str): number of classes.
 
         """
-        self._set_mode_targeted('targeted(random)')
+        self._set_mode_targeted('targeted(random)', quiet)
         self._target_map_function = self.get_random_target_label
 
     @wrapper_method
-    def set_mode_targeted_least_likely(self, kth_min=1):
+    def set_mode_targeted_least_likely(self, kth_min=1, quiet=False):
         r"""
         Set attack mode as targeted with least likely labels.
 
@@ -179,20 +180,20 @@ class Attack(object):
             kth_min (str): label with the k-th smallest probability used as target labels. (Default: 1)
 
         """
-        self._set_mode_targeted('targeted(least-likely)')
+        self._set_mode_targeted('targeted(least-likely)', quiet)
         assert (kth_min > 0)
         self._kth_min = kth_min
         self._target_map_function = self.get_least_likely_label
 
     @wrapper_method
-    def set_mode_targeted_by_label(self):
+    def set_mode_targeted_by_label(self, quiet=False):
         r"""
         Set attack mode as targeted.
         
         .. note::
             Use user-supplied labels as target labels.
         """
-        self._set_mode_targeted('targeted(label)')
+        self._set_mode_targeted('targeted(label)', quiet)
         self._target_map_function = 'function is a string'
 
     @wrapper_method
