@@ -30,7 +30,7 @@ class Pixle(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, iteratsion=50)
+        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, max_iterations=50)
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
