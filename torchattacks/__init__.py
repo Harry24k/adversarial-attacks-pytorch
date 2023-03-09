@@ -22,6 +22,7 @@ from .attacks.pgdrs import PGDRS
 from .attacks.sinifgsm import SINIFGSM
 from .attacks.vmifgsm import VMIFGSM
 from .attacks.vnifgsm import VNIFGSM
+from .attacks.spsa import SPSA
 
 # L2 attacks
 from .attacks.cw import CW
@@ -50,7 +51,7 @@ __all__ = [
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
     "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM",
+    "VMIFGSM", "VNIFGSM", "SPSA"
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 
