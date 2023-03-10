@@ -263,8 +263,8 @@ The distance measure in parentheses.
 |     **Jitter**<br />(Linf)      | Exploring Misclassifications of Robust Neural Networks to Enhance Adversarial Attacks ([Schwinn, Leo, et al., 2021](https://arxiv.org/abs/2105.10304))    |                                                                                                                        |
 |       **Pixle**<br />(L0)       | Pixle: a fast and effective black-box attack based on rearranging pixels ([Pomponi, Jary, et al., 2022](https://arxiv.org/abs/2202.02236))                |                                                                                                                        |
 | **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | :heart_eyes: Contributor [Martin Gubri](https://github.com/Framartin)                               |
-| **SPSA**<br />(Linf) | Adversarial Risk and the Dangers of Evaluating Against Weak Attacks ([Uesato, et al., 2018](https://arxiv.org/abs/1802.05666))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-
+| **SPSA**<br />(Linf) | Adversarial Risk and the Dangers of Evaluating Against Weak Attacks ([Uesato, Jonathan, et al., 2018](https://arxiv.org/abs/1802.05666))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **JSMA**<br /> | The Limitations of Deep Learning in Adversarial Settings ([Papernot, Nicolas, et al., 2016](https://arxiv.org/abs/1511.07528v1))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 
 
 ## Performance Comparison
