@@ -29,6 +29,7 @@ from .attacks.cw import CW
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
+from .attacks.jsma import JSMA
 
 # L0 attacks
 from .attacks.sparsefool import SparseFool
@@ -51,7 +52,7 @@ __all__ = [
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
     "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA",
+    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA",
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 

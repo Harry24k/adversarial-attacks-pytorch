@@ -21,8 +21,6 @@ class SPSA(Attack):
         nb_iter: number of iterations of the attack.
         nb_sample: number of samples for SPSA gradient approximation.
         max_batch_size: maximum batch size to be evaluated at once.
-        clip_min: upper bound of image values.
-        clip_max: lower bound of image values.
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -35,7 +33,7 @@ class SPSA(Attack):
 
     """
 
-    def __init__(self, model, eps=0.01, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64, clip_min=0.0, clip_max=1.0):
+    def __init__(self, model, eps=0.01, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
         super().__init__("SPSA", model)
         self.eps = eps
         self.delta = delta
@@ -43,8 +41,6 @@ class SPSA(Attack):
         self.nb_iter = nb_iter
         self.nb_sample = nb_sample
         self.max_batch_size = max_batch_size
-        self.clip_min = clip_min
-        self.clip_max = clip_max
         self.supported_mode = ['default', 'targeted']
 
     def spsa_grad(self, loss, x, y):
@@ -103,8 +99,7 @@ class SPSA(Attack):
         Return the clamped perturbation `dx`.
         """
         dx_clamped = torch.clamp(dx, min=-self.eps, max=self.eps)
-        x_adv = torch.clamp(
-            x + dx_clamped, min=self.clip_min, max=self.clip_max)
+        x_adv = torch.clamp(x+dx_clamped, min=0, max=1)
         # `dx` is changed *inplace* so the optimizer will keep
         # tracking it. the simplest mechanism for inplace was
         # adding the difference between the new value `x_adv - x`
