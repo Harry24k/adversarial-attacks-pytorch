@@ -61,7 +61,8 @@ class JSMA(Attack):
         return xvar.grad
 
     def compute_forward_derivative(self, adv_images, labels):
-        jacobians = torch.stack([self.jacobian(self.model, adv_images, adv_labels) for adv_labels in range(self.num_classes)])
+        jacobians = torch.stack([self.jacobian(
+            self.model, adv_images, adv_labels) for adv_labels in range(self.num_classes)])
         grads = jacobians.view((jacobians.shape[0], jacobians.shape[1], -1))
         grads_target = grads[labels, range(len(labels)), :]
         grads_other = grads.sum(dim=0) - grads_target
@@ -134,14 +135,17 @@ class JSMA(Attack):
 
         # Algorithm 1
         while (torch.any(labels != adv_pred) and current_step < max_iters):
-            grads_target, grads_other = self.compute_forward_derivative(adv_images, labels)
+            grads_target, grads_other = self.compute_forward_derivative(
+                adv_images, labels)
 
             # Algorithm 3
-            p1, p2, valid = self.saliency_map(search_space, grads_target, grads_other, labels)
+            p1, p2, valid = self.saliency_map(
+                search_space, grads_target, grads_other, labels)
             cond = (labels != adv_pred) & valid
             self.update_search_space(search_space, p1, p2, cond)
 
-            adv_images = self.modify_adv_images(adv_images, batch_size, cond, p1, p2)
+            adv_images = self.modify_adv_images(
+                adv_images, batch_size, cond, p1, p2)
             adv_pred = torch.argmax(self.get_logits(adv_images), 1)
 
             current_step += 1
