@@ -36,10 +36,6 @@ from .attacks.sparsefool import SparseFool
 from .attacks.onepixel import OnePixel
 from .attacks.pixle import Pixle
 
-# L1 attacks
-
-from .attacks.ead import EAD
-
 # Linf, L2 attacks
 from .attacks.fab import FAB
 from .attacks.autoattack import AutoAttack
@@ -56,7 +52,7 @@ __all__ = [
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
     "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EAD",
+    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA",
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 
