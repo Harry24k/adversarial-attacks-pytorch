@@ -393,7 +393,7 @@ class Pixle(Attack):
         indexes = torch.tensor(destinations)
         destination = destination.clone().detach().to(self.device)
 
-        s = source[0][source_pixels].view(3, -1)
+        s = source[0][source_pixels].view(c, -1)
 
         destination[0, :, indexes[:, 0], indexes[:, 1]] = s
 
