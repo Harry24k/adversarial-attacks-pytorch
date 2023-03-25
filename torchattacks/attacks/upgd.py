@@ -92,14 +92,17 @@ class UPGD(Attack):
         return adv_images
 
     def get_loss(self, images, labels, target_labels=None):
-        if self.loss == 'ce':
-            return self.ce_loss(images, labels, target_labels)
-        elif self.loss == 'dlr':
-            return self.dlr_loss(images, labels, target_labels)
-        elif self.loss == 'margin':
-            return self.margin_loss(images, labels, target_labels)
+        if isinstance(self.loss, str):
+            if self.loss == 'ce':
+                return self.ce_loss(images, labels, target_labels)
+            elif self.loss == 'dlr':
+                return self.dlr_loss(images, labels, target_labels)
+            elif self.loss == 'margin':
+                return self.margin_loss(images, labels, target_labels)
+            else:
+                raise ValueError(self.loss + " is not valid.")
         else:
-            raise ValueError(self.loss + " is not valid.")
+            return self.loss(images, labels, target_labels)
 
     def ce_loss(self, images, labels, target_labels):
         loss = nn.CrossEntropyLoss()
