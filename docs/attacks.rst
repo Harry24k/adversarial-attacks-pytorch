@@ -166,3 +166,13 @@ Attacks
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    .. automodule:: torchattacks.attacks.square
     :members:
+    
+   SPSA
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.spsa
+    :members:
+    
+   JSMA
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automodule:: torchattacks.attacks.jsma
+    :members:
