@@ -79,6 +79,8 @@ class PGDRSL2(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         #expend the inputs over noise_batch_size

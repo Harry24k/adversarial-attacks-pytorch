@@ -38,6 +38,8 @@ class TPGD(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         logit_ori = self.get_logits(images).detach()
 

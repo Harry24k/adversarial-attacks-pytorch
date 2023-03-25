@@ -48,6 +48,8 @@ class CW(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
@@ -90,12 +92,17 @@ class CW(Attack):
             optimizer.step()
 
             # Update adversarial images
-            _, pre = torch.max(outputs.detach(), 1)
-            correct = (pre == labels).float()
+            pre = torch.argmax(outputs.detach(), 1)
+            if self.targeted:
+                # We want to let pre == target_labels in a targeted attack
+                condition = (pre == target_labels).float()
+            else:
+                # If the attack is not targeted we simply make these two values unequal
+                condition = (pre != labels).float()
 
-            # filter out images that get either correct predictions or non-decreasing loss, 
+            # Filter out images that get either correct predictions or non-decreasing loss, 
             # i.e., only images that are both misclassified and loss-decreasing are left 
-            mask = (1-correct)*(best_L2 > current_L2.detach())
+            mask = condition*(best_L2 > current_L2.detach())
             best_L2 = mask*current_L2.detach() + (1-mask)*best_L2
 
             mask = mask.view([-1]+[1]*(dim-1))
@@ -115,19 +122,20 @@ class CW(Attack):
 
     def inverse_tanh_space(self, x):
         # torch.atanh is only for torch >= 1.7.0
-        return self.atanh(x*2-1)
+        # atanh is defined in the range -1 to 1
+        return self.atanh(torch.clamp(x*2-1, min=-1, max=1))
 
     def atanh(self, x):
         return 0.5*torch.log((1+x)/(1-x))
 
     # f-function in the paper
     def f(self, outputs, labels):
-        one_hot_labels = torch.eye(len(outputs[0])).to(self.device)[labels]
+        one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[labels]
 
-        i, _ = torch.max((1-one_hot_labels)*outputs, dim=1) # get the second largest logit
-        j = torch.masked_select(outputs, one_hot_labels.bool()) # get the largest logit
+        other = torch.max((1-one_hot_labels)*outputs, dim=1)[0] # find the max logit other than the target class
+        real = torch.max(one_hot_labels*outputs, dim=1)[0]      # get the target class's logit
 
         if self.targeted:
-            return torch.clamp((i-j), min=-self.kappa)
+            return torch.clamp((other-real), min=-self.kappa)
         else:
-            return torch.clamp((j-i), min=-self.kappa)
+            return torch.clamp((real-other), min=-self.kappa)

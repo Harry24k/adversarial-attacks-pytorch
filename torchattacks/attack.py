@@ -63,6 +63,11 @@ class Attack(object):
         raise NotImplementedError
         
     @wrapper_method
+    def _check_inputs(self, images):
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+
+    @wrapper_method
     def set_model(self, model):
         self.model = model
         self.model_name = str(model).split("(")[0]
@@ -132,15 +137,16 @@ class Attack(object):
         print("Attack mode is changed to 'default.'")
 
     @wrapper_method
-    def _set_mode_targeted(self, mode):
+    def _set_mode_targeted(self, mode, quiet):
         if "targeted" not in self.supported_mode:
             raise ValueError("Targeted mode is not supported.")
         self.targeted = True
         self.attack_mode = mode
-        print("Attack mode is changed to '%s'."%mode)
+        if not quiet:
+            print("Attack mode is changed to '%s'."%mode)
 
     @wrapper_method
-    def set_mode_targeted_by_function(self, target_map_function):
+    def set_mode_targeted_by_function(self, target_map_function, quiet=False):
         r"""
         Set attack mode as targeted.
 
@@ -150,32 +156,45 @@ class Attack(object):
                 None for using input labels as targeted labels. (Default)
 
         """
-        self._set_mode_targeted('targeted(custom)')
+        self._set_mode_targeted('targeted(custom)', quiet)
         self._target_map_function = target_map_function
 
     @wrapper_method
-    def set_mode_targeted_random(self):
+    def set_mode_targeted_random(self, quiet=False):
         r"""
         Set attack mode as targeted with random labels.
+
         Arguments:
             num_classses (str): number of classes.
 
         """
-        self._set_mode_targeted('targeted(random)')
+        self._set_mode_targeted('targeted(random)', quiet)
         self._target_map_function = self.get_random_target_label
 
     @wrapper_method
-    def set_mode_targeted_least_likely(self, kth_min=1):
+    def set_mode_targeted_least_likely(self, kth_min=1, quiet=False):
         r"""
         Set attack mode as targeted with least likely labels.
+
         Arguments:
             kth_min (str): label with the k-th smallest probability used as target labels. (Default: 1)
 
         """
-        self._set_mode_targeted('targeted(least-likely)')
+        self._set_mode_targeted('targeted(least-likely)', quiet)
         assert (kth_min > 0)
         self._kth_min = kth_min
         self._target_map_function = self.get_least_likely_label
+
+    @wrapper_method
+    def set_mode_targeted_by_label(self, quiet=False):
+        r"""
+        Set attack mode as targeted.
+        
+        .. note::
+            Use user-supplied labels as target labels.
+        """
+        self._set_mode_targeted('targeted(label)', quiet)
+        self._target_map_function = 'function is a string'
 
     @wrapper_method
     def set_model_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
@@ -380,7 +399,10 @@ class Attack(object):
         """
         if self._target_map_function is None:
             raise ValueError('target_map_function is not initialized by set_mode_targeted.')
-        target_labels = self._target_map_function(inputs, labels)
+        if self.attack_mode == 'targeted(label)':
+            target_labels = labels
+        else:
+            target_labels = self._target_map_function(inputs, labels)
         return target_labels
 
     @torch.no_grad()

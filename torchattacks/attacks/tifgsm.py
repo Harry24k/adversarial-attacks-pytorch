@@ -58,6 +58,8 @@ class TIFGSM(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 

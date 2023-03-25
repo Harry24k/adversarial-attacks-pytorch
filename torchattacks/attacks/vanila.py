@@ -27,6 +27,8 @@ class VANILA(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         adv_images = images.clone().detach().to(self.device)
 
         return adv_images

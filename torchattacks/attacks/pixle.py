@@ -30,7 +30,7 @@ class Pixle(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, iteratsion=50)
+        >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, max_iterations=50)
         >>> adv_images = attack(images, labels)
     """
     def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
@@ -74,6 +74,8 @@ class Pixle(Attack):
         self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
+        self._check_inputs(images)
+
         if not self.update_each_iteration:
             return self.restart_forward(images, labels)
         else:

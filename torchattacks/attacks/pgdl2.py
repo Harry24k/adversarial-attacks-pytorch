@@ -28,7 +28,8 @@ class PGDL2(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, 
+
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10,
                  random_start=True, eps_for_division=1e-10):
         super().__init__("PGDL2", model)
         self.eps = eps
@@ -42,6 +43,8 @@ class PGDL2(Attack):
         r"""
         Overridden.
         """
+        self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
@@ -56,8 +59,8 @@ class PGDL2(Attack):
         if self.random_start:
             # Starting at a uniformly random point
             delta = torch.empty_like(adv_images).normal_()
-            d_flat = delta.view(adv_images.size(0),-1)
-            n = d_flat.norm(p=2,dim=1).view(adv_images.size(0),1,1,1)
+            d_flat = delta.view(adv_images.size(0), -1)
+            n = d_flat.norm(p=2, dim=1).view(adv_images.size(0), 1, 1, 1)
             r = torch.zeros_like(n).uniform_(0, 1)
             delta *= r/n*self.eps
             adv_images = torch.clamp(adv_images + delta, min=0, max=1).detach()
