@@ -104,7 +104,7 @@ class APGD(Attack):
         elif self.loss == 'dlr':
             criterion_indiv = self.dlr_loss
         else:
-            raise ValueError('unknowkn loss')
+            raise ValueError('unknown loss')
         
         x_adv.requires_grad_()
         grad = torch.zeros_like(x)
