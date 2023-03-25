@@ -70,7 +70,7 @@ class Attack(object):
     @wrapper_method
     def set_model(self, model):
         self.model = model
-        self.model_name = str(model).split("(")[0]
+        self.model_name = model.__class__.__name__
 
     def get_logits(self, inputs, labels=None, *args, **kwargs):
         if self._normalization_applied is False:
