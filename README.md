@@ -273,6 +273,7 @@ For a fair comparison, [Robustbench](https://github.com/RobustBench/robustbench)
 
 * **Foolbox**: [505](https://scholar.google.com/scholar?q=Foolbox%3A%20A%20Python%20toolbox%20to%20benchmark%20the%20robustness%20of%20machine%20learning%20models.%20arXiv%202018) citations and last update 2022.10.
 * **ART**: [262](https://scholar.google.com/scholar?cluster=5391305326811305758&hl=ko&as_sdt=0,5&sciodt=0,5) citations and last update 2022.10.
+      
 
 Robust accuracy against each attack and elapsed time on the first 50 images of CIFAR10. For L2 attacks, the average L2 distances between adversarial images and the original images are recorded. All experiments were done on GeForce RTX 2080. For the latest version, please refer to here ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/Performance%20Comparison%20(CIFAR10).ipynb)).
 
@@ -294,6 +295,27 @@ Robust accuracy against each attack and elapsed time on the first 50 images of C
 <sup>*</sup> Note that Foolbox returns accuracy and adversarial images simultaneously, thus the *actual* time for generating adversarial images  might be shorter than the records.
 
 <sup>**†**</sup>Considering that the binary search algorithm for const `c` can be time-consuming, torchattacks supports MutliAttack for grid searching `c`.
+
+
+
+To push further, I introduce [**Rai-toolbox**](https://scholar.google.com/scholar_lookup?arxiv_id=2201.05647), which is newly added package!
+
+| Attack      | Package      | Time/step (accuracy) |
+| ----------- | ------------ | -------------------- |
+| FGSM (Linf) | rai-toolbox  | **58 ms** (0%)       |
+|             | Torchattacks | 81 ms (0%)           |
+|             | Foolbox      | 105 ms (0%)          |
+|             | ART          | 83 ms (0%)           |
+| PGD (Linf)  | rai-toolbox  | **58 ms** (44%)      |
+|             | Torchattacks | 79 ms (44%)          |
+|             | Foolbox      | 82 ms (44%)          |
+|             | ART          | 90 ms (44%)          |
+| PGD (L2)    | rai-toolbox  | **58 ms** (70%)      |
+|             | Torchattacks | 81 ms (70%)          |
+|             | Foolbox      | 82 ms (70%)          |
+|             | ART          | 89 ms (70%)          |
+
+> The rai-toolbox takes a unique approach to gradient-based perturbations: they are implemented in terms of [parameter-transforming optimizers](https://mit-ll-responsible-ai.github.io/responsible-ai-toolbox/ref_optim.html) and [perturbation models](https://mit-ll-responsible-ai.github.io/responsible-ai-toolbox/ref_perturbation.html). This enables users to implement diverse algorithms (like [universal perturbations](https://mit-ll-responsible-ai.github.io/responsible-ai-toolbox/how_to/univ_adv_pert.html) and [concept probing with sparse gradients](https://mit-ll-responsible-ai.github.io/responsible-ai-toolbox/tutorials/ImageNet-Concept-Probing.html)) using the same paradigm as a standard PGD attack.
 
 
 
@@ -321,6 +343,7 @@ If you use this package, please cite the following BibTex ([SemanticScholar](htt
     * [https://github.com/BorealisAI/advertorch](https://github.com/BorealisAI/advertorch): Adversarial attack package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
     * [https://github.com/DSE-MSU/DeepRobust](https://github.com/DSE-MSU/DeepRobust): Adversarial attack (especially on GNN) package made by [BorealisAI](https://www.borealisai.com/en/). **Pytorch available.**
     * https://github.com/fra31/auto-attack: Set of attacks that is believed to be the strongest in existence. **TensorFlow, Pytorch available.**
+    * https://github.com/mit-ll-responsible-ai/responsible-ai-toolbox/: PyTorch-centric tools for evaluating and enhancing both the robustness and the explainability of AI models. **Pytorch available.**
     
     
     
