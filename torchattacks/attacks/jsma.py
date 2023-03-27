@@ -9,8 +9,6 @@ class JSMA(Attack):
     Jacobian Saliency Map Attack in the paper 'The Limitations of Deep Learning in Adversarial Settings'
     [https://arxiv.org/abs/1511.07528v1]
 
-    This includes Algorithm 1 and 3 in v1
-
     Distance Measure : Linf
 
     Arguments:
