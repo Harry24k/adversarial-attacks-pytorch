@@ -43,6 +43,7 @@ class SPSA(Attack):
         self.max_batch_size = max_batch_size
         self.supported_mode = ['default', 'targeted']
 
+    @torch.no_grad()
     def spsa_grad(self, loss, x, y):
         r"""Use the SPSA method to approximate the gradient of `loss_fn(predict(x), y)`
         with respect to `x`, based on the nonce `v`.
@@ -65,11 +66,11 @@ class SPSA(Attack):
             if n % max_batch_size > 0:
                 batche_size.append(n % max_batch_size)
             return batche_size
-
+        
         x = x.expand(self.max_batch_size, *x.shape[1:]).contiguous()
         y = y.expand(self.max_batch_size, *y.shape[1:]).contiguous()
         v = torch.empty_like(x[:, :1, ...])
-
+        
         for batch_size in get_batch_sizes(self.nb_sample, self.max_batch_size):
             x_ = x[:batch_size]
             y_ = y[:batch_size]
