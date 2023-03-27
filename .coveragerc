@@ -1,3 +1,6 @@
 [run]
 branch = True
 omit = *demos*, *docs*, *pic*, *robustbench*
+
+[report]
+omit = *demos*, *docs*, *pic*, *robustbench*
