@@ -1,5 +1,4 @@
 import torch
-from torch.autograd import Variable
 import numpy as np
 
 from ..attack import Attack
