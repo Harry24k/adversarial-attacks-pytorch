@@ -1,7 +1,32 @@
 import torch
 import torch.nn as nn
+from torch.nn.modules.loss import _Loss
 
 from ..attack import Attack
+
+
+class MarginalLoss(_Loss):
+    def forward(self, logits, targets):  # pylint: disable=arguments-differ
+        assert logits.shape[-1] >= 2
+        top_logits, top_classes = torch.topk(logits, 2, dim=-1)
+        target_logits = logits[torch.arange(logits.shape[0]), targets]
+        max_nontarget_logits = torch.where(
+            top_classes[..., 0] == targets,
+            top_logits[..., 1],
+            top_logits[..., 0],
+        )
+
+        loss = max_nontarget_logits - target_logits
+        if self.reduction == "none":
+            pass
+        elif self.reduction == "sum":
+            loss = loss.sum()
+        elif self.reduction == "mean":
+            loss = loss.mean()
+        else:
+            raise ValueError("unknown reduction: '%s'" % (self.recution,))
+
+        return loss
 
 
 class SPSA(Attack):
@@ -28,12 +53,12 @@ class SPSA(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.SPSA(model, eps=8/255, delta=0.01)
+        >>> attack = torchattacks.SPSA(model, eps=0.3)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, eps=0.01, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
+    def __init__(self, model, eps=0.3, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
         super().__init__("SPSA", model)
         self.eps = eps
         self.delta = delta
@@ -41,66 +66,64 @@ class SPSA(Attack):
         self.nb_iter = nb_iter
         self.nb_sample = nb_sample
         self.max_batch_size = max_batch_size
+        self.loss_fn = MarginalLoss(reduction="none")
         self.supported_mode = ['default', 'targeted']
 
-    @torch.no_grad()
-    def spsa_grad(self, loss, x, y):
-        r"""Use the SPSA method to approximate the gradient of `loss_fn(predict(x), y)`
-        with respect to `x`, based on the nonce `v`.
+    def _batch_clamp_tensor_by_vector(self, vector, batch_tensor):
+        return torch.min(torch.max(batch_tensor.transpose(0, -1), -vector), vector).transpose(0, -1).contiguous()
 
-        Return the approximated gradient of `loss(predict(x), y)` with respect to `x`.
-        """
-        grad = torch.zeros_like(x)
-        x = x.unsqueeze(0)
-        y = y.unsqueeze(0)
-
-        def f(x, y):
-            logits = self.get_logits(x)
-            if self.targeted:
-                return -loss(logits, y)
+    def clamp(self, input, min=None, max=None):
+        ndim = input.ndimension()
+        if min is None:
+            pass
+        elif isinstance(min, (float, int)):
+            input = torch.clamp(input, min=min)
+        elif isinstance(min, torch.Tensor):
+            if min.ndimension() == ndim - 1 and min.shape == input.shape[1:]:
+                input = torch.max(input, min.view(1, *min.shape))
             else:
-                return loss(logits, y)
+                assert min.shape == input.shape
+                input = torch.max(input, min)
+        else:
+            raise ValueError("min can only be None | float | torch.Tensor")
 
-        def get_batch_sizes(n, max_batch_size):
-            batche_size = [max_batch_size] * (n // max_batch_size)
-            if n % max_batch_size > 0:
-                batche_size.append(n % max_batch_size)
-            return batche_size
-        
-        x = x.expand(self.max_batch_size, *x.shape[1:]).contiguous()
-        y = y.expand(self.max_batch_size, *y.shape[1:]).contiguous()
-        v = torch.empty_like(x[:, :1, ...])
-        
-        for batch_size in get_batch_sizes(self.nb_sample, self.max_batch_size):
-            x_ = x[:batch_size]
-            y_ = y[:batch_size]
-            vb = v[:batch_size]
-            vb = vb.bernoulli_().mul_(2.0).sub_(1.0)
-            v_ = vb.expand_as(x_).contiguous()
-            x_shape = x_.shape
-            x_ = x_.view(-1, *x.shape[2:])
-            y_ = y_.view(-1, *y.shape[2:])
-            v_ = v_.view(-1, *v.shape[2:])
-            df = f(x_ + self.delta * v_, y_) - f(x_ - self.delta * v_, y_)
-            df = df.view(-1, *[1 for _ in v_.shape[1:]])
-            grad_ = df / (2. * self.delta * v_)
-            grad_ = grad_.view(x_shape)
-            grad_ = grad_.sum(dim=0, keepdim=False)
-            grad += grad_
+        if max is None:
+            pass
+        elif isinstance(max, (float, int)):
+            input = torch.clamp(input, max=max)
+        elif isinstance(max, torch.Tensor):
+            if max.ndimension() == ndim - 1 and max.shape == input.shape[1:]:
+                input = torch.min(input, max.view(1, *max.shape))
+            else:
+                assert max.shape == input.shape
+                input = torch.min(input, max)
+        else:
+            raise ValueError("max can only be None | float | torch.Tensor")
+        return input
 
-        grad /= self.nb_sample
-        return grad
+    def batch_clamp(self, float_or_vector, tensor):
+        if isinstance(float_or_vector, torch.Tensor):
+            assert len(float_or_vector) == len(tensor)
+            tensor = self._batch_clamp_tensor_by_vector(
+                float_or_vector, tensor)
+            return tensor
+        elif isinstance(float_or_vector, float):
+            tensor = self.clamp(tensor, -float_or_vector, float_or_vector)
+        else:
+            raise TypeError("Value has to be float or torch.Tensor")
+        return tensor
 
-    def linf_clamp(self, dx, x):
+    def linf_clamp_(self, dx, x, eps, clip_min, clip_max):
         """Clamps perturbation `dx` to fit L_inf norm and image bounds.
 
         Limit the L_inf norm of `dx` to be <= `eps`, and the bounds of `x + dx`
         to be in `[clip_min, clip_max]`.
 
-        Return the clamped perturbation `dx`.
+        Return: the clamped perturbation `dx`.
         """
-        dx_clamped = torch.clamp(dx, min=-self.eps, max=self.eps)
-        x_adv = torch.clamp(x+dx_clamped, min=0, max=1)
+
+        dx_clamped = self.batch_clamp(eps, dx)
+        x_adv = self.clamp(x + dx_clamped, clip_min, clip_max)
         # `dx` is changed *inplace* so the optimizer will keep
         # tracking it. the simplest mechanism for inplace was
         # adding the difference between the new value `x_adv - x`
@@ -108,33 +131,79 @@ class SPSA(Attack):
         dx += x_adv - x - dx
         return dx
 
+    def _get_batch_sizes(self, n, max_batch_size):
+        batches = [max_batch_size for _ in range(n // max_batch_size)]
+        if n % max_batch_size > 0:
+            batches.append(n % max_batch_size)
+        return batches
+
+    @torch.no_grad()
+    def spsa_grad(self, loss_fn, images, labels, delta, nb_sample, max_batch_size):
+        """Uses SPSA method to apprixmate gradient w.r.t `x`.
+
+        Use the SPSA method to approximate the gradient of `loss_fn(predict(x), y)`
+        with respect to `x`, based on the nonce `v`.
+
+        Return the approximated gradient of `loss_fn(predict(x), y)` with respect to `x`.
+        """
+
+        grad = torch.zeros_like(images)
+        images = images.unsqueeze(0)
+        labels = labels.unsqueeze(0)
+
+        def f(xvar, yvar):
+            return loss_fn(self.get_logits(xvar), yvar)
+        images = images.expand(max_batch_size, *images.shape[1:]).contiguous()
+        labels = labels.expand(max_batch_size, *labels.shape[1:]).contiguous()
+        v = torch.empty_like(images[:, :1, ...])
+
+        for batch_size in self._get_batch_sizes(nb_sample, max_batch_size):
+            x_ = images[:batch_size]
+            y_ = labels[:batch_size]
+            vb = v[:batch_size]
+            vb = vb.bernoulli_().mul_(2.0).sub_(1.0)
+            v_ = vb.expand_as(x_).contiguous()
+            x_shape = x_.shape
+            x_ = x_.view(-1, *images.shape[2:])
+            y_ = y_.view(-1, *labels.shape[2:])
+            v_ = v_.view(-1, *v.shape[2:])
+            df = f(x_+delta*v_, y_) - f(x_-delta*v_, y_)
+            df = df.view(-1, *[1 for _ in v_.shape[1:]])
+            grad_ = df / (2.*delta*v_)
+            grad_ = grad_.view(x_shape)
+            grad_ = grad_.sum(dim=0, keepdim=False)
+            grad += grad_
+
+        grad /= nb_sample
+        return grad
+
+    def spsa_perturb(self, loss_fn, x, y):
+        dx = torch.zeros_like(x)
+        dx.grad = torch.zeros_like(dx)
+        optimizer = torch.optim.Adam([dx], lr=self.lr)
+        for _ in range(self.nb_iter):
+            optimizer.zero_grad()
+            dx.grad = self.spsa_grad(
+                loss_fn, x + dx, y, self.delta, self.nb_sample, self.max_batch_size)
+            optimizer.step()
+            dx = self.linf_clamp_(dx, x, self.eps, 0, 1)
+
+        x_adv = x + dx
+        return x_adv
+
     def forward(self, images, labels):
         r"""
         Overridden.
         """
         self._check_inputs(images)
-
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
         if self.targeted:
-            target_labels = self.get_target_label(images, labels)
+            def loss_fn(*args):
+                return self.loss_fn(*args)
+        else:
+            def loss_fn(*args):
+                return -self.loss_fn(*args)
 
-        loss = nn.CrossEntropyLoss()
-        images.requires_grad = True
-
-        # Update adversarial images
-        dx = torch.zeros_like(images)
-        dx.grad = torch.zeros_like(dx)
-        optimizer = torch.optim.Adam([dx], lr=self.lr)
-        for _ in range(self.nb_iter):
-            optimizer.zero_grad()
-            if self.targeted:
-                dx.grad = self.spsa_grad(loss, images+dx, target_labels)
-            else:
-                dx.grad = self.spsa_grad(loss, images+dx, labels)
-            optimizer.step()
-            dx = self.linf_clamp(dx, images)
-
-        adv_images = images + dx
-        return adv_images
+        return self.spsa_perturb(loss_fn, images, labels)

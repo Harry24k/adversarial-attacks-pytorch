@@ -111,9 +111,8 @@ class JSMA(Attack):
         image: only one element
         label: only one element
         '''
-        var_image = image.clone().detach()
-        var_label = torch.unsqueeze(target_label, 0)
-
+        var_image = image
+        var_label = target_label
         var_image = var_image.to(self.device)
         var_label = var_label.to(self.device)
 
@@ -146,16 +145,17 @@ class JSMA(Attack):
             p1, p2 = self.saliency_map(jacobian, var_label,
                                        increasing, search_domain, num_features)
             # Apply modifications
-            var_sample_flatten = var_image.view(-1,
-                                                num_features).clone().detach_()
+            # var_sample_flatten = var_image.view(-1, num_features).clone().detach_()
+            var_sample_flatten = var_image.view(-1, num_features)
             var_sample_flatten[0, p1] += self.theta
             var_sample_flatten[0, p2] += self.theta
 
-            new_sample = torch.clamp(var_sample_flatten, min=0.0, max=1.0)
-            new_sample = new_sample.view(shape)
+            new_image = torch.clamp(var_sample_flatten, min=0.0, max=1.0)
+            new_image = new_image.view(shape)
             search_domain[p1] = 0
             search_domain[p2] = 0
-            var_image = new_sample.clone().detach().to(self.device)
+            # var_image = new_image.clone().detach().to(self.device)
+            var_image = new_image.to(self.device)
 
             output = self.get_logits(var_image)
             current_pred = torch.argmax(output.data, 1)
@@ -192,7 +192,8 @@ class JSMA(Attack):
             # we only process one image at a time.
             # Shape of MNIST is [-1, 1, 28, 28],
             # and shape of CIFAR10 is [-1, 3, 32, 32].
-            pert_image = self.perturbation_single(torch.unsqueeze(im, 0), tl)
+            pert_image = self.perturbation_single(
+                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0))
             try:
                 adv_images = torch.cat((adv_images, pert_image), 0)
             except Exception:
