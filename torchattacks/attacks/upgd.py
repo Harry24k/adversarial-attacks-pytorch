@@ -134,8 +134,7 @@ class UPGD(Attack):
         outputs = self.get_logits(images)
         if self.targeted:
             # one_hot_labels = torch.eye(len(outputs[0]))[target_labels].to(self.device)
-            one_hot_labels = torch.eye(outputs.shape[1]).to(
-                self.device)[target_labels]
+            one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[target_labels] # nopep8
             i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
             j = torch.masked_select(outputs, one_hot_labels.bool())
             cost = -torch.clamp((i-j), min=0)  # -self.kappa=0
