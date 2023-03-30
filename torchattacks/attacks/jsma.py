@@ -9,13 +9,12 @@ class JSMA(Attack):
     Jacobian Saliency Map Attack in the paper 'The Limitations of Deep Learning in Adversarial Settings'
     [https://arxiv.org/abs/1511.07528v1]
 
-    Distance Measure : Linf
+    Distance Measure : L0
 
     Arguments:
         model (nn.Module): model to attack.
-        num_classes: number of clasess.
-        theta: perturb length, range is either [theta, 0], [0, theta]
-        gamma: highest percentage of pixels can be modified
+        theta (float): perturb length, range is either [theta, 0], [0, theta]
+        gamma (float): highest percentage of pixels can be modified
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].

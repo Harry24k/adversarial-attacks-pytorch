@@ -29,12 +29,16 @@ from .attacks.cw import CW
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
-from .attacks.jsma import JSMA
+from .attacks.eaden import EADEN
+
+# L1 attacks
+from .attacks.eadl1 import EADL1
 
 # L0 attacks
 from .attacks.sparsefool import SparseFool
 from .attacks.onepixel import OnePixel
 from .attacks.pixle import Pixle
+from .attacks.jsma import JSMA
 
 # Linf, L2 attacks
 from .attacks.fab import FAB
@@ -52,7 +56,7 @@ __all__ = [
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
     "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA",
+    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADL2",
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 
