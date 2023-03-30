@@ -93,7 +93,7 @@ class SparseFool(Attack):
 
         adv_images = torch.cat(adv_images).detach()
 
-        return adv_image
+        return adv_images
 
     def _linear_solver(self, x_0, coord_vec, boundary_point):
         input_shape = x_0.size()

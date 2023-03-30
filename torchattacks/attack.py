@@ -320,8 +320,7 @@ class Attack(object):
                     save_dict['clean_inputs'] = input_list_cat
 
                 if self.normalization_used is not None:
-                    save_dict['adv_inputs'] = self.inverse_normalize(
-                        save_dict['adv_inputs'])
+                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])  # nopep8
                     if save_clean_inputs:
                         save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])  # nopep8
 
@@ -386,14 +385,12 @@ class Attack(object):
             std = torch.tensor(normalize['std']).reshape(1, n_channels, 1, 1)
             save_dict['adv_inputs'] = (save_dict['adv_inputs'] - mean) / std
             if load_clean_inputs:
-                save_dict['clean_inputs'] = (
-                    save_dict['clean_inputs'] - mean) / std
+                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std  # nopep8
 
         adv_data = TensorDataset(*[save_dict[key] for key in keys])
         adv_loader = DataLoader(
             adv_data, batch_size=batch_size, shuffle=shuffle)
-        print("Data is loaded in the following order: [%s]" % (
-            ", ".join(keys)))
+        print("Data is loaded in the following order: [%s]" % (", ".join(keys)))  # nopep8
         return adv_loader
 
     @torch.no_grad()

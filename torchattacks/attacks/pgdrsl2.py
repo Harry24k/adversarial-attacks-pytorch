@@ -48,9 +48,7 @@ class PGDRSL2(Attack):
 
     """
 
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=10,
-                 noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048,
-                 eps_for_division=1e-10):
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048, eps_for_division=1e-10):
         super().__init__("PGDRSL2", model)
         self.eps = eps
         self.alpha = alpha

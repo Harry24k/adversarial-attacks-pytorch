@@ -509,8 +509,7 @@ class FAB(Attack):
                     if len(ind_to_fool.shape) == 0:
                         ind_to_fool = ind_to_fool.unsqueeze(0)
                     if ind_to_fool.numel() != 0:
-                        x_to_fool, y_to_fool = x[ind_to_fool].clone(
-                        ), y[ind_to_fool].clone()
+                        x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()  # nopep8
 
                         if targeted:
                             adv_curr = self.attack_single_run_targeted(
@@ -522,11 +521,9 @@ class FAB(Attack):
                         acc_curr = self.get_logits(adv_curr).max(1)[
                             1] == y_to_fool
                         if self.norm == 'Linf':
-                            res = (
-                                x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]
+                            res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]  # nopep8
                         elif self.norm == 'L2':
-                            res = ((x_to_fool - adv_curr) **
-                                   2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()
+                            res = ((x_to_fool - adv_curr)**2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()  # nopep8
                         acc_curr = torch.max(acc_curr, res > self.eps)
 
                         ind_curr = (acc_curr == 0).nonzero().squeeze()
@@ -590,8 +587,7 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
 
         counter2 = counter4.long().unsqueeze(1)
         indcurr = indp_.gather(1, indp_.size(1) - 1 - counter2)
-        b2 = (sb_.gather(1, counter2) - s_.gather(1, counter2)
-              * p_.gather(1, indcurr)).squeeze(1)
+        b2 = (sb_.gather(1, counter2) - s_.gather(1, counter2) * p_.gather(1, indcurr)).squeeze(1)  # nopep8
         c = b_ - b2 > 0
 
         lb = torch.where(c, counter4, lb)
