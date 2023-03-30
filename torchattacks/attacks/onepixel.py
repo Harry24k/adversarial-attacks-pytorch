@@ -34,6 +34,7 @@ class OnePixel(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, pixels=1, steps=10, popsize=10, inf_batch=128):
         super().__init__("OnePixel", model)
         self.pixels = pixels
@@ -46,7 +47,7 @@ class OnePixel(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -93,7 +94,7 @@ class OnePixel(Attack):
             adv_images.append(adv_image)
 
         adv_images = torch.cat(adv_images)
-        return adv_images
+        return self._check_outputs(adv_images)
 
     def _loss(self, image, label, delta):
         adv_images = self._perturb(image, delta)  # Mutiple delta

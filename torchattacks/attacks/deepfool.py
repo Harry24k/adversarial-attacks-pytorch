@@ -36,7 +36,7 @@ class DeepFool(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -66,7 +66,7 @@ class DeepFool(Attack):
         if return_target_labels:
             return adv_images, target_labels
 
-        return adv_images
+        return self._check_outputs(adv_images)
 
     def _forward_indiv(self, image, label):
         image.requires_grad = True

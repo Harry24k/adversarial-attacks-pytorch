@@ -74,12 +74,14 @@ class Pixle(Attack):
         self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         if not self.update_each_iteration:
-            return self.restart_forward(images, labels)
+            adv_images = self.restart_forward(images, labels)
+            return self._check_outputs(adv_images)
         else:
-            return self.iterative_forward(images, labels)
+            adv_images = self.iterative_forward(images, labels)
+            return self._check_outputs(adv_images)
 
     def restart_forward(self, images, labels):
         if len(images.shape) == 3:

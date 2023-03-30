@@ -34,7 +34,7 @@ class FGSM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -60,4 +60,4 @@ class FGSM(Attack):
         adv_images = images + self.eps*grad.sign()
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
-        return adv_images
+        return self._check_outputs(adv_images)

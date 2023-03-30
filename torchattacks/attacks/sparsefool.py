@@ -43,7 +43,7 @@ class SparseFool(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -93,7 +93,7 @@ class SparseFool(Attack):
 
         adv_images = torch.cat(adv_images).detach()
 
-        return adv_images
+        return self._check_outputs(adv_images)
 
     def _linear_solver(self, x_0, coord_vec, boundary_point):
         input_shape = x_0.size()

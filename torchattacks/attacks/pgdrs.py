@@ -76,7 +76,7 @@ class PGDRS(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -114,4 +114,5 @@ class PGDRS(Attack):
             delta = torch.clamp(delta, min=-self.eps, max=self.eps)
             delta_last.data = copy.deepcopy(delta.data)
 
-        return torch.clamp(images + delta, min=0, max=1).detach()
+        adv_images = torch.clamp(images + delta, min=0, max=1).detach()
+        return self._check_outputs(adv_images)

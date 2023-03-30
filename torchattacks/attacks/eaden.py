@@ -45,6 +45,105 @@ class EADEN(Attack):
         self.repeat = binary_search_steps >= 10
         self.supported_mode = ['default', 'targeted']
 
+    def forward(self, images, labels):
+        r"""
+        Overridden.
+        """
+        images = self._check_inputs(images)
+
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
+
+        # if self.targeted:
+        #     targeted_labels = self.get_target_label(images, labels)
+
+        outputs = self.get_logits(images)
+        # num_classes = outputs.shape[1]
+
+        batch_size = images.shape[0]
+        # coeff_lower_bound = images.new_zeros(batch_size)
+        lower_bound = torch.zeros(batch_size, device=self.device)
+        const = torch.ones(batch_size, device=self.device) * self.initial_const
+        # coeff_upper_bound = images.new_ones(batch_size) * 1e10
+        upper_bound = torch.ones(batch_size, device=self.device) * 1e10
+
+        final_adv_images = images.clone()
+        # y_one_hot = torch.zeros((labels.shape[0], num_classes), device=self.device).scatter_(1, labels, 1).float()  # nopep8
+        y_one_hot = torch.eye(outputs.shape[1]).to(self.device)[labels]
+
+        o_bestl1 = [1e10] * batch_size
+        o_bestscore = [-1] * batch_size
+        o_bestl1 = torch.Tensor(o_bestl1).float().to(self.device)
+        o_bestscore = torch.Tensor(o_bestscore).long().to(self.device)
+
+        # Initialization: x^{(0)} = y^{(0)} = x_0 in paper Algorithm 1 part
+        x_k = images.clone().detach()
+        y_k = nn.Parameter(images)
+
+        # Start binary search
+        for outer_step in range(self.binary_search_steps):
+
+            self.global_step = 0
+
+            bestl1 = [1e10] * batch_size
+            bestscore = [-1] * batch_size
+
+            bestl1 = torch.Tensor(bestl1).float().to(self.device)
+            bestscore = torch.Tensor(bestscore).long().to(self.device)
+
+            prevloss = 1e6
+
+            if (self.repeat and outer_step == (self.binary_search_steps - 1)):
+                const = upper_bound
+
+            lr = self.lr
+
+            for iteration in range(self.max_iterations):
+                # reset gradient
+                if y_k.grad is not None:
+                    y_k.grad.detach_()
+                    y_k.grad.zero_()
+
+                # Loss over images_parameters with only L2 same as CW
+                # we don't update L1 loss with SGD because we use ISTA
+                output = self.get_logits(y_k)
+                L2_loss = self.L2_loss(y_k, images)
+
+                cost = self.EAD_loss(output, y_one_hot, None, L2_loss, const)
+                cost.backward(retain_graph=True)
+
+                # Gradient step
+                # images_parameter.data.add_(-lr, images_parameter.grad.data)
+                self.global_step += 1
+                with torch.no_grad():
+                    y_k -= lr
+
+                # Ploynomial decay of learning rate
+                lr = self.lr * (1 - self.global_step / self.max_iterations)**0.5  # nopep8
+                y_k, x_k = self.fast_ISTA(images, y_k, x_k)
+                # loss ElasticNet or L1 over images_clone
+                with torch.no_grad():
+                    output = self.get_logits(x_k)
+                    L2_loss = self.L2_loss(x_k, images)
+                    L1_loss = self.L1_loss(x_k, images)
+                    loss = self.EAD_loss(output, y_one_hot, L1_loss, L2_loss, const)  # nopep8
+
+                    # print('loss: {}, prevloss: {}'.format(loss, prevloss))
+                    if self.abort_early and iteration % (self.max_iterations // 10) == 0:
+                        if loss > prevloss * 0.999999:
+                            break
+                        prevloss = loss
+
+                    # EN attack key step!
+                    cost = L2_loss + (L1_loss * self.beta)
+                    self.update_if_smaller_dist_succeed(
+                        x_k.data, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
+
+            self.update_loss_coeffs(
+                labels, bestscore, batch_size, const, upper_bound, lower_bound)
+
+        return self._check_outputs(final_adv_images)
+
     def L1_loss(self, x1, x2):
         Flatten = nn.Flatten()
         L1_loss = torch.abs(Flatten(x1)-Flatten(x2)).sum(dim=1)
@@ -153,102 +252,3 @@ class EADEN(Attack):
                         lower_bound[i] + upper_bound[i]) / 2
                 else:
                     const[i] *= 10
-
-    def forward(self, images, labels):
-        r"""
-        Overridden.
-        """
-        self._check_inputs(images)
-
-        images = images.clone().detach().to(self.device)
-        labels = labels.clone().detach().to(self.device)
-
-        # if self.targeted:
-        #     targeted_labels = self.get_target_label(images, labels)
-
-        outputs = self.get_logits(images)
-        # num_classes = outputs.shape[1]
-
-        batch_size = images.shape[0]
-        # coeff_lower_bound = images.new_zeros(batch_size)
-        lower_bound = torch.zeros(batch_size, device=self.device)
-        const = torch.ones(batch_size, device=self.device) * self.initial_const
-        # coeff_upper_bound = images.new_ones(batch_size) * 1e10
-        upper_bound = torch.ones(batch_size, device=self.device) * 1e10
-
-        final_adv_images = images.clone()
-        # y_one_hot = torch.zeros((labels.shape[0], num_classes), device=self.device).scatter_(1, labels, 1).float()  # nopep8
-        y_one_hot = torch.eye(outputs.shape[1]).to(self.device)[labels]
-
-        o_bestl1 = [1e10] * batch_size
-        o_bestscore = [-1] * batch_size
-        o_bestl1 = torch.Tensor(o_bestl1).float().to(self.device)
-        o_bestscore = torch.Tensor(o_bestscore).long().to(self.device)
-
-        # Initialization: x^{(0)} = y^{(0)} = x_0 in paper Algorithm 1 part
-        x_k = images.clone().detach()
-        y_k = nn.Parameter(images)
-
-        # Start binary search
-        for outer_step in range(self.binary_search_steps):
-
-            self.global_step = 0
-
-            bestl1 = [1e10] * batch_size
-            bestscore = [-1] * batch_size
-
-            bestl1 = torch.Tensor(bestl1).float().to(self.device)
-            bestscore = torch.Tensor(bestscore).long().to(self.device)
-
-            prevloss = 1e6
-
-            if (self.repeat and outer_step == (self.binary_search_steps - 1)):
-                const = upper_bound
-
-            lr = self.lr
-
-            for iteration in range(self.max_iterations):
-                # reset gradient
-                if y_k.grad is not None:
-                    y_k.grad.detach_()
-                    y_k.grad.zero_()
-
-                # Loss over images_parameters with only L2 same as CW
-                # we don't update L1 loss with SGD because we use ISTA
-                output = self.get_logits(y_k)
-                L2_loss = self.L2_loss(y_k, images)
-
-                cost = self.EAD_loss(output, y_one_hot, None, L2_loss, const)
-                cost.backward(retain_graph=True)
-
-                # Gradient step
-                # images_parameter.data.add_(-lr, images_parameter.grad.data)
-                self.global_step += 1
-                with torch.no_grad():
-                    y_k -= lr
-
-                # Ploynomial decay of learning rate
-                lr = self.lr * (1 - self.global_step / self.max_iterations)**0.5  # nopep8
-                y_k, x_k = self.fast_ISTA(images, y_k, x_k)
-                # loss ElasticNet or L1 over images_clone
-                with torch.no_grad():
-                    output = self.get_logits(x_k)
-                    L2_loss = self.L2_loss(x_k, images)
-                    L1_loss = self.L1_loss(x_k, images)
-                    loss = self.EAD_loss(output, y_one_hot, L1_loss, L2_loss, const)  # nopep8
-
-                    # print('loss: {}, prevloss: {}'.format(loss, prevloss))
-                    if self.abort_early and iteration % (self.max_iterations // 10) == 0:
-                        if loss > prevloss * 0.999999:
-                            break
-                        prevloss = loss
-
-                    # EN attack key step!
-                    cost = L2_loss + (L1_loss * self.beta)
-                    self.update_if_smaller_dist_succeed(
-                        x_k.data, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
-
-            self.update_loss_coeffs(
-                labels, bestscore, batch_size, const, upper_bound, lower_bound)
-
-        return final_adv_images

@@ -56,13 +56,13 @@ class APGD(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images) 
+        images = self._check_inputs(images) 
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         _, adv_images = self.perturb(images, labels, cheap=True)
 
-        return adv_images
+        return self._check_outputs(adv_images)
     
     def check_oscillation(self, x, j, k, y5, k3=0.75):
         t = np.zeros(x.shape[1])

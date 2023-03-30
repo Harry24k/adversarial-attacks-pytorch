@@ -32,6 +32,7 @@ class UPGD(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
                  random_start=False, loss='ce', decay=1.0, eot_iter=1):
         super().__init__("UPGD", model)
@@ -48,7 +49,7 @@ class UPGD(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -81,7 +82,7 @@ class UPGD(Attack):
                                             create_graph=False)[0] / self.eot_iter
 
             # Update adversarial images
-            grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
+            grad = grad / torch.mean(torch.abs(grad), dim=(1, 2, 3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 
@@ -89,7 +90,7 @@ class UPGD(Attack):
             delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return adv_images
+        return self._check_outputs(adv_images)
 
     def get_loss(self, images, labels, target_labels=None):
         if isinstance(self.loss, str):
@@ -130,7 +131,8 @@ class UPGD(Attack):
     def margin_loss(self, images, labels, target_labels):
         outputs = self.get_logits(images)
         if self.targeted:
-            one_hot_labels = torch.eye(len(outputs[0]))[target_labels].to(self.device)
+            # one_hot_labels = torch.eye(len(outputs[0]))[target_labels].to(self.device)
+            one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[target_labels]
             i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
             j = torch.masked_select(outputs, one_hot_labels.bool())
             cost = -torch.clamp((i-j), min=0)  # -self.kappa=0

@@ -19,6 +19,7 @@ class VANILA(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model):
         super().__init__("VANILA", model)
         self.supported_mode = ['default']
@@ -27,8 +28,8 @@ class VANILA(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         adv_images = images.clone().detach().to(self.device)
 
-        return adv_images
+        return self._check_outputs(adv_images)

@@ -33,6 +33,44 @@ class JSMA(Attack):
         self.gamma = gamma
         self.supported_mode = ['default', 'targeted']
 
+    def forward(self, images, labels):
+        r"""
+        Overridden.
+        """
+        images = self._check_inputs(images)
+
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
+
+        if self.targeted:
+            target_labels = self.get_target_label(images, labels)
+        else:
+            # Because the JSMA algorithm does not use any loss function,
+            # it cannot perform untargeted attacks indeed
+            # (we have no control over the convergence of the attack to a data point that is NOT equal to the original class),
+            # so we make the default setting of the target label is right circular shift
+            # to make attack work if user didn't set target label.
+            target_labels = (labels + 1) % 10
+
+        adv_images = None
+        for im, tl in zip(images, target_labels):
+            # Since the attack uses the Jacobian-matrix,
+            # if we input a large number of images directly into it,
+            # the processing will be very complicated,
+            # here, in order to simplify the processing,
+            # we only process one image at a time.
+            # Shape of MNIST is [-1, 1, 28, 28],
+            # and shape of CIFAR10 is [-1, 3, 32, 32].
+            pert_image = self.perturbation_single(
+                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0))
+            try:
+                adv_images = torch.cat((adv_images, pert_image), 0)
+            except Exception:
+                adv_images = pert_image
+
+        adv_images = torch.clamp(adv_images, min=0, max=1)
+        return self._check_outputs(adv_images)
+
     def compute_jacobian(self, image):
         var_image = image.clone().detach()
         var_image.requires_grad = True
@@ -162,41 +200,3 @@ class JSMA(Attack):
 
         adv_image = var_image
         return adv_image
-
-    def forward(self, images, labels):
-        r"""
-        Overridden.
-        """
-        self._check_inputs(images)
-
-        images = images.clone().detach().to(self.device)
-        labels = labels.clone().detach().to(self.device)
-
-        if self.targeted:
-            target_labels = self.get_target_label(images, labels)
-        else:
-            # Because the JSMA algorithm does not use any loss function,
-            # it cannot perform untargeted attacks indeed
-            # (we have no control over the convergence of the attack to a data point that is NOT equal to the original class),
-            # so we make the default setting of the target label is right circular shift
-            # to make attack work if user didn't set target label.
-            target_labels = (labels + 1) % 10
-
-        adv_images = None
-        for im, tl in zip(images, target_labels):
-            # Since the attack uses the Jacobian-matrix,
-            # if we input a large number of images directly into it,
-            # the processing will be very complicated,
-            # here, in order to simplify the processing,
-            # we only process one image at a time.
-            # Shape of MNIST is [-1, 1, 28, 28],
-            # and shape of CIFAR10 is [-1, 3, 32, 32].
-            pert_image = self.perturbation_single(
-                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0))
-            try:
-                adv_images = torch.cat((adv_images, pert_image), 0)
-            except Exception:
-                adv_images = pert_image
-
-        adv_images = torch.clamp(adv_images, min=0, max=1)
-        return adv_images

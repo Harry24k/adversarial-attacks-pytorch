@@ -48,7 +48,7 @@ class CW(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -115,7 +115,7 @@ class CW(Attack):
                     return best_adv_images
                 prev_cost = cost.item()
 
-        return best_adv_images
+        return self._check_outputs(best_adv_images)
 
     def tanh_space(self, x):
         return 1/2*(torch.tanh(x) + 1)

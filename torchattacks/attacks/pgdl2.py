@@ -29,8 +29,7 @@ class PGDL2(Attack):
 
     """
 
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=10,
-                 random_start=True, eps_for_division=1e-10):
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, random_start=True, eps_for_division=1e-10):
         super().__init__("PGDL2", model)
         self.eps = eps
         self.alpha = alpha
@@ -43,7 +42,7 @@ class PGDL2(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -90,4 +89,4 @@ class PGDL2(Attack):
 
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return adv_images
+        return self._check_outputs(adv_images)

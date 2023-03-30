@@ -76,13 +76,13 @@ class AutoAttack(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         adv_images = self._autoattack(images, labels)
 
-        return adv_images
+        return self._check_outputs(adv_images)
 
     def get_seed(self):
         return time.time() if self.seed is None else self.seed

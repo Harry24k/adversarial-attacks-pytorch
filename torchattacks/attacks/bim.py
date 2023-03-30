@@ -42,7 +42,7 @@ class BIM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
+        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -77,4 +77,4 @@ class BIM(Attack):
                 + (b <= ori_images + self.eps).float()*b
             images = torch.clamp(c, max=1).detach()
 
-        return images
+        return self._check_outputs(adv_images)

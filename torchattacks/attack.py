@@ -6,6 +6,7 @@ from collections.abc import Iterable
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
+
 def wrapper_method(func):
     def wrapper_func(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
@@ -24,6 +25,7 @@ class Attack(object):
         It basically changes training mode to eval during attack process.
         To change this, please see `set_model_training_mode`.
     """
+
     def __init__(self, name, model):
         r"""
         Initializes internal attack state.
@@ -35,7 +37,7 @@ class Attack(object):
 
         self.attack = name
         self._attacks = OrderedDict()
-        
+
         self.set_model(model)
         self.device = next(model.parameters()).device
 
@@ -61,11 +63,26 @@ class Attack(object):
         Should be overridden by all subclasses.
         """
         raise NotImplementedError
-        
+
     @wrapper_method
     def _check_inputs(self, images):
-        if torch.max(images) > 1 or torch.min(images) < 0:
-            raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+        if self._normalization_applied:
+            inv_images = self.inverse_normalize(images)
+            return inv_images
+        else:
+            if torch.max(images) > 1 or torch.min(images) < 0:
+                raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(
+                    torch.max(images), torch.min(images)))
+            else:
+                return images
+
+    @wrapper_method
+    def _check_outputs(self, images):
+        if self._normalization_applied:
+            nor_images = self.normalize(images)
+            return nor_images
+        else:
+            return images
 
     @wrapper_method
     def set_model(self, model):
@@ -81,7 +98,7 @@ class Attack(object):
     @wrapper_method
     def _set_normalization_applied(self, flag):
         self._normalization_applied = flag
-    
+
     @wrapper_method
     def set_device(self, device):
         self.device = device
@@ -143,7 +160,7 @@ class Attack(object):
         self.targeted = True
         self.attack_mode = mode
         if not quiet:
-            print("Attack mode is changed to '%s'."%mode)
+            print("Attack mode is changed to '%s'." % mode)
 
     @wrapper_method
     def set_mode_targeted_by_function(self, target_map_function, quiet=False):
@@ -189,7 +206,7 @@ class Attack(object):
     def set_mode_targeted_by_label(self, quiet=False):
         r"""
         Set attack mode as targeted.
-        
+
         .. note::
             Use user-supplied labels as target labels.
         """
@@ -279,8 +296,10 @@ class Attack(object):
                     rob_acc = 100 * float(correct) / total
 
                     # Calculate l2 distance
-                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)
-                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
+                    delta = (adv_inputs - inputs.to(self.device)
+                             ).view(batch_size, -1)
+                    l2_distance.append(torch.norm(
+                        delta[~right_idx], p=2, dim=1))
                     l2 = torch.cat(l2_distance).mean().item()
 
                     # Calculate time computation
@@ -289,7 +308,8 @@ class Attack(object):
                     elapsed_time = end-start
 
                     if verbose:
-                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
+                        self._save_print(progress, rob_acc, l2,
+                                         elapsed_time, end='\r')
 
             if save_path is not None:
                 adv_input_list.append(adv_inputs.detach().cpu())
@@ -297,8 +317,9 @@ class Attack(object):
 
                 adv_input_list_cat = torch.cat(adv_input_list, 0)
                 label_list_cat = torch.cat(label_list, 0)
-                
-                save_dict = {'adv_inputs':adv_input_list_cat, 'labels':label_list_cat}
+
+                save_dict = {'adv_inputs': adv_input_list_cat,
+                             'labels': label_list_cat}
 
                 if save_predictions:
                     pred_list.append(pred.detach().cpu())
@@ -309,16 +330,20 @@ class Attack(object):
                     input_list.append(inputs.detach().cpu())
                     input_list_cat = torch.cat(input_list, 0)
                     save_dict['clean_inputs'] = input_list_cat
-                    
+
                 if self.normalization_used is not None:
-                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])
+                    save_dict['adv_inputs'] = self.inverse_normalize(
+                        save_dict['adv_inputs'])
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])
+                        save_dict['clean_inputs'] = self.inverse_normalize(
+                            save_dict['clean_inputs'])
 
                 if save_type == 'int':
-                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')
+                    save_dict['adv_inputs'] = self.to_type(
+                        save_dict['adv_inputs'], 'int')
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')
+                        save_dict['clean_inputs'] = self.to_type(
+                            save_dict['clean_inputs'], 'int')
 
                 save_dict['save_type'] = save_type
                 torch.save(save_dict, save_path)
@@ -345,12 +370,13 @@ class Attack(object):
             if isinstance(inputs, torch.ByteTensor) or isinstance(inputs, torch.cuda.ByteTensor):
                 return inputs.float()/255
         else:
-            raise ValueError(type + " is not a valid type. [Options: float, int]")
+            raise ValueError(
+                type + " is not a valid type. [Options: float, int]")
         return inputs
 
     @staticmethod
     def _save_print(progress, rob_acc, l2, elapsed_time, end):
-        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
+        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t'
               % (progress, rob_acc, l2, elapsed_time), end=end)
 
     @staticmethod
@@ -367,19 +393,23 @@ class Attack(object):
         if save_dict['save_type'] == 'int':
             save_dict['adv_inputs'] = save_dict['adv_inputs'].float()/255
             if load_clean_inputs:
-                save_dict['clean_inputs'] = save_dict['clean_inputs'].float()/255
-                
+                save_dict['clean_inputs'] = save_dict['clean_inputs'].float() / \
+                    255
+
         if normalize is not None:
             n_channels = len(normalize['mean'])
             mean = torch.tensor(normalize['mean']).reshape(1, n_channels, 1, 1)
             std = torch.tensor(normalize['std']).reshape(1, n_channels, 1, 1)
             save_dict['adv_inputs'] = (save_dict['adv_inputs'] - mean) / std
             if load_clean_inputs:
-                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std
+                save_dict['clean_inputs'] = (
+                    save_dict['clean_inputs'] - mean) / std
 
         adv_data = TensorDataset(*[save_dict[key] for key in keys])
-        adv_loader = DataLoader(adv_data, batch_size=batch_size, shuffle=shuffle)
-        print("Data is loaded in the following order: [%s]"%(", ".join(keys)))
+        adv_loader = DataLoader(
+            adv_data, batch_size=batch_size, shuffle=shuffle)
+        print("Data is loaded in the following order: [%s]" % (
+            ", ".join(keys)))
         return adv_loader
 
     @torch.no_grad()
@@ -398,7 +428,8 @@ class Attack(object):
         Return input labels.
         """
         if self._target_map_function is None:
-            raise ValueError('target_map_function is not initialized by set_mode_targeted.')
+            raise ValueError(
+                'target_map_function is not initialized by set_mode_targeted.')
         if self.attack_mode == 'targeted(label)':
             target_labels = labels
         else:
@@ -474,7 +505,7 @@ class Attack(object):
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
-        
+
         attacks = self.__dict__.get('_attacks')
 
         # Get all items in iterable items.
@@ -492,7 +523,7 @@ class Attack(object):
             else:
                 if isinstance(items, Attack):
                     yield items
-                
+
         for num, value in enumerate(get_all_values(value)):
             attacks[name+"."+str(num)] = value
             for subname, subvalue in value.__dict__.get('_attacks').items():
