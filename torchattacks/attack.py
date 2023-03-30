@@ -296,10 +296,8 @@ class Attack(object):
                     rob_acc = 100 * float(correct) / total
 
                     # Calculate l2 distance
-                    delta = (adv_inputs - inputs.to(self.device)
-                             ).view(batch_size, -1)
-                    l2_distance.append(torch.norm(
-                        delta[~right_idx], p=2, dim=1))
+                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)  # nopep8
+                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))  # nopep8
                     l2 = torch.cat(l2_distance).mean().item()
 
                     # Calculate time computation
@@ -308,8 +306,7 @@ class Attack(object):
                     elapsed_time = end-start
 
                     if verbose:
-                        self._save_print(progress, rob_acc, l2,
-                                         elapsed_time, end='\r')
+                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')  # nopep8
 
             if save_path is not None:
                 adv_input_list.append(adv_inputs.detach().cpu())
@@ -318,8 +315,7 @@ class Attack(object):
                 adv_input_list_cat = torch.cat(adv_input_list, 0)
                 label_list_cat = torch.cat(label_list, 0)
 
-                save_dict = {'adv_inputs': adv_input_list_cat,
-                             'labels': label_list_cat}
+                save_dict = {'adv_inputs': adv_input_list_cat, 'labels': label_list_cat}  # nopep8
 
                 if save_predictions:
                     pred_list.append(pred.detach().cpu())
@@ -335,15 +331,12 @@ class Attack(object):
                     save_dict['adv_inputs'] = self.inverse_normalize(
                         save_dict['adv_inputs'])
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.inverse_normalize(
-                            save_dict['clean_inputs'])
+                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])  # nopep8
 
                 if save_type == 'int':
-                    save_dict['adv_inputs'] = self.to_type(
-                        save_dict['adv_inputs'], 'int')
+                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')  # nopep8
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.to_type(
-                            save_dict['clean_inputs'], 'int')
+                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')  # nopep8
 
                 save_dict['save_type'] = save_type
                 torch.save(save_dict, save_path)
@@ -393,8 +386,7 @@ class Attack(object):
         if save_dict['save_type'] == 'int':
             save_dict['adv_inputs'] = save_dict['adv_inputs'].float()/255
             if load_clean_inputs:
-                save_dict['clean_inputs'] = save_dict['clean_inputs'].float() / \
-                    255
+                save_dict['clean_inputs'] = save_dict['clean_inputs'].float() / 255  # nopep8
 
         if normalize is not None:
             n_channels = len(normalize['mean'])
