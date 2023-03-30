@@ -67,22 +67,17 @@ class Attack(object):
     @wrapper_method
     def _check_inputs(self, images):
         if self._normalization_applied:
-            inv_images = self.inverse_normalize(images)
-            return inv_images
-        else:
-            if torch.max(images) > 1 or torch.min(images) < 0:
-                raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(
-                    torch.max(images), torch.min(images)))
-            else:
-                return images
+            images = self.inverse_normalize(images)
+        if torch.max(images) > 1 or torch.min(images) < 0:
+            raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(
+                torch.max(images), torch.min(images)))
+        return images
 
     @wrapper_method
     def _check_outputs(self, images):
         if self._normalization_applied:
-            nor_images = self.normalize(images)
-            return nor_images
-        else:
-            return images
+            images = self.normalize(images)
+        return images
 
     @wrapper_method
     def set_model(self, model):
