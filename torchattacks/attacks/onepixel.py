@@ -47,7 +47,6 @@ class OnePixel(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -94,7 +93,7 @@ class OnePixel(Attack):
             adv_images.append(adv_image)
 
         adv_images = torch.cat(adv_images)
-        return self._check_outputs(adv_images)
+        return adv_images
 
     def _loss(self, image, label, delta):
         adv_images = self._perturb(image, delta)  # Mutiple delta

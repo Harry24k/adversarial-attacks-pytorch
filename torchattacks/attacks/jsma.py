@@ -37,7 +37,6 @@ class JSMA(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -69,7 +68,7 @@ class JSMA(Attack):
                 adv_images = pert_image
 
         adv_images = torch.clamp(adv_images, min=0, max=1)
-        return self._check_outputs(adv_images)
+        return adv_images
 
     def compute_jacobian(self, image):
         var_image = image.clone().detach()

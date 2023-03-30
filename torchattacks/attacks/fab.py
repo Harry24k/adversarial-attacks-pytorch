@@ -71,13 +71,12 @@ class FAB(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         adv_images = self.perturb(images, labels)
 
-        return self._check_outputs(adv_images)
+        return adv_images
 
     def _get_predicted_label(self, x):
         with torch.no_grad():

@@ -42,7 +42,6 @@ class PGDL2(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -77,7 +76,7 @@ class PGDL2(Attack):
             # Update adversarial images
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
-            grad_norms = torch.norm(grad.view(batch_size, -1), p=2, dim=1) + self.eps_for_division
+            grad_norms = torch.norm(grad.view(batch_size, -1), p=2, dim=1) + self.eps_for_division  # nopep8
             grad = grad / grad_norms.view(batch_size, 1, 1, 1)
             adv_images = adv_images.detach() + self.alpha * grad
 
@@ -89,4 +88,4 @@ class PGDL2(Attack):
 
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return self._check_outputs(adv_images)
+        return adv_images

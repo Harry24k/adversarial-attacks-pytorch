@@ -46,7 +46,6 @@ class VNIFGSM(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -55,11 +54,8 @@ class VNIFGSM(Attack):
             target_labels = self.get_target_label(images, labels)
 
         momentum = torch.zeros_like(images).detach().to(self.device)
-
         v = torch.zeros_like(images).detach().to(self.device)
-
         loss = nn.CrossEntropyLoss()
-
         adv_images = images.clone().detach()
 
         for _ in range(self.steps):
@@ -106,4 +102,4 @@ class VNIFGSM(Attack):
                                 min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return self._check_outputs(adv_images)
+        return adv_images

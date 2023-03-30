@@ -33,6 +33,7 @@ class Pixle(Attack):
         >>> attack = torchattacks.Pixle(model, x_dimensions=(0.1, 0.2), restarts=10, max_iterations=50)
         >>> adv_images = attack(images, labels)
     """
+
     def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
                  pixel_mapping='random', restarts=20,
                  max_iterations=10, update_each_iteration=False):
@@ -74,14 +75,13 @@ class Pixle(Attack):
         self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
-        images = self._check_inputs(images)
 
         if not self.update_each_iteration:
             adv_images = self.restart_forward(images, labels)
-            return self._check_outputs(adv_images)
+            return adv_images
         else:
             adv_images = self.iterative_forward(images, labels)
-            return self._check_outputs(adv_images)
+            return adv_images
 
     def restart_forward(self, images, labels):
         if len(images.shape) == 3:
@@ -132,8 +132,7 @@ class Pixle(Attack):
 
                     destinations = self.get_pixel_mapping(image, x, x_offset,
                                                           y, y_offset,
-                                                          destination_image=
-                                                          best_image)
+                                                          destination_image=best_image)
 
                     solution = [x, y, x_offset, y_offset] + destinations
 
@@ -171,7 +170,7 @@ class Pixle(Attack):
 
     def iterative_forward(self, images, labels):
         assert len(images.shape) == 3 or \
-               (len(images.shape) == 4 and images.size(0) == 1)
+            (len(images.shape) == 4 and images.size(0) == 1)
 
         if len(images.shape) == 3:
             images = images.unsqueeze(0)

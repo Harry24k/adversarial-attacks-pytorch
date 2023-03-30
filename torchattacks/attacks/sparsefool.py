@@ -31,6 +31,7 @@ class SparseFool(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, steps=10, lam=3, overshoot=0.02):
         super().__init__("SparseFool", model)
         self.steps = steps
@@ -43,7 +44,6 @@ class SparseFool(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -93,7 +93,7 @@ class SparseFool(Attack):
 
         adv_images = torch.cat(adv_images).detach()
 
-        return self._check_outputs(adv_images)
+        return adv_image
 
     def _linear_solver(self, x_0, coord_vec, boundary_point):
         input_shape = x_0.size()
@@ -116,7 +116,8 @@ class SparseFool(Attack):
             pert = f_k.abs() / coord_vec.abs().max()
 
             mask = torch.zeros_like(coord_vec)
-            mask[np.unravel_index(torch.argmax(coord_vec.abs()).cpu(), input_shape)] = 1.
+            mask[np.unravel_index(torch.argmax(
+                coord_vec.abs()).cpu(), input_shape)] = 1.
 
             r_i = torch.clamp(pert, min=1e-4) * mask * coord_vec.sign()
 

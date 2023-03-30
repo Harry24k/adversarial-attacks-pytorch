@@ -73,7 +73,7 @@ class SPSA(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
+
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
@@ -85,8 +85,7 @@ class SPSA(Attack):
                 return -self.loss_fn(*args)
 
         adv_images = self.spsa_perturb(loss_fn, images, labels)
-        return self._check_outputs(adv_images)
-        
+        return adv_images
 
     def _batch_clamp_tensor_by_vector(self, vector, batch_tensor):
         return torch.min(torch.max(batch_tensor.transpose(0, -1), -vector), vector).transpose(0, -1).contiguous()

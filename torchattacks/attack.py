@@ -48,8 +48,8 @@ class Attack(object):
         self._target_map_function = None
 
         # Controls when normalization is used.
-        self.normalization_used = None
-        self._normalization_applied = None
+        self.normalization_used = {}
+        self._normalization_applied = False
         self._set_auto_normalization_used(model)
 
         # Controls model mode during attack.
@@ -64,7 +64,6 @@ class Attack(object):
         """
         raise NotImplementedError
 
-    @wrapper_method
     def _check_inputs(self, images):
         if self._normalization_applied:
             images = self.inverse_normalize(images)
@@ -73,7 +72,6 @@ class Attack(object):
                 torch.max(images), torch.min(images)))
         return images
 
-    @wrapper_method
     def _check_outputs(self, images):
         if self._normalization_applied:
             images = self.normalize(images)
@@ -85,7 +83,7 @@ class Attack(object):
         self.model_name = model.__class__.__name__
 
     def get_logits(self, inputs, labels=None, *args, **kwargs):
-        if self._normalization_applied is False:
+        if self._normalization_applied:
             inputs = self.normalize(inputs)
         logits = self.model(inputs)
         return logits
@@ -113,7 +111,6 @@ class Attack(object):
 
     @wrapper_method
     def set_normalization_used(self, mean, std):
-        self.normalization_used = {}
         n_channels = len(mean)
         mean = torch.tensor(mean).reshape(1, n_channels, 1, 1)
         std = torch.tensor(std).reshape(1, n_channels, 1, 1)
@@ -455,23 +452,14 @@ class Attack(object):
 
         return target_labels.long().to(self.device)
 
-    def __call__(self, inputs, labels=None, *args, **kwargs):
+    def __call__(self, images, labels=None, *args, **kwargs):
         given_training = self.model.training
         self._change_model_mode(given_training)
-
-        if self._normalization_applied is True:
-            inputs = self.inverse_normalize(inputs)
-            self._set_normalization_applied(False)
-
-            adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-            adv_inputs = self.normalize(adv_inputs)
-            self._set_normalization_applied(True)
-        else:
-            adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-
+        images = self._check_inputs(images)
+        adv_images = self.forward(images, labels, *args, **kwargs)
+        adv_images = self._check_outputs(adv_images)
         self._recover_model_mode(given_training)
-
-        return adv_inputs
+        return adv_images
 
     def __repr__(self):
         info = self.__dict__.copy()
@@ -486,7 +474,7 @@ class Attack(object):
             del info[key]
 
         info['attack_mode'] = self.attack_mode
-        info['normalization_used'] = True if self.normalization_used is not None else False
+        info['normalization_used'] = True if len(self.normalization_used) > 0 else False  # nopep8
 
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
 

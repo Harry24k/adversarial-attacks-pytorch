@@ -26,6 +26,7 @@ class DeepFool(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, steps=50, overshoot=0.02):
         super().__init__("DeepFool", model)
         self.steps = steps
@@ -36,7 +37,6 @@ class DeepFool(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -53,8 +53,9 @@ class DeepFool(Attack):
 
         while (True in correct) and (curr_steps < self.steps):
             for idx in range(batch_size):
-                if not correct[idx]: continue
-                early_stop, pre, adv_image = self._forward_indiv(adv_images[idx], labels[idx])
+                if not correct[idx]:
+                    continue
+                early_stop, pre, adv_image = self._forward_indiv(adv_images[idx], labels[idx])  # nopep8
                 adv_images[idx] = adv_image
                 target_labels[idx] = pre
                 if early_stop:
@@ -66,7 +67,7 @@ class DeepFool(Attack):
         if return_target_labels:
             return adv_images, target_labels
 
-        return self._check_outputs(adv_images)
+        return adv_images
 
     def _forward_indiv(self, image, label):
         image.requires_grad = True
@@ -87,13 +88,11 @@ class DeepFool(Attack):
 
         f_prime = f_k - f_0
         w_prime = w_k - w_0
-        value = torch.abs(f_prime) \
-                / torch.norm(nn.Flatten()(w_prime), p=2, dim=1)
+        value = torch.abs(f_prime) / torch.norm(nn.Flatten()(w_prime), p=2, dim=1)  # nopep8
         value[label] = float('inf')
         _, hat_L = torch.min(value, 0)
 
-        delta = (torch.abs(f_prime[hat_L])*w_prime[hat_L] \
-                 / (torch.norm(w_prime[hat_L], p=2)**2))
+        delta = (torch.abs(f_prime[hat_L])*w_prime[hat_L] / (torch.norm(w_prime[hat_L], p=2)**2))  # nopep8
 
         target_label = hat_L
 

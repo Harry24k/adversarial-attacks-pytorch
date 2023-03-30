@@ -41,7 +41,6 @@ class PGD(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -50,7 +49,6 @@ class PGD(Attack):
             target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
-
         adv_images = images.clone().detach()
 
         if self.random_start:
@@ -78,4 +76,4 @@ class PGD(Attack):
                                 min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
-        return self._check_outputs(adv_images)
+        return adv_images

@@ -13,7 +13,7 @@ class EADL1(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        kappa (float): (also written as 'confidence') how strong the adversarial example should be.
+        kappa (float): how strong the adversarial example should be (also written as 'confidence').
         lr (float): larger values converge faster to less accurate results.
         binary_search_steps (int): number of times to adjust the constant with binary search.
         max_iterations (int): number of iterations to perform gradient descent.
@@ -49,7 +49,6 @@ class EADL1(Attack):
         r"""
         Overridden.
         """
-        images = self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -142,7 +141,7 @@ class EADL1(Attack):
             self.update_loss_coeffs(
                 labels, bestscore, batch_size, const, upper_bound, lower_bound)
 
-        return self._check_outputs(final_adv_images)
+        return final_adv_images
 
     def L1_loss(self, x1, x2):
         Flatten = nn.Flatten()
