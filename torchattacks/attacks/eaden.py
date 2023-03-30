@@ -43,7 +43,7 @@ class EADEN(Attack):
         self.beta = beta
         # The last iteration (if we run many steps) repeat the search once.
         self.repeat = binary_search_steps >= 10
-        self.supported_mode = ['default']
+        self.supported_mode = ['default', 'targeted']
 
     def L1_loss(self, x1, x2):
         Flatten = nn.Flatten()
@@ -92,8 +92,8 @@ class EADEN(Attack):
         images_parameter.data = new_images_clone + (zt * (new_images_clone - images_clone))  # nopep8
         return images_parameter, new_images_clone
 
-    def _is_successful(self, y1, y2, targeted):
-        if targeted:
+    def _is_successful(self, y1, y2):
+        if self.targeted:
             return y1 == y2
         else:
             return y1 != y2
@@ -114,7 +114,7 @@ class EADEN(Attack):
             if pred == -1:
                 return pred.new_zeros(pred.shape).byte()
 
-        return self._is_successful(pred, label, self.targeted)
+        return self._is_successful(pred, label)
 
     def update_if_smaller_dist_succeed(self, adv_img, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images):
         # images_clone.data, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images
