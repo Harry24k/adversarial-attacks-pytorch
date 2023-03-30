@@ -56,7 +56,7 @@ __all__ = [
     "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
     "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
     "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADL2",
+    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADEN",
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 
