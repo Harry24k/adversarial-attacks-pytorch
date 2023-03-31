@@ -455,7 +455,7 @@ class DifferentialEvolutionSolver(object):
         # We need to do this sampling for each parameter.
         samples = (segsize * rng.random_sample(self.population_shape)
 
-        # Offset each segment to cover the entire parameter range [0, 1)
+                   # Offset each segment to cover the entire parameter range [0, 1)
                    + np.linspace(0., 1., self.num_population_members,
                                  endpoint=False)[:, np.newaxis])
 
@@ -589,8 +589,10 @@ class DifferentialEvolutionSolver(object):
             if convergence != 0:
                 conv = self.tol / convergence
             else:
-                if np.sign(self.tol) == np.sign(convergence):
+                if np.sign(self.tol) > 0:
                     conv = float('inf')
+                elif np.sign(self.tol) == 0:
+                    conv = 1  # 0/0 = 1
                 else:
                     conv = float('-inf')
 
@@ -649,11 +651,13 @@ class DifferentialEvolutionSolver(object):
         """
 
         ##############
-        ## CHANGES: self.func operates on the entire parameters array
+        # CHANGES: self.func operates on the entire parameters array
         ##############
-        itersize = max(0, min(len(self.population), self.maxfun - self._nfev + 1))
+        itersize = max(0, min(len(self.population),
+                       self.maxfun - self._nfev + 1))
         candidates = self.population[:itersize]
-        parameters = np.array([self._scale_parameters(c) for c in candidates]) # TODO: vectorize
+        parameters = np.array([self._scale_parameters(c)
+                              for c in candidates])  # TODO: vectorize
         energies = self.func(parameters, *self.args)
         self.population_energies = energies
         self._nfev += itersize
@@ -669,8 +673,6 @@ class DifferentialEvolutionSolver(object):
 
         ##############
         ##############
-
-        
 
         minval = np.argmin(self.population_energies)
 
@@ -704,17 +706,21 @@ class DifferentialEvolutionSolver(object):
                           * (self.dither[1] - self.dither[0]) + self.dither[0])
 
         ##############
-        ## CHANGES: self.func operates on the entire parameters array
+        # CHANGES: self.func operates on the entire parameters array
         ##############
 
-        itersize = max(0, min(self.num_population_members, self.maxfun - self._nfev + 1))
-        trials = np.array([self._mutate(c) for c in range(itersize)]) # TODO: vectorize
-        for trial in trials: self._ensure_constraint(trial)
-        parameters = np.array([self._scale_parameters(trial) for trial in trials])
+        itersize = max(0, min(self.num_population_members,
+                       self.maxfun - self._nfev + 1))
+        trials = np.array([self._mutate(c)
+                          for c in range(itersize)])  # TODO: vectorize
+        for trial in trials:
+            self._ensure_constraint(trial)
+        parameters = np.array([self._scale_parameters(trial)
+                              for trial in trials])
         energies = self.func(parameters, *self.args)
         self._nfev += itersize
 
-        for candidate,(energy,trial) in enumerate(zip(energies, trials)):
+        for candidate, (energy, trial) in enumerate(zip(energies, trials)):
             # if the energy of the trial candidate is lower than the
             # original population member then replace it
             if energy < self.population_energies[candidate]:
@@ -863,7 +869,7 @@ class DifferentialEvolutionSolver(object):
         currenttobest1bin, currenttobest1exp
         """
         r0, r1 = samples[:2]
-        bprime = (self.population[candidate] + self.scale * 
+        bprime = (self.population[candidate] + self.scale *
                   (self.population[0] - self.population[candidate] +
                    self.population[r0] - self.population[r1]))
         return bprime
