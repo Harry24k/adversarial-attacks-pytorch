@@ -48,6 +48,7 @@ class FAB(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1,
                  alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
                  multi_targeted=False, n_classes=10):
@@ -71,7 +72,6 @@ class FAB(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -224,7 +224,7 @@ class FAB(Attack):
                     ind = dist1.min(dim=1)[1]
                     dg2 = dg[u1, ind]
                     b = (- df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1)
-                                         .sum(dim=-1))
+                         .sum(dim=-1))
                     w = dg2.reshape([bs, -1])
 
                     if self.norm == 'Linf':
@@ -392,7 +392,8 @@ class FAB(Attack):
             counter_iter = 0
             while counter_iter < self.steps:
                 with torch.no_grad():
-                    df, dg = self.get_diff_logits_grads_batch_targeted(x1, la2, la_target2)
+                    df, dg = self.get_diff_logits_grads_batch_targeted(
+                        x1, la2, la_target2)
                     if self.norm == 'Linf':
                         dist1 = df.abs() / (1e-12 +
                                             dg.abs()
@@ -411,7 +412,7 @@ class FAB(Attack):
 
                     dg2 = dg[u1, ind]
                     b = (- df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1)
-                                         .sum(dim=-1))
+                         .sum(dim=-1))
                     w = dg2.reshape([bs, -1])
 
                     if self.norm == 'Linf':
@@ -505,20 +506,24 @@ class FAB(Attack):
             def inner_perturb(targeted):
                 for counter in range(self.n_restarts):
                     ind_to_fool = acc.nonzero().squeeze()
-                    if len(ind_to_fool.shape) == 0: ind_to_fool = ind_to_fool.unsqueeze(0)
+                    if len(ind_to_fool.shape) == 0:
+                        ind_to_fool = ind_to_fool.unsqueeze(0)
                     if ind_to_fool.numel() != 0:
-                        x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()
+                        x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()  # nopep8
 
                         if targeted:
-                            adv_curr = self.attack_single_run_targeted(x_to_fool, y_to_fool, use_rand_start=(counter > 0))
+                            adv_curr = self.attack_single_run_targeted(
+                                x_to_fool, y_to_fool, use_rand_start=(counter > 0))
                         else:
-                            adv_curr = self.attack_single_run(x_to_fool, y_to_fool, use_rand_start=(counter > 0))
+                            adv_curr = self.attack_single_run(
+                                x_to_fool, y_to_fool, use_rand_start=(counter > 0))
 
-                        acc_curr = self.get_logits(adv_curr).max(1)[1] == y_to_fool
+                        acc_curr = self.get_logits(adv_curr).max(1)[
+                            1] == y_to_fool
                         if self.norm == 'Linf':
-                            res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]
+                            res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]  # nopep8
                         elif self.norm == 'L2':
-                            res = ((x_to_fool - adv_curr) ** 2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()
+                            res = ((x_to_fool - adv_curr)**2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()  # nopep8
                         acc_curr = torch.max(acc_curr, res > self.eps)
 
                         ind_curr = (acc_curr == 0).nonzero().squeeze()
@@ -582,7 +587,7 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
 
         counter2 = counter4.long().unsqueeze(1)
         indcurr = indp_.gather(1, indp_.size(1) - 1 - counter2)
-        b2 = (sb_.gather(1, counter2) - s_.gather(1, counter2) * p_.gather(1, indcurr)).squeeze(1)
+        b2 = (sb_.gather(1, counter2) - s_.gather(1, counter2) * p_.gather(1, indcurr)).squeeze(1)  # nopep8
         c = b_ - b2 > 0
 
         lb = torch.where(c, counter4, lb)
@@ -591,11 +596,14 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
     lb = lb.long()
 
     if c_l.any():
-        lmbd_opt = torch.clamp_min((b[c_l] - sb[c_l, -1]) / (-s[c_l, -1]), min=0).unsqueeze(-1)
+        lmbd_opt = torch.clamp_min(
+            (b[c_l] - sb[c_l, -1]) / (-s[c_l, -1]), min=0).unsqueeze(-1)
         d[c_l] = (2 * a[c_l] - 1) * lmbd_opt
 
-    lmbd_opt = torch.clamp_min((b[c2] - sb[c2, lb]) / (-s[c2, lb]), min=0).unsqueeze(-1)
-    d[c2] = torch.min(lmbd_opt, d[c2]) * a[c2] + torch.max(-lmbd_opt, d[c2]) * (1 - a[c2])
+    lmbd_opt = torch.clamp_min(
+        (b[c2] - sb[c2, lb]) / (-s[c2, lb]), min=0).unsqueeze(-1)
+    d[c2] = torch.min(lmbd_opt, d[c2]) * a[c2] + \
+        torch.max(-lmbd_opt, d[c2]) * (1 - a[c2])
 
     return d * (w != 0).float()
 
@@ -622,7 +630,8 @@ def projection_l2(points_to_project, w_hyperplane, b_hyperplane):
     ws = w5 - torch.cumsum(w3s, dim=1)
     d = -(r * w)
     d.mul_((w.abs() > 1e-8).float())
-    s = torch.cat((-w5 * rs[:, 0:1], torch.cumsum((-rs2 + rs) * ws, dim=1) - w5 * rs[:, 0:1]), 1)
+    s = torch.cat(
+        (-w5 * rs[:, 0:1], torch.cumsum((-rs2 + rs) * ws, dim=1) - w5 * rs[:, 0:1]), 1)
 
     c4 = s[:, 0] + c < 0
     c3 = (d * w).sum(dim=1) + c > 0
@@ -693,7 +702,8 @@ def projection_l1(points_to_project, w_hyperplane, b_hyperplane):
     if c2.any():
         indr = indr[c2].gather(1, lb2.unsqueeze(1)).squeeze(1)
         u = torch.arange(0, w.shape[0], device=device).unsqueeze(1)
-        u2 = torch.arange(0, w.shape[1], device=device, dtype=torch.float).unsqueeze(0)
+        u2 = torch.arange(0, w.shape[1], device=device,
+                          dtype=torch.float).unsqueeze(0)
         alpha = -s[c2, lb2] / w[c2, indr]
         c5 = u2 < lb.unsqueeze(-1)
         u3 = c5[u[:c5.shape[0]], indr_rev[c2]]

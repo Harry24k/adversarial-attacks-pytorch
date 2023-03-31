@@ -46,7 +46,6 @@ class VMIFGSM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -55,11 +54,8 @@ class VMIFGSM(Attack):
             target_labels = self.get_target_label(images, labels)
 
         momentum = torch.zeros_like(images).detach().to(self.device)
-
         v = torch.zeros_like(images).detach().to(self.device)
-
         loss = nn.CrossEntropyLoss()
-
         adv_images = images.clone().detach()
 
         for _ in range(self.steps):
@@ -74,9 +70,10 @@ class VMIFGSM(Attack):
 
             # Update adversarial images
             adv_grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
+                                           retain_graph=False, create_graph=False)[0]
 
-            grad = (adv_grad + v) / torch.mean(torch.abs(adv_grad + v), dim=(1,2,3), keepdim=True)
+            grad = (adv_grad + v) / torch.mean(torch.abs(adv_grad + v),
+                                               dim=(1, 2, 3), keepdim=True)
             grad = grad + momentum * self.decay
             momentum = grad
 
@@ -84,7 +81,8 @@ class VMIFGSM(Attack):
             GV_grad = torch.zeros_like(images).detach().to(self.device)
             for _ in range(self.N):
                 neighbor_images = adv_images.detach() + \
-                                  torch.randn_like(images).uniform_(-self.eps*self.beta, self.eps*self.beta)
+                    torch.randn_like(images).uniform_(-self.eps *
+                                                      self.beta, self.eps*self.beta)
                 neighbor_images.requires_grad = True
                 outputs = self.get_logits(neighbor_images)
 
@@ -99,7 +97,8 @@ class VMIFGSM(Attack):
             v = GV_grad / self.N - adv_grad
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            delta = torch.clamp(adv_images - images,
+                                min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

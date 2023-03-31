@@ -25,6 +25,7 @@ class FFGSM(Attack):
         >>> attack = torchattacks.FFGSM(model, eps=8/255, alpha=10/255)
         >>> adv_images = attack(images, labels)
     """
+
     def __init__(self, model, eps=8/255, alpha=10/255):
         super().__init__("FFGSM", model)
         self.eps = eps
@@ -35,7 +36,6 @@ class FFGSM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -45,7 +45,7 @@ class FFGSM(Attack):
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images = images + torch.randn_like(images).uniform_(-self.eps, self.eps)
+        adv_images = images + torch.randn_like(images).uniform_(-self.eps, self.eps)  # nopep8
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
         adv_images.requires_grad = True
 

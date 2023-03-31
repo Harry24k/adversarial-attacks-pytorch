@@ -35,6 +35,7 @@ class AutoAttack(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, norm='Linf', eps=8/255, version='standard', n_classes=10, seed=None, verbose=False):
         super().__init__("AutoAttack", model)
         self.norm = norm
@@ -47,26 +48,39 @@ class AutoAttack(Attack):
 
         if version == 'standard':  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
             self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=1),
-                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
-                Square(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_queries=5000, n_restarts=1),
+                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
+                     verbose=verbose, loss='ce', n_restarts=1),
+                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(),
+                      verbose=verbose, n_classes=n_classes, n_restarts=1),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(
+                ), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
+                Square(model, eps=eps, norm=norm, seed=self.get_seed(),
+                       verbose=verbose, n_queries=5000, n_restarts=1),
             ])
 
-        elif version == 'plus':  # ['apgd-ce', 'apgd-dlr', 'fab', 'square', 'apgd-t', 'fab-t']
+        # ['apgd-ce', 'apgd-dlr', 'fab', 'square', 'apgd-t', 'fab-t']
+        elif version == 'plus':
             self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', n_restarts=5),
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', n_restarts=5),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=5),
-                Square(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_queries=5000, n_restarts=1),
-                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
+                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
+                     verbose=verbose, loss='ce', n_restarts=5),
+                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
+                     verbose=verbose, loss='dlr', n_restarts=5),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(),
+                    verbose=verbose, n_classes=n_classes, n_restarts=5),
+                Square(model, eps=eps, norm=norm, seed=self.get_seed(),
+                       verbose=verbose, n_queries=5000, n_restarts=1),
+                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(),
+                      verbose=verbose, n_classes=n_classes, n_restarts=1),
+                FAB(model, eps=eps, norm=norm, seed=self.get_seed(
+                ), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
             ])
 
         elif version == 'rand':  # ['apgd-ce', 'apgd-dlr']
             self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='ce', eot_iter=20, n_restarts=1),
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(), verbose=verbose, loss='dlr', eot_iter=20, n_restarts=1),
+                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
+                     verbose=verbose, loss='ce', eot_iter=20, n_restarts=1),
+                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
+                     verbose=verbose, loss='dlr', eot_iter=20, n_restarts=1),
             ])
 
         else:
@@ -76,7 +90,6 @@ class AutoAttack(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)

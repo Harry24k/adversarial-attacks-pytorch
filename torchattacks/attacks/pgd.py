@@ -28,8 +28,8 @@ class PGD(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=8/255,
-                 alpha=2/255, steps=10, random_start=True):
+
+    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, random_start=True):
         super().__init__("PGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -41,7 +41,6 @@ class PGD(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -50,12 +49,12 @@ class PGD(Attack):
             target_labels = self.get_target_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
-
         adv_images = images.clone().detach()
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
+            adv_images = adv_images + \
+                torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for _ in range(self.steps):
@@ -73,7 +72,8 @@ class PGD(Attack):
                                        retain_graph=False, create_graph=False)[0]
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            delta = torch.clamp(adv_images - images,
+                                min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

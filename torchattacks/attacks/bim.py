@@ -28,6 +28,7 @@ class BIM(Attack):
         >>> attack = torchattacks.BIM(model, eps=8/255, alpha=2/255, steps=10)
         >>> adv_images = attack(images, labels)
     """
+
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
         super().__init__("BIM", model)
         self.eps = eps
@@ -42,7 +43,6 @@ class BIM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -71,10 +71,8 @@ class BIM(Attack):
 
             adv_images = images + self.alpha*grad.sign()
             a = torch.clamp(ori_images - self.eps, min=0)
-            b = (adv_images >= a).float()*adv_images \
-                + (adv_images < a).float()*a
-            c = (b > ori_images+self.eps).float()*(ori_images+self.eps) \
-                + (b <= ori_images + self.eps).float()*b
+            b = (adv_images >= a).float()*adv_images + (adv_images < a).float()*a  # nopep8
+            c = (b > ori_images+self.eps).float()*(ori_images+self.eps) + (b <= ori_images + self.eps).float()*b  # nopep8
             images = torch.clamp(c, max=1).detach()
 
         return images

@@ -102,7 +102,7 @@ atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(lab
 ```python
 # label from user provide.
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
-atk.set_mode_targeted_by_label()
+atk.set_mode_targeted_by_label(quiet=True) # do not show the message
 # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
 target_labels = (labels + 1) % 10
 adv_images = atk(images, target_labels)
@@ -264,7 +264,9 @@ The distance measure in parentheses.
 |       **Pixle**<br />(L0)       | Pixle: a fast and effective black-box attack based on rearranging pixels ([Pomponi, Jary, et al., 2022](https://arxiv.org/abs/2202.02236))                |                                                                                                                        |
 | **LGV**<br />(Linf, L2, L1, L0) | LGV: Boosting Adversarial Example Transferability from Large Geometric Vicinity ([Gubri, et al., 2022](https://arxiv.org/abs/2207.13129))                 | :heart_eyes: Contributor [Martin Gubri](https://github.com/Framartin)                               |
 | **SPSA**<br />(Linf) | Adversarial Risk and the Dangers of Evaluating Against Weak Attacks ([Uesato, Jonathan, et al., 2018](https://arxiv.org/abs/1802.05666))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-| **JSMA**<br /> | The Limitations of Deep Learning in Adversarial Settings ([Papernot, Nicolas, et al., 2016](https://arxiv.org/abs/1511.07528v1))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **JSMA**<br />(L0) | The Limitations of Deep Learning in Adversarial Settings ([Papernot, Nicolas, et al., 2016](https://arxiv.org/abs/1511.07528v1))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **EADL1**<br />(L1) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **EADEN**<br />(L1, L2) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 
 
 ## Performance Comparison

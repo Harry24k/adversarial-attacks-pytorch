@@ -47,9 +47,8 @@ class PGDRSL2(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=10,
-                 noise_type = "guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048,
-                 eps_for_division=1e-10):
+
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048, eps_for_division=1e-10):
         super().__init__("PGDRSL2", model)
         self.eps = eps
         self.alpha = alpha
@@ -79,27 +78,29 @@ class PGDRSL2(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-        #expend the inputs over noise_batch_size
-        shape = torch.Size([images.shape[0], self.noise_batch_size]) + images.shape[1:]
+        # expend the inputs over noise_batch_size
+        shape = torch.Size([images.shape[0], self.noise_batch_size]) + images.shape[1:]  # nopep8
         inputs_exp = images.unsqueeze(1).expand(shape)
-        inputs_exp = inputs_exp.reshape(torch.Size([-1]) + inputs_exp.shape[2:])
+        inputs_exp = inputs_exp.reshape(torch.Size([-1]) + inputs_exp.shape[2:])  # nopep8
 
         data_batch_size = labels.shape[0]
-        delta = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device)
-        delta_last = torch.zeros((len(labels), *inputs_exp.shape[1:]), requires_grad=False, device=self.device)
+        delta = torch.zeros(
+            (len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device)
+        delta_last = torch.zeros(
+            (len(labels), *inputs_exp.shape[1:]), requires_grad=False, device=self.device)
 
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
         for _ in range(self.steps):
             delta.requires_grad = True
-            #img_adv is the perturbed data for randmized smoothing
-            img_adv = inputs_exp + delta.unsqueeze(1).repeat((1, self.noise_batch_size, 1, 1, 1)).view_as(inputs_exp)#delta.repeat(1,self.noise_batch_size,1,1)
-            img_adv = torch.clamp(img_adv, min=0, max=1)   
+            # img_adv is the perturbed data for randmized smoothing
+            # delta.repeat(1,self.noise_batch_size,1,1)
+            img_adv = inputs_exp + delta.unsqueeze(1).repeat((1, self.noise_batch_size, 1, 1, 1)).view_as(inputs_exp)  # nopep8
+            img_adv = torch.clamp(img_adv, min=0, max=1)
 
             noise_added = self.noise_func(img_adv.view(len(img_adv), -1))
             noise_added = noise_added.view(img_adv.shape)
@@ -109,19 +110,25 @@ class PGDRSL2(Attack):
 
             softmax = F.softmax(logits, dim=1)
             # average the probabilities across noise
-            average_softmax = softmax.reshape(-1, self.noise_batch_size, logits.shape[-1]).mean(1, keepdim=True).squeeze(1)
+            average_softmax = softmax.reshape(
+                -1, self.noise_batch_size, logits.shape[-1]).mean(1, keepdim=True).squeeze(1)
             logsoftmax = torch.log(average_softmax.clamp(min=1e-20))
-            ce_loss = F.nll_loss(logsoftmax, labels) if not self.targeted else -F.nll_loss(logsoftmax, target_labels)
+            ce_loss = F.nll_loss(
+                logsoftmax, labels) if not self.targeted else -F.nll_loss(logsoftmax, target_labels)
 
-            grad = torch.autograd.grad(ce_loss, delta, retain_graph=False, create_graph=False)[0]
-            grad_norms = torch.norm(grad.view(data_batch_size, -1), p=2, dim=1) + self.eps_for_division
+            grad = torch.autograd.grad(
+                ce_loss, delta, retain_graph=False, create_graph=False)[0]
+            grad_norms = torch.norm(
+                grad.view(data_batch_size, -1), p=2, dim=1) + self.eps_for_division
             grad = grad / grad_norms.view(data_batch_size, 1, 1, 1)
 
             delta = delta_last + self.alpha*grad
-            delta_norms = torch.norm(delta.view(data_batch_size, -1), p=2, dim=1)
+            delta_norms = torch.norm(delta.view(
+                data_batch_size, -1), p=2, dim=1)
             factor = self.eps / delta_norms
             factor = torch.min(factor, torch.ones_like(delta_norms))
             delta = delta * factor.view(-1, 1, 1, 1)
             delta_last.data = copy.deepcopy(delta.data)
 
-        return torch.clamp(images + delta, min=0, max=1).detach()
+        adv_images = torch.clamp(images + delta, min=0, max=1).detach()
+        return adv_images

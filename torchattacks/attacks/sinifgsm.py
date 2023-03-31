@@ -44,7 +44,6 @@ class SINIFGSM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -76,10 +75,12 @@ class SINIFGSM(Attack):
             adv_grad = adv_grad / self.m
 
             # Update adversarial images
-            grad = self.decay*momentum + adv_grad / torch.mean(torch.abs(adv_grad), dim=(1,2,3), keepdim=True)
+            grad = self.decay*momentum + adv_grad / \
+                torch.mean(torch.abs(adv_grad), dim=(1, 2, 3), keepdim=True)
             momentum = grad
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            delta = torch.clamp(adv_images - images,
+                                min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

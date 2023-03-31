@@ -36,6 +36,7 @@ class CW(Attack):
     .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
 
     """
+
     def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01):
         super().__init__("CW", model)
         self.c = c
@@ -48,7 +49,6 @@ class CW(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -100,8 +100,8 @@ class CW(Attack):
                 # If the attack is not targeted we simply make these two values unequal
                 condition = (pre != labels).float()
 
-            # Filter out images that get either correct predictions or non-decreasing loss, 
-            # i.e., only images that are both misclassified and loss-decreasing are left 
+            # Filter out images that get either correct predictions or non-decreasing loss,
+            # i.e., only images that are both misclassified and loss-decreasing are left
             mask = condition*(best_L2 > current_L2.detach())
             best_L2 = mask*current_L2.detach() + (1-mask)*best_L2
 
@@ -110,7 +110,7 @@ class CW(Attack):
 
             # Early stop when loss does not converge.
             # max(.,1) To prevent MODULO BY ZERO error in the next step.
-            if step % max(self.steps//10,1) == 0:
+            if step % max(self.steps//10, 1) == 0:
                 if cost.item() > prev_cost:
                     return best_adv_images
                 prev_cost = cost.item()
@@ -132,8 +132,10 @@ class CW(Attack):
     def f(self, outputs, labels):
         one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[labels]
 
-        other = torch.max((1-one_hot_labels)*outputs, dim=1)[0] # find the max logit other than the target class
-        real = torch.max(one_hot_labels*outputs, dim=1)[0]      # get the target class's logit
+        # find the max logit other than the target class
+        other = torch.max((1-one_hot_labels)*outputs, dim=1)[0]
+        # get the target class's logit
+        real = torch.max(one_hot_labels*outputs, dim=1)[0]
 
         if self.targeted:
             return torch.clamp((other-real), min=-self.kappa)

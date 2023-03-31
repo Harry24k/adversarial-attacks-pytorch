@@ -21,6 +21,7 @@ class GN(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, std=0.1):
         super().__init__("GN", model)
         self.std = std
@@ -30,7 +31,6 @@ class GN(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         adv_images = images + self.std*torch.randn_like(images)

@@ -34,6 +34,7 @@ class OnePixel(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, model, pixels=1, steps=10, popsize=10, inf_batch=128):
         super().__init__("OnePixel", model)
         self.pixels = pixels
@@ -46,7 +47,6 @@ class OnePixel(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)

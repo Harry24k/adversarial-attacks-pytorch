@@ -6,6 +6,7 @@ from collections.abc import Iterable
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
+
 def wrapper_method(func):
     def wrapper_func(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
@@ -24,6 +25,7 @@ class Attack(object):
         It basically changes training mode to eval during attack process.
         To change this, please see `set_model_training_mode`.
     """
+
     def __init__(self, name, model):
         r"""
         Initializes internal attack state.
@@ -35,7 +37,7 @@ class Attack(object):
 
         self.attack = name
         self._attacks = OrderedDict()
-        
+
         self.set_model(model)
         self.device = next(model.parameters()).device
 
@@ -46,8 +48,8 @@ class Attack(object):
         self._target_map_function = None
 
         # Controls when normalization is used.
-        self.normalization_used = None
-        self._normalization_applied = None
+        self.normalization_used = {}
+        self._normalization_applied = False
         self._set_auto_normalization_used(model)
 
         # Controls model mode during attack.
@@ -61,11 +63,19 @@ class Attack(object):
         Should be overridden by all subclasses.
         """
         raise NotImplementedError
-        
-    @wrapper_method
+
     def _check_inputs(self, images):
+        if self._normalization_applied:
+            images = self.inverse_normalize(images)
         if torch.max(images) > 1 or torch.min(images) < 0:
-            raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(torch.max(images), torch.min(images)))
+            raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(
+                torch.max(images), torch.min(images)))
+        return images
+
+    def _check_outputs(self, images):
+        if self._normalization_applied:
+            images = self.normalize(images)
+        return images
 
     @wrapper_method
     def set_model(self, model):
@@ -73,7 +83,7 @@ class Attack(object):
         self.model_name = model.__class__.__name__
 
     def get_logits(self, inputs, labels=None, *args, **kwargs):
-        if self._normalization_applied is False:
+        if self._normalization_applied:
             inputs = self.normalize(inputs)
         logits = self.model(inputs)
         return logits
@@ -81,7 +91,7 @@ class Attack(object):
     @wrapper_method
     def _set_normalization_applied(self, flag):
         self._normalization_applied = flag
-    
+
     @wrapper_method
     def set_device(self, device):
         self.device = device
@@ -101,7 +111,6 @@ class Attack(object):
 
     @wrapper_method
     def set_normalization_used(self, mean, std):
-        self.normalization_used = {}
         n_channels = len(mean)
         mean = torch.tensor(mean).reshape(1, n_channels, 1, 1)
         std = torch.tensor(std).reshape(1, n_channels, 1, 1)
@@ -143,7 +152,7 @@ class Attack(object):
         self.targeted = True
         self.attack_mode = mode
         if not quiet:
-            print("Attack mode is changed to '%s'."%mode)
+            print("Attack mode is changed to '%s'." % mode)
 
     @wrapper_method
     def set_mode_targeted_by_function(self, target_map_function, quiet=False):
@@ -189,7 +198,7 @@ class Attack(object):
     def set_mode_targeted_by_label(self, quiet=False):
         r"""
         Set attack mode as targeted.
-        
+
         .. note::
             Use user-supplied labels as target labels.
         """
@@ -279,8 +288,8 @@ class Attack(object):
                     rob_acc = 100 * float(correct) / total
 
                     # Calculate l2 distance
-                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)
-                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))
+                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)  # nopep8
+                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))  # nopep8
                     l2 = torch.cat(l2_distance).mean().item()
 
                     # Calculate time computation
@@ -289,7 +298,7 @@ class Attack(object):
                     elapsed_time = end-start
 
                     if verbose:
-                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')
+                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')  # nopep8
 
             if save_path is not None:
                 adv_input_list.append(adv_inputs.detach().cpu())
@@ -297,8 +306,8 @@ class Attack(object):
 
                 adv_input_list_cat = torch.cat(adv_input_list, 0)
                 label_list_cat = torch.cat(label_list, 0)
-                
-                save_dict = {'adv_inputs':adv_input_list_cat, 'labels':label_list_cat}
+
+                save_dict = {'adv_inputs': adv_input_list_cat, 'labels': label_list_cat}  # nopep8
 
                 if save_predictions:
                     pred_list.append(pred.detach().cpu())
@@ -309,16 +318,16 @@ class Attack(object):
                     input_list.append(inputs.detach().cpu())
                     input_list_cat = torch.cat(input_list, 0)
                     save_dict['clean_inputs'] = input_list_cat
-                    
+
                 if self.normalization_used is not None:
-                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])
+                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])  # nopep8
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])
+                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])  # nopep8
 
                 if save_type == 'int':
-                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')
+                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')  # nopep8
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')
+                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')  # nopep8
 
                 save_dict['save_type'] = save_type
                 torch.save(save_dict, save_path)
@@ -345,12 +354,13 @@ class Attack(object):
             if isinstance(inputs, torch.ByteTensor) or isinstance(inputs, torch.cuda.ByteTensor):
                 return inputs.float()/255
         else:
-            raise ValueError(type + " is not a valid type. [Options: float, int]")
+            raise ValueError(
+                type + " is not a valid type. [Options: float, int]")
         return inputs
 
     @staticmethod
     def _save_print(progress, rob_acc, l2, elapsed_time, end):
-        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t' \
+        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t'
               % (progress, rob_acc, l2, elapsed_time), end=end)
 
     @staticmethod
@@ -367,19 +377,20 @@ class Attack(object):
         if save_dict['save_type'] == 'int':
             save_dict['adv_inputs'] = save_dict['adv_inputs'].float()/255
             if load_clean_inputs:
-                save_dict['clean_inputs'] = save_dict['clean_inputs'].float()/255
-                
+                save_dict['clean_inputs'] = save_dict['clean_inputs'].float() / 255  # nopep8
+
         if normalize is not None:
             n_channels = len(normalize['mean'])
             mean = torch.tensor(normalize['mean']).reshape(1, n_channels, 1, 1)
             std = torch.tensor(normalize['std']).reshape(1, n_channels, 1, 1)
             save_dict['adv_inputs'] = (save_dict['adv_inputs'] - mean) / std
             if load_clean_inputs:
-                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std
+                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std  # nopep8
 
         adv_data = TensorDataset(*[save_dict[key] for key in keys])
-        adv_loader = DataLoader(adv_data, batch_size=batch_size, shuffle=shuffle)
-        print("Data is loaded in the following order: [%s]"%(", ".join(keys)))
+        adv_loader = DataLoader(
+            adv_data, batch_size=batch_size, shuffle=shuffle)
+        print("Data is loaded in the following order: [%s]" % (", ".join(keys)))  # nopep8
         return adv_loader
 
     @torch.no_grad()
@@ -398,7 +409,8 @@ class Attack(object):
         Return input labels.
         """
         if self._target_map_function is None:
-            raise ValueError('target_map_function is not initialized by set_mode_targeted.')
+            raise ValueError(
+                'target_map_function is not initialized by set_mode_targeted.')
         if self.attack_mode == 'targeted(label)':
             target_labels = labels
         else:
@@ -437,23 +449,14 @@ class Attack(object):
 
         return target_labels.long().to(self.device)
 
-    def __call__(self, inputs, labels=None, *args, **kwargs):
+    def __call__(self, images, labels=None, *args, **kwargs):
         given_training = self.model.training
         self._change_model_mode(given_training)
-
-        if self._normalization_applied is True:
-            inputs = self.inverse_normalize(inputs)
-            self._set_normalization_applied(False)
-
-            adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-            adv_inputs = self.normalize(adv_inputs)
-            self._set_normalization_applied(True)
-        else:
-            adv_inputs = self.forward(inputs, labels, *args, **kwargs)
-
+        images = self._check_inputs(images)
+        adv_images = self.forward(images, labels, *args, **kwargs)
+        adv_images = self._check_outputs(adv_images)
         self._recover_model_mode(given_training)
-
-        return adv_inputs
+        return adv_images
 
     def __repr__(self):
         info = self.__dict__.copy()
@@ -468,13 +471,13 @@ class Attack(object):
             del info[key]
 
         info['attack_mode'] = self.attack_mode
-        info['normalization_used'] = True if self.normalization_used is not None else False
+        info['normalization_used'] = True if len(self.normalization_used) > 0 else False  # nopep8
 
         return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
-        
+
         attacks = self.__dict__.get('_attacks')
 
         # Get all items in iterable items.
@@ -492,7 +495,7 @@ class Attack(object):
             else:
                 if isinstance(items, Attack):
                     yield items
-                
+
         for num, value in enumerate(get_all_values(value)):
             attacks[name+"."+str(num)] = value
             for subname, subvalue in value.__dict__.get('_attacks').items():

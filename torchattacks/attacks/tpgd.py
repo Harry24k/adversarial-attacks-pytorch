@@ -27,6 +27,7 @@ class TPGD(Attack):
         >>> adv_images = attack(images)
 
     """
+
     def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
         super().__init__("TPGD", model)
         self.eps = eps
@@ -38,7 +39,6 @@ class TPGD(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         logit_ori = self.get_logits(images).detach()
@@ -61,7 +61,8 @@ class TPGD(Attack):
                                        retain_graph=False, create_graph=False)[0]
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            delta = torch.clamp(adv_images - images,
+                                min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

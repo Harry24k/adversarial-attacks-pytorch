@@ -41,7 +41,6 @@ class MIFGSM(Attack):
         r"""
         Overridden.
         """
-        self._check_inputs(images)
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
@@ -69,12 +68,14 @@ class MIFGSM(Attack):
             grad = torch.autograd.grad(cost, adv_images,
                                        retain_graph=False, create_graph=False)[0]
 
-            grad = grad / torch.mean(torch.abs(grad), dim=(1,2,3), keepdim=True)
+            grad = grad / torch.mean(torch.abs(grad),
+                                     dim=(1, 2, 3), keepdim=True)
             grad = grad + momentum*self.decay
             momentum = grad
 
             adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
+            delta = torch.clamp(adv_images - images,
+                                min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

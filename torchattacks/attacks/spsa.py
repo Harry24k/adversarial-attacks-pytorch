@@ -6,7 +6,7 @@ from ..attack import Attack
 
 
 class MarginalLoss(_Loss):
-    def forward(self, logits, targets):  # pylint: disable=arguments-differ
+    def forward(self, logits, targets):
         assert logits.shape[-1] >= 2
         top_logits, top_classes = torch.topk(logits, 2, dim=-1)
         target_logits = logits[torch.arange(logits.shape[0]), targets]
@@ -41,11 +41,11 @@ class SPSA(Attack):
     Arguments:
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
-        delta: scaling parameter of SPSA.
-        lr: the learning rate of the `Adam` optimizer.
-        nb_iter: number of iterations of the attack.
-        nb_sample: number of samples for SPSA gradient approximation.
-        max_batch_size: maximum batch size to be evaluated at once.
+        delta (float): scaling parameter of SPSA.
+        lr (float): the learning rate of the `Adam` optimizer.
+        nb_iter (int): number of iterations of the attack.
+        nb_sample (int): number of samples for SPSA gradient approximation.
+        max_batch_size (int): maximum batch size to be evaluated at once.
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -68,6 +68,24 @@ class SPSA(Attack):
         self.max_batch_size = max_batch_size
         self.loss_fn = MarginalLoss(reduction="none")
         self.supported_mode = ['default', 'targeted']
+
+    def forward(self, images, labels):
+        r"""
+        Overridden.
+        """
+
+        images = images.clone().detach().to(self.device)
+        labels = labels.clone().detach().to(self.device)
+
+        if self.targeted:
+            def loss_fn(*args):
+                return self.loss_fn(*args)
+        else:
+            def loss_fn(*args):
+                return -self.loss_fn(*args)
+
+        adv_images = self.spsa_perturb(loss_fn, images, labels)
+        return adv_images
 
     def _batch_clamp_tensor_by_vector(self, vector, batch_tensor):
         return torch.min(torch.max(batch_tensor.transpose(0, -1), -vector), vector).transpose(0, -1).contiguous()
@@ -190,20 +208,3 @@ class SPSA(Attack):
 
         x_adv = x + dx
         return x_adv
-
-    def forward(self, images, labels):
-        r"""
-        Overridden.
-        """
-        self._check_inputs(images)
-        images = images.clone().detach().to(self.device)
-        labels = labels.clone().detach().to(self.device)
-
-        if self.targeted:
-            def loss_fn(*args):
-                return self.loss_fn(*args)
-        else:
-            def loss_fn(*args):
-                return -self.loss_fn(*args)
-
-        return self.spsa_perturb(loss_fn, images, labels)
