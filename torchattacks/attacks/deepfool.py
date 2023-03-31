@@ -56,7 +56,10 @@ class DeepFool(Attack):
                     target_labels.append(pre)
                     break
 
+        # Fix for sparsefool attack
+        adv_images = adv_images.detach()
         if return_target_labels:
+            target_labels = torch.tensor(target_labels)
             return adv_images, target_labels
 
         return adv_images

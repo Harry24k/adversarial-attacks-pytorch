@@ -116,8 +116,7 @@ class SparseFool(Attack):
             pert = f_k.abs() / coord_vec.abs().max()
 
             mask = torch.zeros_like(coord_vec)
-            mask[np.unravel_index(torch.argmax(
-                coord_vec.abs()).cpu(), input_shape)] = 1.
+            mask[np.unravel_index(torch.argmax(coord_vec.abs()).cpu(), input_shape)] = 1.  # nopep8
 
             r_i = torch.clamp(pert, min=1e-4) * mask * coord_vec.sign()
 
