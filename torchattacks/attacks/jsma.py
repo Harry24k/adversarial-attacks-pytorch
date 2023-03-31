@@ -140,7 +140,8 @@ class JSMA(Attack):
             saliency_map.view(-1, nb_features * nb_features), dim=1)
         # p = max_idx // nb_features
         p = torch.div(max_idx, nb_features, rounding_mode='floor')
-        q = max_idx % nb_features
+        # q = max_idx % nb_features
+        q = max_idx - p * nb_features
         return p, q
 
     def perturbation_single(self, image, target_label):
