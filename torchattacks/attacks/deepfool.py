@@ -41,28 +41,20 @@ class DeepFool(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        batch_size = len(images)
-        correct = torch.tensor([True]*batch_size)
-        target_labels = labels.clone().detach().to(self.device)
-        curr_steps = 0
-
-        adv_images = []
-        for idx in range(batch_size):
-            image = images[idx:idx+1].clone().detach()
-            adv_images.append(image)
-
-        while (True in correct) and (curr_steps < self.steps):
-            for idx in range(batch_size):
-                if not correct[idx]:
-                    continue
-                early_stop, pre, adv_image = self._forward_indiv(adv_images[idx], labels[idx])  # nopep8
-                adv_images[idx] = adv_image
-                target_labels[idx] = pre
+        adv_images = None
+        target_labels = []
+        for image, label in zip(images, labels):
+            adv_image = torch.unsqueeze(image, 0)
+            label = torch.squeeze(label, 0)
+            for _ in range(self.steps):
+                early_stop, pre, adv_image = self._forward_indiv(adv_image, label)  # nopep8
                 if early_stop:
-                    correct[idx] = False
-            curr_steps += 1
-
-        adv_images = torch.cat(adv_images).detach()
+                    try:
+                        adv_images = torch.cat((adv_images, adv_image), 0)
+                    except Exception:
+                        adv_images = adv_image
+                    target_labels.append(pre)
+                    break
 
         if return_target_labels:
             return adv_images, target_labels
@@ -70,9 +62,10 @@ class DeepFool(Attack):
         return adv_images
 
     def _forward_indiv(self, image, label):
+        # Only one image
         image.requires_grad = True
-        fs = self.get_logits(image)[0]
-        _, pre = torch.max(fs, dim=0)
+        fs = torch.squeeze(self.get_logits(image))
+        pre = torch.argmax(fs)
         if pre != label:
             return (True, pre, image)
 
@@ -82,15 +75,15 @@ class DeepFool(Attack):
         f_0 = fs[label]
         w_0 = ws[label]
 
-        wrong_classes = [i for i in range(len(fs)) if i != label]
-        f_k = fs[wrong_classes]
-        w_k = ws[wrong_classes]
-
+        # wrong_classes = [i for i in range(len(fs)) if i != label]
+        f_k = fs
+        w_k = ws
         f_prime = f_k - f_0
         w_prime = w_k - w_0
+
         value = torch.abs(f_prime) / torch.norm(nn.Flatten()(w_prime), p=2, dim=1)  # nopep8
         value[label] = float('inf')
-        _, hat_L = torch.min(value, 0)
+        hat_L = torch.argmin(value)
 
         delta = (torch.abs(f_prime[hat_L])*w_prime[hat_L] / (torch.norm(w_prime[hat_L], p=2)**2))  # nopep8
 
@@ -100,9 +93,9 @@ class DeepFool(Attack):
         adv_image = torch.clamp(adv_image, min=0, max=1).detach()
         return (False, target_label, adv_image)
 
-    # https://stackoverflow.com/questions/63096122/pytorch-is-it-possible-to-differentiate-a-matrix
-    # torch.autograd.functional.jacobian is only for torch >= 1.5.1
     def _construct_jacobian(self, y, x):
+        # https://stackoverflow.com/questions/63096122/pytorch-is-it-possible-to-differentiate-a-matrix
+        # torch.autograd.functional.jacobian is only for torch >= 1.5.1
         x_grads = []
         for idx, y_element in enumerate(y):
             if x.grad is not None:
