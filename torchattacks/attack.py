@@ -65,9 +65,10 @@ class Attack(object):
         raise NotImplementedError
 
     def _check_inputs(self, images):
+        tol = 1e-4
         if self._normalization_applied:
             images = self.inverse_normalize(images)
-        if torch.max(images) > 1 or torch.min(images) < 0:
+        if torch.max(images) > 1+tol or torch.min(images) < 0-tol:
             raise ValueError('Input must have a range [0, 1] (max: {}, min: {})'.format(
                 torch.max(images), torch.min(images)))
         return images
