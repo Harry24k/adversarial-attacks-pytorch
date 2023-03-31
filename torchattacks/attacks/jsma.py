@@ -86,6 +86,7 @@ class JSMA(Attack):
 
         return jacobian.to(self.device)
 
+    @torch.no_grad()
     def saliency_map(self, jacobian, target_label, increasing, search_space, nb_features):
         # The search domain
         domain = torch.eq(search_space, 1).float()
@@ -138,8 +139,8 @@ class JSMA(Attack):
         # Get the most significant two pixels
         max_idx = torch.argmax(
             saliency_map.view(-1, nb_features * nb_features), dim=1)
-        p = max_idx // nb_features
-        q = max_idx % nb_features
+        p = int(max_idx) // int(nb_features)
+        q = int(max_idx) % int(nb_features)
         return p, q
 
     def perturbation_single(self, image, target_label):
