@@ -83,17 +83,19 @@ class DeepFool(Attack):
         w_k = ws
         f_prime = f_k - f_0
         w_prime = w_k - w_0
+        
+        value = torch.abs(f_prime) / torch.norm(nn.Flatten()(w_prime), p=2, dim=1)
+        _, hat_L = torch.min(value, 0)
 
-        value = torch.abs(f_prime) / torch.norm(nn.Flatten()(w_prime), p=2, dim=1)  # nopep8
-        value[label] = float('inf')
-        hat_L = torch.argmin(value)
+        delta = (torch.abs(f_prime[hat_L])*w_prime[hat_L] \
+                 / (torch.norm(w_prime[hat_L], p=2)**2))
 
-        delta = (torch.abs(f_prime[hat_L])*w_prime[hat_L] / (torch.norm(w_prime[hat_L], p=2)**2))  # nopep8
-
-        target_label = hat_L
+        # transform to original label dimension: n-1 -> n.
+        target_label = hat_L if hat_L < label else hat_L+1 
 
         adv_image = image + (1+self.overshoot)*delta
         adv_image = torch.clamp(adv_image, min=0, max=1).detach()
+        
         return (False, target_label, adv_image)
 
     def _construct_jacobian(self, y, x):
