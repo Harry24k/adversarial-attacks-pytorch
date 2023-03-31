@@ -589,7 +589,10 @@ class DifferentialEvolutionSolver(object):
             if convergence != 0:
                 conv = self.tol / convergence
             else:
-                conv = float('inf')
+                if np.sign(self.tol) == np.sign(convergence):
+                    conv = float('inf')
+                else:
+                    conv = float('-inf')
 
             if (self.callback and
                     self.callback(self._scale_parameters(self.population[0]),
