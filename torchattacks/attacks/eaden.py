@@ -136,7 +136,7 @@ class EADEN(Attack):
                             break
                         prevloss = loss
 
-                    # L1 attack key step!
+                    # EN attack key step!
                     cost = L2_loss + (L1_loss * self.beta)
                     self.adjust_best_result(
                         x_k, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
