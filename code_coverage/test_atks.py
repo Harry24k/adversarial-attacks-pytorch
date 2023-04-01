@@ -12,7 +12,7 @@ from robustbench.utils import load_model, clean_accuracy
 
 CACHE = {}
 
-def get_model(model_name='Gowal2021Improving_R18_ddpm_100m', device="cpu", model_dir='./models'):
+def get_model(model_name='Standard', device="cpu", model_dir='./models'):
     model = load_model(model_name, model_dir=model_dir, norm='Linf')
     return model.to(device)
 

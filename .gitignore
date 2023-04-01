@@ -18,4 +18,5 @@ autoattack/*
 demo/_*
 demo/data/*
 demo/models/*
+demo/torchdefenses/*
 TODO.txt
