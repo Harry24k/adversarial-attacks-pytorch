@@ -125,7 +125,7 @@ class EADL1(Attack):
                 x_k, y_k = self.FISTA(images, x_k, y_k)
                 # Loss ElasticNet or L1 over x_k
                 with torch.no_grad():
-                    # output = self.get_logits(x_k)
+                    output = self.get_logits(x_k)
                     L2_loss = self.L2_loss(x_k, images)
                     L1_loss = self.L1_loss(x_k, images)
                     loss = self.EAD_loss(output, y_one_hot, L1_loss, L2_loss, const)  # nopep8
