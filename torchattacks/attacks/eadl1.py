@@ -33,7 +33,7 @@ class EADL1(Attack):
 
     """
 
-    def __init__(self, model, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=10000, abort_early=True, initial_const=0.001, beta=0.001):
+    def __init__(self, model, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
         super().__init__("EADL1", model)
         self.kappa = kappa
         self.lr = lr

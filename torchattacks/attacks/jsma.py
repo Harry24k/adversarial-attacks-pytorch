@@ -86,6 +86,7 @@ class JSMA(Attack):
 
         return jacobian.to(self.device)
 
+    @torch.no_grad()
     def saliency_map(self, jacobian, target_label, increasing, search_space, nb_features):
         # The search domain
         domain = torch.eq(search_space, 1).float()

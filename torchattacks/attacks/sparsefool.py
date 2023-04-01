@@ -69,8 +69,7 @@ class SparseFool(Attack):
                     correct[idx] = False
                     continue
 
-                adv_image, target_label = self.deepfool(adv_image, label,
-                                                        return_target_labels=True)
+                adv_image, target_label = self.deepfool.forward_return_target_labels(adv_image, label)
                 adv_image = image + self.lam*(adv_image - image)
 
                 adv_image.requires_grad = True
