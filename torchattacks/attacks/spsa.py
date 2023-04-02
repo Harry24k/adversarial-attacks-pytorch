@@ -77,61 +77,16 @@ class SPSA(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
 
-        if self.targeted:
-            def loss_fn(*args):
-                return self.loss_fn(*args)
-        else:
-            def loss_fn(*args):
-                return -self.loss_fn(*args)
-
-        adv_images = self.spsa_perturb(loss_fn, images, labels)
+        adv_images = self.spsa_perturb(images, labels)
         return adv_images
 
-    def _batch_clamp_tensor_by_vector(self, vector, batch_tensor):
-        return torch.min(torch.max(batch_tensor.transpose(0, -1), -vector), vector).transpose(0, -1).contiguous()
-
-    def clamp(self, input, min=None, max=None):
-        ndim = input.ndimension()
-        if min is None:
-            pass
-        elif isinstance(min, (float, int)):
-            input = torch.clamp(input, min=min)
-        elif isinstance(min, torch.Tensor):
-            if min.ndimension() == ndim - 1 and min.shape == input.shape[1:]:
-                input = torch.max(input, min.view(1, *min.shape))
-            else:
-                assert min.shape == input.shape
-                input = torch.max(input, min)
+    def loss(self, *args):
+        if self.targeted:
+            return self.loss_fn(*args)
         else:
-            raise ValueError("min can only be None | float | torch.Tensor")
+            return -self.loss_fn(*args)
 
-        if max is None:
-            pass
-        elif isinstance(max, (float, int)):
-            input = torch.clamp(input, max=max)
-        elif isinstance(max, torch.Tensor):
-            if max.ndimension() == ndim - 1 and max.shape == input.shape[1:]:
-                input = torch.min(input, max.view(1, *max.shape))
-            else:
-                assert max.shape == input.shape
-                input = torch.min(input, max)
-        else:
-            raise ValueError("max can only be None | float | torch.Tensor")
-        return input
-
-    def batch_clamp(self, float_or_vector, tensor):
-        if isinstance(float_or_vector, torch.Tensor):
-            assert len(float_or_vector) == len(tensor)
-            tensor = self._batch_clamp_tensor_by_vector(
-                float_or_vector, tensor)
-            return tensor
-        elif isinstance(float_or_vector, float):
-            tensor = self.clamp(tensor, -float_or_vector, float_or_vector)
-        else:
-            raise TypeError("Value has to be float or torch.Tensor")
-        return tensor
-
-    def linf_clamp_(self, dx, x, eps, clip_min, clip_max):
+    def linf_clamp_(self, dx, x, eps):
         """Clamps perturbation `dx` to fit L_inf norm and image bounds.
 
         Limit the L_inf norm of `dx` to be <= `eps`, and the bounds of `x + dx`
@@ -140,8 +95,10 @@ class SPSA(Attack):
         Return: the clamped perturbation `dx`.
         """
 
-        dx_clamped = self.batch_clamp(eps, dx)
-        x_adv = self.clamp(x + dx_clamped, clip_min, clip_max)
+        # dx_clamped = self.batch_clamp(eps, dx)
+        dx_clamped = torch.clamp(dx, min=-eps, max=eps)
+        # x_adv = self.clamp(x + dx_clamped, clip_min, clip_max)
+        x_adv = torch.clamp(x + dx_clamped, min=0, max=1)
         # `dx` is changed *inplace* so the optimizer will keep
         # tracking it. the simplest mechanism for inplace was
         # adding the difference between the new value `x_adv - x`
@@ -156,25 +113,26 @@ class SPSA(Attack):
         return batches
 
     @torch.no_grad()
-    def spsa_grad(self, loss_fn, images, labels, delta, nb_sample, max_batch_size):
+    def spsa_grad(self, images, labels, delta, nb_sample, max_batch_size):
         """Uses SPSA method to apprixmate gradient w.r.t `x`.
 
-        Use the SPSA method to approximate the gradient of `loss_fn(predict(x), y)`
+        Use the SPSA method to approximate the gradient of `loss(predict(x), y)`
         with respect to `x`, based on the nonce `v`.
 
         Return the approximated gradient of `loss_fn(predict(x), y)` with respect to `x`.
         """
 
         grad = torch.zeros_like(images)
-        images = images.unsqueeze(0)
-        labels = labels.unsqueeze(0)
+        images = torch.unsqueeze(images, 0)
+        labels = torch.unsqueeze(labels, 0)
 
         def f(xvar, yvar):
-            return loss_fn(self.get_logits(xvar), yvar)
+            return self.loss(self.get_logits(xvar), yvar)
+
         images = images.expand(max_batch_size, *images.shape[1:]).contiguous()
         labels = labels.expand(max_batch_size, *labels.shape[1:]).contiguous()
-        v = torch.empty_like(images[:, :1, ...])
 
+        v = torch.empty_like(images[:, :1, ...])
         for batch_size in self._get_batch_sizes(nb_sample, max_batch_size):
             x_ = images[:batch_size]
             y_ = labels[:batch_size]
@@ -195,16 +153,16 @@ class SPSA(Attack):
         grad /= nb_sample
         return grad
 
-    def spsa_perturb(self, loss_fn, x, y):
+    def spsa_perturb(self, x, y):
         dx = torch.zeros_like(x)
         dx.grad = torch.zeros_like(dx)
         optimizer = torch.optim.Adam([dx], lr=self.lr)
         for _ in range(self.nb_iter):
             optimizer.zero_grad()
             dx.grad = self.spsa_grad(
-                loss_fn, x + dx, y, self.delta, self.nb_sample, self.max_batch_size)
+                x + dx, y, self.delta, self.nb_sample, self.max_batch_size)
             optimizer.step()
-            dx = self.linf_clamp_(dx, x, self.eps, 0, 1)
+            dx = self.linf_clamp_(dx, x, self.eps)
 
         x_adv = x + dx
         return x_adv
