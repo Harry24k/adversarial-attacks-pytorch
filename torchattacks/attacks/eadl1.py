@@ -67,13 +67,14 @@ class EADL1(Attack):
         upper_bound = torch.ones(batch_size, device=self.device) * 1e10
 
         final_adv_images = images.clone()
-        # y_one_hot = torch.zeros((labels.shape[0], num_classes), device=self.device).scatter_(1, labels, 1).float()  # nopep8
         y_one_hot = torch.eye(outputs.shape[1]).to(self.device)[labels]
 
         o_bestl1 = [1e10] * batch_size
         o_bestscore = [-1] * batch_size
-        o_bestl1 = torch.Tensor(o_bestl1).float().to(self.device)
-        o_bestscore = torch.Tensor(o_bestscore).long().to(self.device)
+        # o_bestl1 = torch.Tensor(o_bestl1).float().to(self.device)
+        # o_bestscore = torch.Tensor(o_bestscore).long().to(self.device)
+        o_bestl1 = torch.Tensor(o_bestl1).to(self.device)
+        o_bestscore = torch.Tensor(o_bestscore).to(self.device)
 
         # Initialization: x^{(0)} = y^{(0)} = x_0 in paper Algorithm 1 part
         x_k = images.clone().detach()
@@ -87,8 +88,10 @@ class EADL1(Attack):
             bestl1 = [1e10] * batch_size
             bestscore = [-1] * batch_size
 
-            bestl1 = torch.Tensor(bestl1).float().to(self.device)
-            bestscore = torch.Tensor(bestscore).long().to(self.device)
+            # bestl1 = torch.Tensor(bestl1).float().to(self.device)
+            # bestscore = torch.Tensor(bestscore).long().to(self.device)
+            bestl1 = torch.Tensor(bestl1).to(self.device)
+            bestscore = torch.Tensor(bestscore).to(self.device)
 
             prevloss = 1e6
 
@@ -96,7 +99,6 @@ class EADL1(Attack):
                 const = upper_bound
 
             lr = self.lr
-
             for iteration in range(self.max_iterations):
                 # reset gradient
                 if y_k.grad is not None:
@@ -109,18 +111,19 @@ class EADL1(Attack):
                 L2_loss = self.L2_loss(y_k, images)
 
                 cost = self.EAD_loss(output, y_one_hot, None, L2_loss, const)
-                cost.backward(retain_graph=True)
+                # cost.backward(retain_graph=True)
+                cost.backward()
 
                 # Gradient step
-                # images_parameter.data.add_(-lr, images_parameter.grad.data)
+                # y_k.data.add_(-lr, y_k.grad.data)
                 self.global_step += 1
                 with torch.no_grad():
-                    y_k -= lr
+                    y_k -= y_k.grad * lr
 
                 # Ploynomial decay of learning rate
                 lr = self.lr * (1 - self.global_step / self.max_iterations)**0.5  # nopep8
-                y_k, x_k = self.fast_ISTA(images, y_k, x_k)
-                # loss ElasticNet or L1 over images_clone
+                x_k, y_k = self.FISTA(images, x_k, y_k)
+                # Loss ElasticNet or L1 over x_k
                 with torch.no_grad():
                     output = self.get_logits(x_k)
                     L2_loss = self.L2_loss(x_k, images)
@@ -135,11 +138,11 @@ class EADL1(Attack):
 
                     # L1 attack key step!
                     cost = L1_loss
-                    self.update_if_smaller_dist_succeed(
-                        x_k.data, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
+                    self.adjust_best_result(
+                        x_k, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
 
-            self.update_loss_coeffs(
-                labels, bestscore, batch_size, const, upper_bound, lower_bound)
+            self.adjust_constant(
+                labels, bestscore, const, upper_bound, lower_bound)
 
         return final_adv_images
 
@@ -156,11 +159,13 @@ class EADL1(Attack):
         # L2_loss = L2.sum()
         return L2_loss
 
-    def EAD_loss(self, output, one_hot, L1_loss, L2_loss, const):
+    def EAD_loss(self, output, one_hot_labels, L1_loss, L2_loss, const):
 
-        # Same as CW's f function
-        other = torch.max((1-one_hot)*output-(one_hot*1e4), dim=1)[0]
-        real = torch.max(one_hot*output, dim=1)[0]
+        # Not same as CW's f function
+        other = torch.max((1-one_hot_labels)*output -
+                          (one_hot_labels*1e4), dim=1)[0]
+        # other = torch.max((1-one_hot_labels)*output, dim=1)[0]
+        real = torch.max(one_hot_labels*output, dim=1)[0]
 
         if self.targeted:
             F_loss = torch.clamp((other-real), min=-self.kappa)
@@ -170,84 +175,61 @@ class EADL1(Attack):
         if isinstance(L1_loss, type(None)):
             loss = torch.sum(const * F_loss) + torch.sum(L2_loss)
         else:
-            loss = torch.sum(const * F_loss) + torch.sum(L2_loss) + torch.sum(self.beta * L1_loss)  # nopep8
+            loss = torch.sum(const * F_loss) + \
+                torch.sum(L2_loss) + torch.sum(self.beta * L1_loss)
 
         return loss
 
-    def fast_ISTA(self, images, images_parameter, images_clone):
+    def FISTA(self, images, x_k, y_k):
 
         zt = self.global_step / (self.global_step + 3)
 
-        upper = torch.clamp(images_parameter - self.beta, max=1)
-        lower = torch.clamp(images_parameter + self.beta, min=0)
+        upper = torch.clamp(y_k - self.beta, max=1)
+        lower = torch.clamp(y_k + self.beta, min=0)
 
-        diff = images_parameter - images
+        diff = y_k - images
         cond1 = (diff > self.beta).float()
         cond2 = (torch.abs(diff) <= self.beta).float()
         cond3 = (diff < -self.beta).float()
 
-        new_images_clone = (cond1 * upper) + (cond2 * images) + (cond3 * lower)
-        images_parameter.data = new_images_clone + (zt * (new_images_clone - images_clone))  # nopep8
-        return images_parameter, new_images_clone
+        new_x_k = (cond1 * upper) + (cond2 * images) + (cond3 * lower)
+        y_k.data = new_x_k + (zt * (new_x_k - x_k))
+        return new_x_k, y_k
 
-    def _is_successful(self, y1, y2):
-        if self.targeted:
-            return y1 == y2
-        else:
-            return y1 != y2
-
-    def is_successful(self, output, label, is_logits):
-        # Determine success, see if confidence-adjusted logits give the right label
-        if is_logits:
-            output = output.detach().clone()
+    def compare(self, output, labels):
+        if len(output.shape) >= 2:
+            # output is tensor
+            output = output.clone().detach()
             if self.targeted:
-                output[torch.arange(len(label)).long(),
-                       label] -= self.kappa
+                output[:, labels] -= self.kappa
             else:
-                output[torch.arange(len(label)).long(),
-                       label] += self.kappa
-            pred = torch.argmax(output, dim=1)
+                output[:, labels] += self.kappa
+            output = torch.argmax(output, 1)
         else:
-            pred = output
-            if pred == -1:
-                return pred.new_zeros(pred.shape).byte()
+            # output is int or float
+            pass
 
-        return self._is_successful(pred, label)
+        if self.targeted:
+            return output == labels
+        else:
+            return output != labels
 
-    def update_if_smaller_dist_succeed(self, adv_img, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images):
-        # images_clone.data, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images
-
-        target_label = labels
-        output_logits = output
-        output_label = torch.argmax(output_logits, 1)
-
-        mask = (cost < bestl1) & self.is_successful(output_logits, target_label, True)  # nopep8
-
-        bestl1[mask] = cost[mask]  # redundant
+    def adjust_best_result(self, adv_img, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images):
+        output_label = torch.argmax(output, 1).float()
+        mask = (cost < bestl1) & self.compare(output, labels)
+        bestl1[mask] = cost[mask]
         bestscore[mask] = output_label[mask]
 
-        mask = (cost < o_bestl1) & self.is_successful(
-            output_logits, target_label, True)
+        mask = (cost < o_bestl1) & self.compare(output, labels)
         o_bestl1[mask] = cost[mask]
         o_bestscore[mask] = output_label[mask]
         final_adv_images[mask] = adv_img[mask]
 
-    def update_loss_coeffs(self, labels, bestscore, batch_size, const, upper_bound, lower_bound):
-        # labels, bestscore, batch_size, const, upper_bound, lower_bound
-        for i in range(batch_size):
-            bestscore[i] = int(bestscore[i])
-            if self.is_successful(bestscore[i], labels[i], False):
-                upper_bound[i] = min(
-                    upper_bound[i], const[i])
+    def adjust_constant(self, labels, bestscore, const, upper_bound, lower_bound):
+        mask = (self.compare(bestscore, labels)) & (bestscore != -1)
+        upper_bound[mask] = torch.min(upper_bound[mask], const[mask])
+        lower_bound[~mask] = torch.max(lower_bound[~mask], const[~mask])  # nopep8
 
-                if upper_bound[i] < 1e9:
-                    const[i] = (
-                        lower_bound[i] + upper_bound[i]) / 2
-            else:
-                lower_bound[i] = max(
-                    lower_bound[i], const[i])
-                if upper_bound[i] < 1e9:
-                    const[i] = (
-                        lower_bound[i] + upper_bound[i]) / 2
-                else:
-                    const[i] *= 10
+        mask = upper_bound < 1e9
+        const[mask] = (lower_bound[mask] + upper_bound[mask]) / 2
+        const[~mask] = const[~mask] * 10
