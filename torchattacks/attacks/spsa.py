@@ -1,5 +1,8 @@
+'''
+Code is from https://github.com/BorealisAI/advertorch/blob/master/advertorch/attacks/spsa.py
+'''
+
 import torch
-import torch.nn as nn
 from torch.nn.modules.loss import _Loss
 
 from ..attack import Attack
@@ -33,8 +36,6 @@ class SPSA(Attack):
     r"""
     SPSA in the paper 'Adversarial Risk and the Dangers of Evaluating Against Weak Attacks'
     [https://arxiv.org/abs/1802.05666]
-    Code is from
-    [https://github.com/BorealisAI/advertorch/blob/master/advertorch/attacks/spsa.py]
 
     Distance Measure : Linf
 
