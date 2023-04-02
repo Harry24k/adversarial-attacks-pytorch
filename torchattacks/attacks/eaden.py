@@ -161,7 +161,7 @@ class EADEN(Attack):
 
     def EAD_loss(self, output, one_hot_labels, L1_loss, L2_loss, const):
 
-        # Same as CW's f function
+        # Not same as CW's f function
         other = torch.max((1-one_hot_labels)*output -
                           (one_hot_labels*1e4), dim=1)[0]
         # other = torch.max((1-one_hot_labels)*output, dim=1)[0]
@@ -175,7 +175,8 @@ class EADEN(Attack):
         if isinstance(L1_loss, type(None)):
             loss = torch.sum(const * F_loss) + torch.sum(L2_loss)
         else:
-            loss = torch.sum(const * F_loss) + torch.sum(L2_loss) + torch.sum(self.beta * L1_loss)  # nopep8
+            loss = torch.sum(const * F_loss) + \
+                torch.sum(L2_loss) + torch.sum(self.beta * L1_loss)
 
         return loss
 
@@ -192,7 +193,7 @@ class EADEN(Attack):
         cond3 = (diff < -self.beta).float()
 
         new_x_k = (cond1 * upper) + (cond2 * images) + (cond3 * lower)
-        y_k.data = new_x_k + (zt * (new_x_k - x_k))  # nopep8
+        y_k.data = new_x_k + (zt * (new_x_k - x_k))
         return new_x_k, y_k
 
     def compare(self, output, labels):
