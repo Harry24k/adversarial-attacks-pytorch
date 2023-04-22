@@ -83,7 +83,7 @@ pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
 * Random target label:
 ```python
 # random labels as target labels.
-atk.set_mode_targeted_random(n_classses)
+atk.set_mode_targeted_random()
 ```
 
 * Least likely label:
@@ -98,11 +98,9 @@ atk.set_mode_targeted_least_likely(kth_min)
 atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
 ```
 
-* By labels:
+* By label:
 ```python
-# label from user provide.
-atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
-atk.set_mode_targeted_by_label(quiet=True) # do not show the message
+atk.set_mode_targeted_by_label(quiet=True)
 # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
 target_labels = (labels + 1) % 10
 adv_images = atk(images, target_labels)

@@ -165,6 +165,7 @@ class Attack(object):
             target_map_function (function): Label mapping function.
                 e.g. lambda inputs, labels:(labels+1)%10.
                 None for using input labels as targeted labels. (Default)
+            quiet (bool): Display information message or not. (Default: False)
 
         """
         self._set_mode_targeted('targeted(custom)', quiet)
@@ -176,7 +177,7 @@ class Attack(object):
         Set attack mode as targeted with random labels.
 
         Arguments:
-            num_classses (str): number of classes.
+            quiet (bool): Display information message or not. (Default: False)
 
         """
         self._set_mode_targeted('targeted(random)', quiet)
@@ -189,6 +190,7 @@ class Attack(object):
 
         Arguments:
             kth_min (str): label with the k-th smallest probability used as target labels. (Default: 1)
+            num_classses (str): number of classes. (Default: False)
 
         """
         self._set_mode_targeted('targeted(least-likely)', quiet)
@@ -200,6 +202,9 @@ class Attack(object):
     def set_mode_targeted_by_label(self, quiet=False):
         r"""
         Set attack mode as targeted.
+
+        Arguments:
+            quiet (bool): Display information message or not. (Default: False)
 
         .. note::
             Use user-supplied labels as target labels.
