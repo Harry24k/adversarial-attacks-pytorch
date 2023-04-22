@@ -42,11 +42,11 @@ class SPSA(Attack):
     Arguments:
         model (nn.Module): model to attack.
         eps (float): maximum perturbation. (Default: 8/255)
-        delta (float): scaling parameter of SPSA.
-        lr (float): the learning rate of the `Adam` optimizer.
-        nb_iter (int): number of iterations of the attack.
-        nb_sample (int): number of samples for SPSA gradient approximation.
-        max_batch_size (int): maximum batch size to be evaluated at once.
+        delta (float): scaling parameter of SPSA. (Default: 0.01)
+        lr (float): the learning rate of the `Adam` optimizer. (Default: 0.01)
+        nb_iter (int): number of iterations of the attack. (Default: 1)
+        nb_sample (int): number of samples for SPSA gradient approximation. (Default: 128)
+        max_batch_size (int): maximum batch size to be evaluated at once. (Default: 64)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].

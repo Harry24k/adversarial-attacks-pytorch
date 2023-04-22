@@ -8,14 +8,18 @@ from ..attack import Attack
 
 class PIFGSM(Attack):
     r"""
-    FGSM in the paper 'Patch-wise Attack for Fooling Deep Neural Network'
+    PIFGSM in the paper 'Patch-wise Attack for Fooling Deep Neural Network'
     [https://arxiv.org/abs/2007.06765]
 
     Distance Measure : Linf
 
     Arguments:
         model (nn.Module): model to attack.
-        eps (float): maximum perturbation. (Default: 8/255)
+        max_epsilon (float): maximum size of adversarial perturbation. (Default: 16/255)
+        num_iter_set (float): number of iterations. (Default: 10)
+        momentum (float): momentum. (Default: 1.0)
+        amplification (float): to amplifythe step size. (Default: 10.0)
+        prob (float): probability of using diverse inputs. (Default: 0.7)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -23,7 +27,7 @@ class PIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PIFGSM(model, eps=8/255)
+        >>> attack = torchattacks.PIFGSM(model, eps=16/255, num_iter_set=10)
         >>> adv_images = attack(images, labels)
 
     """
