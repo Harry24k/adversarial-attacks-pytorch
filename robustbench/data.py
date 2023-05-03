@@ -82,46 +82,58 @@ def _load_dataset(
 def load_cifar10(
     n_examples: Optional[int] = None,
     data_dir: str = './data',
-    transforms_test: Callable = PREPROCESSINGS[None]
+    transforms_test: Callable = PREPROCESSINGS[None],
+    shashank: bool = False,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     dataset = datasets.CIFAR10(root=data_dir,
                                train=False,
                                transform=transforms_test,
                                download=True)
-    return _load_dataset(dataset, n_examples)
+    if shashank:
+        return dataset
+    else:
+        return _load_dataset(dataset, n_examples)
 
 
 def load_cifar100(
     n_examples: Optional[int] = None,
     data_dir: str = './data',
-    transforms_test: Callable = PREPROCESSINGS[None]
+    transforms_test: Callable = PREPROCESSINGS[None],
+    shashank: bool = False,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     dataset = datasets.CIFAR100(root=data_dir,
                                 train=False,
                                 transform=transforms_test,
                                 download=True)
-    return _load_dataset(dataset, n_examples)
+    if shashank:
+        return dataset
+    else:
+        return _load_dataset(dataset, n_examples)
 
 
 def load_imagenet(
-    n_examples: Optional[int] = 5000,
+    n_examples: Optional[int] = 128,
     data_dir: str = './data',
-    transforms_test: Callable = PREPROCESSINGS['Res256Crop224']
+    transforms_test: Callable = PREPROCESSINGS['Res256Crop224'],
+    shashank: bool = False
 ) -> Tuple[torch.Tensor, torch.Tensor]:
-    if n_examples > 5000:
-        raise ValueError(
-            'The evaluation is currently possible on at most 5000 points-')
+    #if n_examples > 5000:
+    #    raise ValueError(
+    #        'The evaluation is currently possible on at most 5000 points-')
 
     imagenet = CustomImageFolder(data_dir + '/val', transforms_test)
 
     test_loader = data.DataLoader(imagenet,
                                   batch_size=n_examples,
                                   shuffle=False,
-                                  num_workers=4)
+                                  num_workers=24)
 
     x_test, y_test, paths = next(iter(test_loader))
 
-    return x_test, y_test
+    if shashank:
+        return imagenet
+    else:
+        return x_test, y_test
 
 
 CleanDatasetLoader = Callable[[Optional[int], str, Callable],
@@ -264,7 +276,8 @@ def load_corruptions_cifar(
         severity: int,
         data_dir: str,
         corruptions: Sequence[str] = CORRUPTIONS,
-        shuffle: bool = False) -> Tuple[torch.Tensor, torch.Tensor]:
+        shuffle: bool = False,
+        shashank: bool = False) -> Tuple[torch.Tensor, torch.Tensor]:
     assert 1 <= severity <= 5
     n_total_cifar = 10000
 
@@ -312,4 +325,7 @@ def load_corruptions_cifar(
     x_test = torch.tensor(x_test)[:n_examples]
     y_test = torch.tensor(y_test)[:n_examples]
 
-    return x_test, y_test
+    if shashank:
+        return x_test, y_test
+    else:        
+        return x_test, y_test

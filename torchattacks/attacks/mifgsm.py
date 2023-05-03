@@ -29,7 +29,7 @@ class MIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
+    def __init__(self, model, eps=2/255, alpha=2/255, steps=10, decay=1.0):
         super().__init__("MIFGSM", model)
         self.eps = eps
         self.steps = steps

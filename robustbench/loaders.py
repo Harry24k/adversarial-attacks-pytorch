@@ -19,6 +19,7 @@ import sys
 def make_custom_dataset(root, path_imgs, class_to_idx):
     with open(pkg_resources.resource_filename(__name__, path_imgs), 'r') as f:
         fnames = f.readlines()
+    #import ipdb;ipdb.set_trace()
     images = [(os.path.join(root,
                             c.split('\n')[0]), class_to_idx[c.split('/')[0]])
               for c in fnames]

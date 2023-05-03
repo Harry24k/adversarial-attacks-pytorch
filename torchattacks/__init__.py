@@ -7,6 +7,8 @@ from .attacks.fgsm import FGSM
 from .attacks.bim import BIM
 from .attacks.rfgsm import RFGSM
 from .attacks.pgd import PGD
+from .attacks.cospgd import CosPGD
+from .attacks.cospgd_softmax import CosPGD_softmax
 from .attacks.eotpgd import EOTPGD
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
@@ -53,10 +55,11 @@ __version__ = '3.4.1'
 __all__ = [
     "VANILA", "GN",
 
-    "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
-    "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
-    "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADEN",
+    "FGSM", "BIM", "RFGSM", "PGD", "CosPGD", "CosPGD_softmax", 
+    "EOTPGD", "FFGSM", "TPGD", "MIFGSM", "UPGD", 
+    "APGD", "APGDT", "DIFGSM", "TIFGSM", "Jitter", 
+    "NIFGSM", "PGDRS", "SINIFGSM", "VMIFGSM", 
+    "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADEN",
 
     "CW", "PGDL2", "DeepFool", "PGDRSL2",
 

@@ -27,7 +27,7 @@ class RFGSM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
+    def __init__(self, model, eps=2/255, alpha=2/255, steps=10):
         super().__init__("RFGSM", model)
         self.eps = eps
         self.alpha = alpha

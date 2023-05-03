@@ -39,7 +39,7 @@ class APGDT(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10):
+    def __init__(self, model, norm='Linf', eps=2/255, steps=10, n_restarts=1, seed=0, eot_iter=1, rho=.75, verbose=False, n_classes=10):
         super().__init__("APGDT", model)
         self.eps = eps
         self.steps = steps

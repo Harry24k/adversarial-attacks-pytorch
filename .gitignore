@@ -20,3 +20,9 @@ demo/data/*
 demo/models/*
 demo/torchdefenses/*
 TODO.txt
+*.tar
+*.zip
+*.JPEG
+*.png
+*.jpeg
+*.PNG

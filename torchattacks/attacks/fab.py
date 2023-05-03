@@ -49,7 +49,7 @@ class FAB(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1,
+    def __init__(self, model, norm='Linf', eps=2/255, steps=10, n_restarts=1,
                  alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
                  multi_targeted=False, n_classes=10):
         super().__init__("FAB", model)

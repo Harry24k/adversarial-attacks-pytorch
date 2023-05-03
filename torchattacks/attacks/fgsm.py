@@ -25,7 +25,7 @@ class FGSM(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, model, eps=8/255):
+    def __init__(self, model, eps=2/255):
         super().__init__("FGSM", model)
         self.eps = eps
         self.supported_mode = ['default', 'targeted']

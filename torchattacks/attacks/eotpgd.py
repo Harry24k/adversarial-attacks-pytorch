@@ -29,7 +29,7 @@ class EOTPGD(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
+    def __init__(self, model, eps=2/255, alpha=2/255, steps=10,
                  eot_iter=2, random_start=True):
         super().__init__("EOTPGD", model)
         self.eps = eps

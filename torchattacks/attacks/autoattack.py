@@ -36,7 +36,7 @@ class AutoAttack(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, version='standard', n_classes=10, seed=None, verbose=False):
+    def __init__(self, model, norm='Linf', eps=2/255, version='standard', n_classes=10, seed=None, verbose=False):
         super().__init__("AutoAttack", model)
         self.norm = norm
         self.eps = eps
