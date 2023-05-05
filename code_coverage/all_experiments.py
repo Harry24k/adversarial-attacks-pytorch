@@ -9,6 +9,18 @@ test_import_version()
 import torchattacks
 
 # %%
+print("*************************************              TESTING GRAD CAM              *************************************")
+models = ["convnext_tiny", "resnet50", "vit_small_patch16_224", "wide_resnet50_2"]
+for model in models:
+    for atk_class in [atk_class for atk_class in torchattacks.__testing__ if atk_class not in torchattacks.__wrapper__]:
+        test_atks_on_imagenet1k(atk_class=atk_class,
+                                device='cuda',
+                                model_dir='../demo/models/',
+                                data_dir='/home/prasse/Shashank_Projects/adversarial-attacks-pytorch/data',
+                                model=model)
+
+"""
+# %%
 print("*************************************              IMAGENET-1k              *************************************")
 models = ["convnext_tiny", "resnet50", "vit_small_patch16_224", "wide_resnet50_2"]
 for model in models:
@@ -24,8 +36,12 @@ print("*************************************              CIFAR-10              
 for atk_class in [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__]:
     test_atks_on_cifar10(atk_class=atk_class,
                          device='cuda',
-                         model_dir='../demo/models/',
+                         model_dir='/home/prasse/Shashank_Projects/adversarial-attacks-pytorch/data',
                          data_dir='../demo/data/')
+
+
+
+
 
 # %%
 print("*************************************              CIFAR-100              *************************************")
@@ -36,7 +52,7 @@ for atk_class in [atk_class for atk_class in torchattacks.__all__ if atk_class n
                          data_dir='../demo/data/')
 
 # %%
-
+"""
 """
 VANILA      : clean_acc=0.8148 robust_acc=0.8148 sec=5.7115
 convnext_tiny_GN: 100%

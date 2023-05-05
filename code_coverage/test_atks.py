@@ -9,7 +9,7 @@ from tqdm.autonotebook import tqdm
 import torch
 import torchattacks
 from robustbench.data import load_cifar10, load_cifar100, load_imagenet
-from robustbench.utils import load_model, clean_accuracy
+from robustbench.utils import load_model, clean_accuracy, get_grad_cam
 
 #import detectors
 import timm
@@ -33,7 +33,8 @@ def get_data_cifar100(data_name='CIFAR100', device="cpu", n_examples=5, data_dir
     dataset = load_cifar100(data_dir=data_dir, shashank=True)
     return dataset
 
-@torch.no_grad()
+#@torch.no_grad()
+@torch.enable_grad()
 @pytest.mark.parametrize("atk_class", [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_cifar10(atk_class, device="cpu", n_examples=128, model_dir='./models', data_dir='./data'):
     import detectors
@@ -61,7 +62,7 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=128, model_dir='./m
         with tqdm(test_loader, unit="batch") as tepoch:
             for images, labels in tepoch:
                 images, labels = images.to(device), labels.to(device)
-                clean_acc += clean_accuracy(model, images, labels)
+                clean_acc += clean_accuracy(model, images, labels)                
         clean_acc /= len(tepoch)
         CACHE_c10['clean_acc'] = clean_acc
     else:
@@ -78,6 +79,7 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=128, model_dir='./m
                 for images, labels in tepoch:
                     image, labels = images.to(device), labels.to(device)
                     adv_images = atk(images, labels)
+                    get_grad_cam(model=model, input=adv_images, save_path='runs/testing/')
                     robust_acc += clean_accuracy(model, adv_images, labels)
         end = time.time()
         robust_acc /= len(tepoch)
@@ -167,6 +169,7 @@ def test_atks_on_cifar100(atk_class, device="cpu", n_examples=128, model_dir='./
                     for images, labels in tepoch:
                         image, labels = images.to(device), labels.to(device)
                         adv_images = atk(images, labels)
+                        get_grad_cam(model=model, input=adv_images, save_path='runs/testing/')
                         robust_acc += clean_accuracy(model, adv_images, labels)
             end = time.time()
             sec = float(end - start)
@@ -181,7 +184,7 @@ def test_atks_on_cifar100(atk_class, device="cpu", n_examples=128, model_dir='./
     assert clean_acc >= robust_acc
 
 
-@torch.no_grad()
+@torch.enable_grad()
 @pytest.mark.parametrize("atk_class", [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='./models', data_dir='./data', model='resnet50'):
     model_name = model
@@ -193,6 +196,8 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
         model = CACHE_img1k['model']
 
     dataset = load_imagenet(data_dir=data_dir, shashank=True)
+
+    save_path = 'results/' + str(atk_class) + '/' + model_name
 
     test_loader = torch.utils.data.DataLoader(
         dataset,
@@ -227,10 +232,13 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
         start = time.time()
         with torch.enable_grad():
             with tqdm(test_loader, unit="batch", desc=model_name+'_'+atk_class) as tepoch:
+                iterator = 0
                 for images, labels, _ in tepoch:
                     image, labels = images.to(device), labels.to(device)
                     adv_images = atk(images, labels)
+                    get_grad_cam(model=model, input=adv_images, save_path=save_path + '/non-targeted', iterator=images.shape[0]*iterator)
                     robust_acc += clean_accuracy(model, adv_images, labels)
+                    iterator += 1
         end = time.time()
         robust_acc /= len(tepoch)
         
@@ -245,6 +253,7 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
                     for images, labels, _ in tepoch:
                         image, labels = images.to(device), labels.to(device)
                         adv_images = atk(images, labels)
+                        get_grad_cam(model=model, input=adv_images, save_path=save_path + '/targeted')
                         robust_acc += clean_accuracy(model, adv_images, labels)
             end = time.time()
             sec = float(end - start)

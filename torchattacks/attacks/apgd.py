@@ -175,7 +175,8 @@ class APGD(Attack):
                     loss = loss_indiv.sum()
 
                 # 1 backward pass (eot_iter = 1)
-                grad += torch.autograd.grad(loss, [x_adv])[0].detach()
+                grad += torch.autograd.grad(loss, [x_adv], 
+                                            retain_graph=False, create_graph=False)[0].detach()
 
             grad /= float(self.eot_iter)
 

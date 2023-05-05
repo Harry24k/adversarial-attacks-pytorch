@@ -9,12 +9,19 @@ from pathlib import Path
 from typing import Dict, Optional, Union
 
 import requests
-# import timm
+import timm
 import torch
 from torch import nn
+import numpy as np
 
 from robustbench.model_zoo import model_dicts as all_models
 from robustbench.model_zoo.enums import BenchmarkDataset, ThreatModel
+
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
+from PIL import Image
+import cv2
 
 
 ACC_FIELDS = {
@@ -229,6 +236,32 @@ def clean_accuracy(model: nn.Module,
 
     return acc.item() / x.shape[0]
 
+def top_k_accuracy(model: nn.Module,
+                   x: torch.Tensor,
+                   y: torch.Tensor,
+                   batch_size: int = 100,
+                   topk = (1,),
+                   device: torch.device = None):
+    acc = 0.
+    if device is None:
+        device = x.device 
+    with torch.no_grad():
+        for counter in range(n_batches):
+            x_curr = x[counter * batch_size:(counter + 1) *
+                       batch_size].to(device)
+            y_curr = y[counter * batch_size:(counter + 1) *
+                       batch_size].to(device)
+
+            output = model(x_curr)
+            #acc += (output.max(1)[1] == y_curr).float().sum()
+            maxk = max(topk)
+            _, pred = output.topk(maxk, dim=1, largest=True, sorted=True)
+            top_k_acc = []
+            for k in topk:
+                correct = (output * torch.zeros_like(output).scatter(1, pred[:, :k], 1)).float()
+            top_k_acc.append(correct.sum() / output.sum())
+        return top_k_acc
+
 
 def get_key(x, keys):
     if isinstance(keys, str):
@@ -426,6 +459,52 @@ def update_json(dataset: BenchmarkDataset, threat_model: ThreatModel,
 
     with open(json_path, "w") as f:
         f.write(json.dumps(dataclasses.asdict(model_info), indent=2))
+    
+def reshape_transform(tensor, height=14, width=14):
+    result = tensor[:, 1 :  , :].reshape(tensor.size(0),
+        height, width, tensor.size(2))
+
+    # Bring the channels to the first dimension,
+    # like in CNNs.
+    result = result.transpose(2, 3).transpose(1, 2)
+    return result
+
+@torch.enable_grad()
+def get_grad_cam(model: nn.Module, input, save_path, iterator=0):    
+    if '.ResNet' in str(model.__class__):
+        target_layer = [model.layer4[-1]]
+    elif '.ConvNeXt' in str(model.__class__):
+        try:
+            target_layer = [model.features[-1][-1]]
+        except Exception:
+            target_layer = [model.stages[-1].blocks[-1]]
+    elif '.VisionTransformer' in str(model.__class__):
+        target_layer = [model.blocks[-1].norm1]
+    
+    cam = GradCAM(model=model, target_layers=target_layer, use_cuda=True, 
+                  reshape_transform=reshape_transform if '.VisionTransformer' in str(model.__class__) else None)
+    #import ipdb;ipdb.set_trace()
+    grayscale_cam = cam(input_tensor=input, targets=None)
+    iterator = iterator
+    for image, g_cam in zip(input.clone().detach().cpu(), grayscale_cam):
+        np_image = np.uint8(image.permute(1,2,0))
+        #pil_image = Image.fromarray(np_image)
+        #import ipdb;ipdb.set_trace()
+        visualization = show_cam_on_image(np_image, g_cam, use_rgb=True)
+        save_path_grad_cam = os.path.join(save_path, 'grad_cam')
+        save_path_adversarial = os.path.join(save_path, 'adversarial')
+        os.makedirs(save_path_grad_cam, exist_ok=True)
+        os.makedirs(save_path_adversarial, exist_ok=True)
+        save_location_grad=save_path_grad_cam + '/image_00' + str(iterator) + '.png'
+        save_location_adversarial=save_path_adversarial + '/image_00' + str(iterator) + '.png'
+        iterator += 1
+        cv2.imwrite(save_location_grad, cv2.cvtColor(visualization, cv2.COLOR_RGB2BGR))
+        scaled_image = np_image*255
+        cv2.imwrite(save_location_adversarial, cv2.cvtColor(scaled_image, cv2.COLOR_RGB2BGR))
+
+
+    
+
 
 
 @dataclasses.dataclass

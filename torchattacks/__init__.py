@@ -51,7 +51,7 @@ from .attacks.square import Square
 from .wrappers.multiattack import MultiAttack
 from .wrappers.lgv import LGV
 
-__version__ = '3.4.1'
+__version__ = '3.5.1'
 __all__ = [
     "VANILA", "GN",
 
@@ -68,6 +68,13 @@ __all__ = [
     "FAB", "AutoAttack", "Square",
 
     "MultiAttack", "LGV",
+]
+__testing__ = [
+    "FGSM", "PGD", "CosPGD", 
+    "CosPGD_softmax", 
+    "MIFGSM", "UPGD", 
+    "APGD", "DIFGSM", 
+    "AutoAttack",
 ]
 __wrapper__ = [
     "LGV", "MultiAttack",
