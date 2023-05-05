@@ -22,6 +22,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 
 from PIL import Image
 import cv2
+import torchvision.transforms as T
 
 
 ACC_FIELDS = {
@@ -29,6 +30,8 @@ ACC_FIELDS = {
     ThreatModel.L2: ("external", "autoattack_acc"),
     ThreatModel.Linf: ("external", "autoattack_acc")
 }
+
+ITER = 0
 
 
 def download_gdrive(gdrive_id, fname_save):
@@ -469,6 +472,23 @@ def reshape_transform(tensor, height=14, width=14):
     result = result.transpose(2, 3).transpose(1, 2)
     return result
 
+def save_clean_image(input, save_path):
+    global ITER
+    for image in input:
+        #np_image = np.uint8(image.permute(1,2,0))
+        #import ipdb;ipdb.set_trace()
+        save_path_clean = os.path.join(save_path, 'clean_image')
+        os.makedirs(save_path_clean, exist_ok=True)
+        save_location_clean=save_path_clean + '/image_00' + str(ITER) + '.png'
+        ITER += 1
+        #cv2.imwrite(save_location_clean, cv2.cvtColor(np_image*255, cv2.COLOR_RGB2BGR))
+        T.ToPILImage()(image).save(save_location_clean)
+
+def reset_iter():
+    global ITER
+    ITER = 0
+
+
 @torch.enable_grad()
 def get_grad_cam(model: nn.Module, input, save_path, iterator=0):    
     if '.ResNet' in str(model.__class__):
@@ -485,12 +505,7 @@ def get_grad_cam(model: nn.Module, input, save_path, iterator=0):
                   reshape_transform=reshape_transform if '.VisionTransformer' in str(model.__class__) else None)
     #import ipdb;ipdb.set_trace()
     grayscale_cam = cam(input_tensor=input, targets=None)
-    iterator = iterator
     for image, g_cam in zip(input.clone().detach().cpu(), grayscale_cam):
-        np_image = np.uint8(image.permute(1,2,0))
-        #pil_image = Image.fromarray(np_image)
-        #import ipdb;ipdb.set_trace()
-        visualization = show_cam_on_image(np_image, g_cam, use_rgb=True)
         save_path_grad_cam = os.path.join(save_path, 'grad_cam')
         save_path_adversarial = os.path.join(save_path, 'adversarial')
         os.makedirs(save_path_grad_cam, exist_ok=True)
@@ -498,9 +513,16 @@ def get_grad_cam(model: nn.Module, input, save_path, iterator=0):
         save_location_grad=save_path_grad_cam + '/image_00' + str(iterator) + '.png'
         save_location_adversarial=save_path_adversarial + '/image_00' + str(iterator) + '.png'
         iterator += 1
-        cv2.imwrite(save_location_grad, cv2.cvtColor(visualization, cv2.COLOR_RGB2BGR))
-        scaled_image = np_image*255
-        cv2.imwrite(save_location_adversarial, cv2.cvtColor(scaled_image, cv2.COLOR_RGB2BGR))
+        
+        adv_image = T.ToPILImage()(image)        
+        colormap = cv2.COLORMAP_JET
+        heatmap = cv2.applyColorMap(np.uint8(255 * g_cam), colormap)    
+        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+        heatmap = T.ToPILImage()(torch.tensor(heatmap).permute(2,0,1))
+        mask = Image.new("L", adv_image.size, 128)
+        visualization = Image.composite(adv_image, heatmap, mask)
+        visualization.save(save_location_grad)
+        adv_image.save(save_location_adversarial)
 
 
     

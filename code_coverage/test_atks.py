@@ -9,7 +9,7 @@ from tqdm.autonotebook import tqdm
 import torch
 import torchattacks
 from robustbench.data import load_cifar10, load_cifar100, load_imagenet
-from robustbench.utils import load_model, clean_accuracy, get_grad_cam
+from robustbench.utils import load_model, clean_accuracy, get_grad_cam, save_clean_image
 
 #import detectors
 import timm
@@ -197,7 +197,7 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
 
     dataset = load_imagenet(data_dir=data_dir, shashank=True)
 
-    save_path = 'results/' + str(atk_class) + '/' + model_name
+    save_path = 'results/imagenet1k/' + str(atk_class) + '/' + model_name
 
     test_loader = torch.utils.data.DataLoader(
         dataset,
@@ -218,6 +218,7 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
         with tqdm(test_loader, unit="batch") as tepoch:
             for images, labels, _ in tepoch:
                 images, labels = images.to(device), labels.to(device)
+                #save_clean_image(images.clone().detach().cpu(), save_path)
                 clean_acc += clean_accuracy(model, images, labels)
         clean_acc /= len(tepoch)
         CACHE_img1k['clean_acc'] = clean_acc
@@ -229,23 +230,28 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
         if atk_class in ['SPSA']:
             kargs['max_batch_size'] = 5
         atk = eval("torchattacks."+atk_class)(model, **kargs)
+        saving_time = 0
         start = time.time()
+        iterator = 0
         with torch.enable_grad():
-            with tqdm(test_loader, unit="batch", desc=model_name+'_'+atk_class) as tepoch:
-                iterator = 0
+            with tqdm(test_loader, unit="batch", desc=model_name+'_'+atk_class) as tepoch:                
                 for images, labels, _ in tepoch:
                     image, labels = images.to(device), labels.to(device)
                     adv_images = atk(images, labels)
+                    save_start = time.time()
                     get_grad_cam(model=model, input=adv_images, save_path=save_path + '/non-targeted', iterator=images.shape[0]*iterator)
+                    save_end = time.time()
+                    saving_time += float(save_end - save_start)
                     robust_acc += clean_accuracy(model, adv_images, labels)
                     iterator += 1
         end = time.time()
         robust_acc /= len(tepoch)
         
-        sec = float(end - start)
+        sec = float(end - start) - saving_time
         print('{0:<12}: clean_acc={1:2.4f} robust_acc={2:2.4f} sec={3:2.4f}'.format(atk_class, clean_acc, robust_acc, sec))
         
         robust_acc = 0
+        iterator = 0
         if 'targeted' in atk.supported_mode:
             atk.set_mode_targeted_random(quiet=True)
             with torch.enable_grad():
@@ -253,7 +259,8 @@ def test_atks_on_imagenet1k(atk_class, device="cpu", n_examples=128, model_dir='
                     for images, labels, _ in tepoch:
                         image, labels = images.to(device), labels.to(device)
                         adv_images = atk(images, labels)
-                        get_grad_cam(model=model, input=adv_images, save_path=save_path + '/targeted')
+                        get_grad_cam(model=model, input=adv_images, save_path=save_path + '/targeted', iterator=images.shape[0]*iterator)
+                        iterator +=1
                         robust_acc += clean_accuracy(model, adv_images, labels)
             end = time.time()
             sec = float(end - start)
