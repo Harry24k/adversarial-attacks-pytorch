@@ -15,6 +15,7 @@ from .attacks.tpgd import TPGD
 from .attacks.mifgsm import MIFGSM
 from .attacks.upgd import UPGD
 from .attacks.apgd import APGD
+from .attacks.apgd_dlr import APGD_DLR
 from .attacks.apgdt import APGDT
 from .attacks.difgsm import DIFGSM
 from .attacks.tifgsm import TIFGSM
@@ -74,7 +75,7 @@ __testing__ = [
     "CosPGD_softmax", 
     "MIFGSM", "UPGD", 
     "APGD", "DIFGSM", 
-    "AutoAttack",
+    "AutoAttack", "APGD_DLR",
 ]
 __wrapper__ = [
     "LGV", "MultiAttack",

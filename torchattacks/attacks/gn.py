@@ -22,7 +22,7 @@ class GN(Attack):
 
     """
 
-    def __init__(self, model, std=0.1):
+    def __init__(self, model, std=0.1, n_classes=10):
         super().__init__("GN", model)
         self.std = std
         self.supported_mode = ['default']

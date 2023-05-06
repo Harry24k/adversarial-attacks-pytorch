@@ -1,5 +1,5 @@
 # %%
-from test_atks import test_atks_on_cifar10, test_atks_on_cifar100, test_atks_on_imagenet1k
+from test_atks import test_atks, test_atks_on_cifar10, test_atks_on_cifar100, test_atks_on_imagenet1k
 from test_import import test_import_version
 
 # %%
@@ -11,13 +11,28 @@ import torchattacks
 # %%
 print("*************************************              TESTING GRAD CAM              *************************************")
 models = ["convnext_tiny", "resnet50", "vit_small_patch16_224", "wide_resnet50_2"]
+iter_attacks=['PGD', 'APGD', 'CosPGD', 'CosPGD_softmax', 'DIFGSM', 'UPGD', 'MIFGSM', 'APGDT', 'APGD_DLR']
 for model in models:
     for atk_class in [atk_class for atk_class in torchattacks.__testing__ if atk_class not in torchattacks.__wrapper__]:
-        test_atks_on_imagenet1k(atk_class=atk_class,
-                                device='cuda',
-                                model_dir='../demo/models/',
-                                data_dir='/home/prasse/Shashank_Projects/adversarial-attacks-pytorch/data',
-                                model=model)
+        if atk_class in iter_attacks:
+            steps = [3,5,10,20,40]
+            for step in steps:
+                test_atks(dataset='imagenet1k',
+                            atk_class=atk_class,
+                            device='cuda',
+                            model_dir='../demo/models/',
+                            data_dir='/home/prasse/Shashank_Projects/adversarial-attacks-pytorch/data',
+                            model=model,
+                            steps=step)
+        else:
+            test_atks(dataset='imagenet1k',
+                            atk_class=atk_class,
+                            device='cuda',
+                            model_dir='../demo/models/',
+                            data_dir='/home/prasse/Shashank_Projects/adversarial-attacks-pytorch/data',
+                            model=model,
+                            steps=1)
+
 
 """
 # %%

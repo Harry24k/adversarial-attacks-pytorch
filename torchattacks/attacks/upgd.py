@@ -34,7 +34,7 @@ class UPGD(Attack):
     """
 
     def __init__(self, model, eps=2/255, alpha=2/255, steps=10,
-                 random_start=False, loss='ce', decay=1.0, eot_iter=1):
+                 random_start=False, loss='ce', decay=1.0, eot_iter=1, n_classes=10):
         super().__init__("UPGD", model)
         self.eps = eps
         self.alpha = alpha

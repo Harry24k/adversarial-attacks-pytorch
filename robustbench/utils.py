@@ -12,6 +12,7 @@ import requests
 import timm
 import torch
 from torch import nn
+import torch.nn.functional as F
 import numpy as np
 
 from robustbench.model_zoo import model_dicts as all_models
@@ -32,6 +33,7 @@ ACC_FIELDS = {
 }
 
 ITER = 0
+ITER_grad_cam = 0
 
 
 def download_gdrive(gdrive_id, fname_save):
@@ -242,12 +244,17 @@ def clean_accuracy(model: nn.Module,
 def top_k_accuracy(model: nn.Module,
                    x: torch.Tensor,
                    y: torch.Tensor,
-                   batch_size: int = 100,
-                   topk = (1,),
+                   batch_size: int = 128,
+                   k: int = 5,
                    device: torch.device = None):
-    acc = 0.
     if device is None:
-        device = x.device 
+        device = x.device
+    acc = 0.
+    acc_top5 = 0.
+    confidences = None
+    preds = None
+    targets = None
+    n_batches = math.ceil(x.shape[0] / batch_size)
     with torch.no_grad():
         for counter in range(n_batches):
             x_curr = x[counter * batch_size:(counter + 1) *
@@ -256,15 +263,29 @@ def top_k_accuracy(model: nn.Module,
                        batch_size].to(device)
 
             output = model(x_curr)
-            #acc += (output.max(1)[1] == y_curr).float().sum()
-            maxk = max(topk)
-            _, pred = output.topk(maxk, dim=1, largest=True, sorted=True)
-            top_k_acc = []
-            for k in topk:
-                correct = (output * torch.zeros_like(output).scatter(1, pred[:, :k], 1)).float()
-            top_k_acc.append(correct.sum() / output.sum())
-        return top_k_acc
+            acc += (output.max(1)[1] == y_curr).float().sum()
+            output_top5, preds_top5 = torch.topk(output, k=k, dim=1, largest=True, sorted=True)
+            for pred, label in zip(preds_top5, y_curr):
+                for p in pred:
+                    if p == label:
+                        acc_top5 += 1   
+            if confidences == None:
+                confidences = F.softmax(output_top5, dim=1)                         
+            else:
+                confidences = torch.cat((confidences, F.softmax(output_top5, dim=1)))
+            if preds == None:
+                preds = preds_top5
+            else:
+                preds = torch.cat((preds, preds_top5))
+            if targets == None:
+                targets = y_curr
+            else:
+                targets = torch.cat((targets, y_curr))
 
+    clean_accuracy =  acc.item() / x.shape[0]
+    top5_accuracy = acc_top5 / x.shape[0]
+
+    return clean_accuracy, top5_accuracy, confidences, preds, targets
 
 def get_key(x, keys):
     if isinstance(keys, str):
@@ -485,12 +506,13 @@ def save_clean_image(input, save_path):
         T.ToPILImage()(image).save(save_location_clean)
 
 def reset_iter():
-    global ITER
+    global ITER, ITER_grad_cam
     ITER = 0
+    ITER_grad_cam = 0
 
 
 @torch.enable_grad()
-def get_grad_cam(model: nn.Module, input, save_path, iterator=0):    
+def get_grad_cam(model: nn.Module, input, save_path):    
     if '.ResNet' in str(model.__class__):
         target_layer = [model.layer4[-1]]
     elif '.ConvNeXt' in str(model.__class__):
@@ -510,9 +532,8 @@ def get_grad_cam(model: nn.Module, input, save_path, iterator=0):
         save_path_adversarial = os.path.join(save_path, 'adversarial')
         os.makedirs(save_path_grad_cam, exist_ok=True)
         os.makedirs(save_path_adversarial, exist_ok=True)
-        save_location_grad=save_path_grad_cam + '/image_00' + str(iterator) + '.png'
-        save_location_adversarial=save_path_adversarial + '/image_00' + str(iterator) + '.png'
-        iterator += 1
+        save_location_grad=save_path_grad_cam + '/image_00' + str(ITER_grad_cam) + '.png'
+        save_location_adversarial=save_path_adversarial + '/image_00' + str(ITER_grad_cam) + '.png'
         
         adv_image = T.ToPILImage()(image)        
         colormap = cv2.COLORMAP_JET

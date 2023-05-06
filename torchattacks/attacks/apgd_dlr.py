@@ -8,7 +8,7 @@ import torch.nn as nn
 from ..attack import Attack
 
 
-class APGD(Attack):
+class APGD_DLR(Attack):
     r"""
     APGD in the paper 'Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks'
     [https://arxiv.org/abs/2003.01690]
@@ -39,8 +39,8 @@ class APGD(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=2/255, steps=10, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False, n_classes=10):
-        super().__init__("APGD", model)
+    def __init__(self, model, norm='Linf', eps=2/255, steps=10, n_restarts=1, seed=0, loss='dlr', eot_iter=1, rho=.75, verbose=False, n_classes=10):
+        super().__init__("APGD_DLR", model)
         self.eps = eps
         self.steps = steps
         self.norm = norm

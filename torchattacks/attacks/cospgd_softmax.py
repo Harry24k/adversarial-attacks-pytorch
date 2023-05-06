@@ -30,7 +30,7 @@ class CosPGD_softmax(Attack):
 
     """
 
-    def __init__(self, model, eps=2/255, alpha=10/255, steps=10, random_start=True):
+    def __init__(self, model, eps=2/255, alpha=10/255, steps=10, random_start=True, n_classes=10):
         super().__init__("CosPGD_softmax", model)
         self.eps = eps
         self.alpha = alpha
