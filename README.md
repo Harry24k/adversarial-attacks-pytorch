@@ -48,16 +48,24 @@ adv_images = atk(images, labels)
 
 
 
-### :hammer: Installation
+### :hammer: Installation from pip
 
 ```
 pip install torchattacks
 ```
 
-**or install from source**
+### :hammer: Installation from source (recommended)
 
 ```
 pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
+```
+
+or
+
+```
+git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
+cd adversarial-attacks-pytorch/
+pip install -e .
 ```
 
 
