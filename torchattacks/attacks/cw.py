@@ -37,8 +37,8 @@ class CW(Attack):
 
     """
 
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01):
-        super().__init__("CW", model)
+    def __init__(self, model, device=None, c=1, kappa=0, steps=50, lr=0.01):
+        super().__init__('CW', model, device)
         self.c = c
         self.kappa = kappa
         self.steps = steps

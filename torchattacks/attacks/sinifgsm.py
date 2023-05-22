@@ -31,8 +31,8 @@ class SINIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5):
-        super().__init__("SINIFGSM", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10, decay=1.0, m=5):
+        super().__init__('SINIFGSM', model, device)
         self.eps = eps
         self.steps = steps
         self.decay = decay

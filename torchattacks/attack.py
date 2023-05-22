@@ -26,7 +26,7 @@ class Attack(object):
         To change this, please see `set_model_training_mode`.
     """
 
-    def __init__(self, name, model):
+    def __init__(self, name, model, device):
         r"""
         Initializes internal attack state.
 
@@ -39,7 +39,15 @@ class Attack(object):
         self._attacks = OrderedDict()
 
         self.set_model(model)
-        self.device = next(model.parameters()).device
+        if device:
+            self.device = device
+        else:
+            try:
+                self.device = next(model.parameters()).device
+            except Exception:
+                self.device = None
+                print(
+                    'Failed to set device automatically, please try set_device() manual.')
 
         # Controls attack mode.
         self.attack_mode = 'default'
@@ -457,13 +465,16 @@ class Attack(object):
         return target_labels.long().to(self.device)
 
     def __call__(self, images, labels=None, *args, **kwargs):
-        given_training = self.model.training
-        self._change_model_mode(given_training)
-        images = self._check_inputs(images)
-        adv_images = self.forward(images, labels, *args, **kwargs)
-        adv_images = self._check_outputs(adv_images)
-        self._recover_model_mode(given_training)
-        return adv_images
+        if self.device:
+            given_training = self.model.training
+            self._change_model_mode(given_training)
+            images = self._check_inputs(images)
+            adv_images = self.forward(images, labels, *args, **kwargs)
+            adv_images = self._check_outputs(adv_images)
+            self._recover_model_mode(given_training)
+            return adv_images
+        else:
+            print('Device is not set.')
 
     def __repr__(self):
         info = self.__dict__.copy()

@@ -20,8 +20,8 @@ class VANILA(Attack):
 
     """
 
-    def __init__(self, model):
-        super().__init__("VANILA", model)
+    def __init__(self, model, device):
+        super().__init__('VANILA', model, device)
         self.supported_mode = ['default']
 
     def forward(self, images, labels=None):

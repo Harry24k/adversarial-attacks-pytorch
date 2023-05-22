@@ -32,8 +32,8 @@ class PIFGSM(Attack):
 
     """
 
-    def __init__(self, model, max_epsilon=16/255, num_iter_set=10, momentum=1.0, amplification=10.0, prob=0.7):
-        super().__init__("PIFGSM", model)
+    def __init__(self, model, device=None, max_epsilon=16/255, num_iter_set=10, momentum=1.0, amplification=10.0, prob=0.7):
+        super().__init__('PIFGSM', model, device)
         self.max_epsilon = max_epsilon
         self.num_iter_set = num_iter_set
         self.momentum = momentum

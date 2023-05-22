@@ -29,8 +29,8 @@ class BIM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
-        super().__init__("BIM", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10):
+        super().__init__('BIM', model, device)
         self.eps = eps
         self.alpha = alpha
         if steps == 0:

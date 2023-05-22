@@ -34,10 +34,10 @@ class Pixle(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, x_dimensions=(2, 10), y_dimensions=(2, 10),
+    def __init__(self, model, device=None, x_dimensions=(2, 10), y_dimensions=(2, 10),
                  pixel_mapping='random', restarts=20,
                  max_iterations=10, update_each_iteration=False):
-        super().__init__("Pixle", model)
+        super().__init__('Pixle', model, device)
 
         if restarts < 0 or not isinstance(restarts, int):
             raise ValueError('restarts must be and integer >= 0 '

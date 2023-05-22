@@ -29,8 +29,8 @@ class PGD(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, random_start=True):
-        super().__init__("PGD", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10, random_start=True):
+        super().__init__('PGD', model, device)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps

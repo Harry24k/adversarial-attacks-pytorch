@@ -32,8 +32,8 @@ class EADEN(Attack):
 
     """
 
-    def __init__(self, model, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
-        super().__init__("EADEN", model)
+    def __init__(self, model, device=None, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
+        super().__init__('EADEN', model, device)
         self.kappa = kappa
         self.lr = lr
         self.binary_search_steps = binary_search_steps

@@ -31,9 +31,9 @@ class Jitter(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10,
                  scale=10, std=0.1, random_start=True):
-        super().__init__("Jitter", model)
+        super().__init__('Jitter', model, device)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps

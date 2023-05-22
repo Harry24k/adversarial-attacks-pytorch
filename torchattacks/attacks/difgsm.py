@@ -33,9 +33,9 @@ class DIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=0.0,
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10, decay=0.0,
                  resize_rate=0.9, diversity_prob=0.5, random_start=False):
-        super().__init__("DIFGSM", model)
+        super().__init__('DIFGSM', model, device)
         self.eps = eps
         self.steps = steps
         self.decay = decay

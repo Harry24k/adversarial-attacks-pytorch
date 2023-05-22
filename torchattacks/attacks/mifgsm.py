@@ -29,8 +29,8 @@ class MIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0):
-        super().__init__("MIFGSM", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10, decay=1.0):
+        super().__init__('MIFGSM', model, device)
         self.eps = eps
         self.steps = steps
         self.decay = decay
