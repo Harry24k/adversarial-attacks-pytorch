@@ -5,10 +5,10 @@ import numpy as np
 from ..attack import Attack
 
 
-class PIFGSM(Attack):
+class PIFGSMPLUSPLUS(Attack):
     r"""
-    PIFGSM in the paper 'Patch-wise Attack for Fooling Deep Neural Network'
-    [https://arxiv.org/abs/2007.06765]
+    Patch-wise++ Perturbation for Adversarial Targeted Attacks'
+    [https://arxiv.org/abs/2012.15503]
 
     Distance Measure : Linf
 
@@ -19,6 +19,7 @@ class PIFGSM(Attack):
         momentum (float): momentum. (Default: 1.0)
         amplification (float): to amplifythe step size. (Default: 10.0)
         prob (float): probability of using diverse inputs. (Default: 0.7)
+        project_factor (float): To control the weight of project term. (Default: 0.8)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -26,19 +27,20 @@ class PIFGSM(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PIFGSM(model, eps=16/255, num_iter_set=10)
+        >>> attack = torchattacks.PIFGSMPLUSPLUS(model, eps=16/255, num_iter_set=10)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, device=None, max_epsilon=16/255, num_iter_set=10, momentum=1.0, amplification=10.0, prob=0.7):
-        super().__init__('PIFGSM', model, device)
+    def __init__(self, model, device=None, max_epsilon=16/255, num_iter_set=10, momentum=1.0, amplification=10.0, prob=0.7, project_factor=0.8):
+        super().__init__('PIFGSMPLUSPLUS', model, device)
         self.max_epsilon = max_epsilon
         self.num_iter_set = num_iter_set
         self.momentum = momentum
         self.amplification = amplification
         self.prob = prob
-        self.supported_mode = ['default']
+        self.project_factor = project_factor
+        self.supported_mode = ['default', 'targeted']
 
     def forward(self, images, labels):
         r"""
@@ -67,6 +69,20 @@ class PIFGSM(Attack):
             padding_size, padding_size), groups=3)
         return images
 
+    def gaussian_kern(self, kernlen=21, nsig=3):
+        """Returns a 2D Gaussian kernel array."""
+        import scipy.stats as st
+
+        x = np.linspace(-nsig, nsig, kernlen)
+        kern1d = st.norm.pdf(x)
+        kernel_raw = np.outer(kern1d, kern1d)
+        kernel = kernel_raw / kernel_raw.sum()
+        kernel = kernel.astype(np.float32)
+        stack_kernel = np.stack([kernel, kernel, kernel]).swapaxes(2, 0)
+        stack_kernel = np.expand_dims(stack_kernel, 1)
+        stack_kernel = torch.tensor(stack_kernel).to(self.device)
+        return stack_kernel
+
     def project_kern(self, kern_size):
         kern = np.ones((kern_size, kern_size),
                        dtype=np.float32) / (kern_size ** 2 - 1)
@@ -82,8 +98,9 @@ class PIFGSM(Attack):
         num_iter = self.num_iter_set
         alpha = eps / num_iter
         alpha_beta = alpha * self.amplification
-        gamma = alpha_beta
+        gamma = alpha_beta * self.project_factor
         P_kern, padding_size = self.project_kern(3)
+        T_kern = self.gaussian_kern(3, 3)
 
         images.requires_grad = True
         amplification = 0.0
@@ -97,6 +114,8 @@ class PIFGSM(Attack):
             loss = F.cross_entropy(output_v3, labels)
             loss.backward()
             noise = images.grad.data
+            noise = F.conv2d(noise, T_kern, padding=(
+                padding_size, padding_size), groups=3)
 
             amplification += alpha_beta * torch.sign(noise)
             cut_noise = torch.clamp(
@@ -104,9 +123,12 @@ class PIFGSM(Attack):
             projection = gamma * \
                 torch.sign(self.project_noise(
                     cut_noise, P_kern, padding_size))
-            amplification += projection
 
-            images = images + alpha_beta * torch.sign(noise) + projection
+            if self.targeted:
+                images = images - alpha_beta * torch.sign(noise) - projection
+            else:
+                images = images + alpha_beta * torch.sign(noise) + projection
+
             images = self.clip_by_tensor(images, images_min, images_max)
             images = images.detach().requires_grad_(True)
 
