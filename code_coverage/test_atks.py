@@ -1,4 +1,4 @@
-from test import test
+from aabbcc import test
 
 from robustbench.utils import load_model, clean_accuracy
 from robustbench.data import load_cifar10
