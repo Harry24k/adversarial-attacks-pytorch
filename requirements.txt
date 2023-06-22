@@ -7,4 +7,3 @@ tqdm~=4.56.1
 requests~=2.25.1
 pandas~=1.2.4
 numpy>=1.19.4
-robustbench
