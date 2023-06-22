@@ -1,3 +1,7 @@
+from import_test import test
+
+test()
+
 from robustbench.utils import load_model, clean_accuracy
 from robustbench.data import load_cifar10
 import torchattacks
