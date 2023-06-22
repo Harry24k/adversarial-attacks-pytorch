@@ -48,26 +48,14 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./mod
         clean_acc = CACHE['clean_acc']
 
     try:
-        kargs = {}
+        kargs = {'device': device}
         if atk_class in ['SPSA']:
             kargs['max_batch_size'] = 5
         atk = eval("torchattacks."+atk_class)(model, **kargs)
-    except Exception as e:
-        robust_acc = clean_acc + 1  # It will cuase assertion.
-        print('{0:<12} create attack Error'.format(atk_class))
-        print(e)
-
-    try:
         start = time.time()
         with torch.enable_grad():
             adv_images = atk(images, labels)
         end = time.time()
-    except Exception as e:
-        robust_acc = clean_acc + 1  # It will cuase assertion.
-        print('{0:<12} attack images Error'.format(atk_class))
-        print(e)
-    
-    try:
         robust_acc = clean_accuracy(model, adv_images, labels)
         sec = float(end - start)
         print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
@@ -84,7 +72,7 @@ def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./mod
 
     except Exception as e:
         robust_acc = clean_acc + 1  # It will cuase assertion.
-        print('{0:<12} occurs Error'.format(atk_class))
+        print('{0:<12} test acc Error'.format(atk_class))
         print(e)
 
     assert clean_acc >= robust_acc
