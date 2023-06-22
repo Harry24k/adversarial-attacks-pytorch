@@ -1,8 +1,8 @@
 import sys
+import os
 # Importing the parent directory
-# sys.path.insert(0, os.path.abspath(
-#     os.path.join(os.path.dirname(__file__), '..')))
-sys.path.append("..")
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')))
 
 from robustbench.utils import load_model  # nopep8
 from robustbench.utils import clean_accuracy  # nopep8
