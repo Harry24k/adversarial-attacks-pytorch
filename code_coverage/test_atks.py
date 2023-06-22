@@ -1,7 +1,3 @@
-from robustbench.utils import load_model
-from robustbench.utils import clean_accuracy
-from robustbench.data import load_cifar10
-import torchattacks
 import torch
 import pytest
 import time
@@ -10,6 +6,11 @@ import sys
 
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
+
+from robustbench.utils import load_model
+from robustbench.utils import clean_accuracy
+from robustbench.data import load_cifar10
+import torchattacks
 
 CACHE = {}
 
