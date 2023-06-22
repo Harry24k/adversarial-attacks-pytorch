@@ -1,16 +1,16 @@
-import torch
-import pytest
-import time
-import os
 import sys
+# Importing the parent directory
+# sys.path.insert(0, os.path.abspath(
+#     os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append("..")
 
-sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..')))
-
-from robustbench.utils import load_model
-from robustbench.utils import clean_accuracy
-from robustbench.data import load_cifar10
-import torchattacks
+from robustbench.utils import load_model  # nopep8
+from robustbench.utils import clean_accuracy  # nopep8
+from robustbench.data import load_cifar10  # nopep8
+import torchattacks  # nopep8
+import torch  # nopep8
+import pytest  # nopep8
+import time  # nopep8
 
 CACHE = {}
 
