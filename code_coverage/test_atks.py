@@ -1,6 +1,7 @@
 import sys
 import os
 # Importing the parent directory
+# This line must be preceded by
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
