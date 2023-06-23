@@ -21,7 +21,7 @@ jobs:
 #           - macos-latest
         python-version: [3.11, 3.9, 3.8, 3.7]
         pytorch-version:
-          [2.0.1, 1.11.0, 1.10.0, 1.9.1]
+          [2.0.1, 1.13.1, 1.11.0, 1.10.0, 1.9.1]
           # 1.5.1, 1.4.0 Model load error in robustbench.
           # 1.8.1, 1.7.1, 1.6.0 'padding==same' error in TIFGSM
         exclude:
