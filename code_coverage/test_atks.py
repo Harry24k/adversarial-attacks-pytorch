@@ -2,8 +2,7 @@ import sys
 import os
 # Importing the parent directory
 # This line must be preceded by
-sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # nopep8
 
 from robustbench.utils import load_model  # nopep8
 from robustbench.utils import clean_accuracy  # nopep8
@@ -30,9 +29,9 @@ def get_data(data_name='CIFAR10', device="cpu", n_examples=5, data_dir='./data')
 @pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./models', data_dir='./data'):
 
+    global CACHE
     if CACHE.get('model') is None:
         model = get_model(device=device, model_dir=model_dir)
-        global CACHE
         CACHE['model'] = model
     else:
         model = CACHE['model']
