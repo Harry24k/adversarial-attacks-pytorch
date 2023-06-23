@@ -16,18 +16,24 @@ CACHE = {}
 
 
 def get_model(model_name='Standard', device='cpu', model_dir='./models'):
-    model = load_model(model_name, model_dir=model_dir, norm='Linf')
+    while True:
+        try:
+            model = load_model(model_name, model_dir=model_dir, norm='Linf')
+            break
+        except Exception:
+            pass
+    # fsize = os.path.getsize(filePath)
     return model.to(device)
 
 
-def get_data(data_name='CIFAR10', device="cpu", n_examples=5, data_dir='./data'):
+def get_data(data_name='CIFAR10', device='cpu', n_examples=5, data_dir='./data'):
     images, labels = load_cifar10(n_examples=n_examples, data_dir=data_dir)
     return images.to(device), labels.to(device)
 
 
 @torch.no_grad()
 @pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
-def test_atks_on_cifar10(atk_class, device="cpu", n_examples=5, model_dir='./models', data_dir='./data'):
+def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
 
     global CACHE
     if CACHE.get('model') is None:
