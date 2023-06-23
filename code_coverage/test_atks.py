@@ -16,12 +16,7 @@ CACHE = {}
 
 
 def get_model(model_name='Standard', device='cpu', model_dir='./models'):
-    while True:
-        try:
-            model = load_model(model_name, model_dir=model_dir, norm='Linf')
-            break
-        except Exception:
-            pass
+    model = load_model(model_name, model_dir=model_dir, norm='Linf')
     # fsize = os.path.getsize(filePath)
     return model.to(device)
 
