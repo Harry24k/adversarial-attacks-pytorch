@@ -1,7 +1,5 @@
 import time
-import logging
 from collections import OrderedDict
-from collections.abc import Iterable
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -11,7 +9,7 @@ def wrapper_method(func):
     def wrapper_func(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         for atk in self.__dict__.get('_attacks').values():
-            eval("atk."+func.__name__+"(*args, **kwargs)")
+            eval("atk." + func.__name__ + "(*args, **kwargs)")
         return result
     return wrapper_func
 
