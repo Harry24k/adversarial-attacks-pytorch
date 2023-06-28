@@ -51,7 +51,7 @@ jobs:
             pip install ruff pytest pytest-cov
             if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Set up PyTorch ${{ matrix.python-version }}
+      - name: Set up PyTorch ${{ matrix.pytorch-version }}
         run: |
             python -m pip install torch==${{ matrix.pytorch-version }} torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
             export CUDA_VISIBLE_DEVICES=""
