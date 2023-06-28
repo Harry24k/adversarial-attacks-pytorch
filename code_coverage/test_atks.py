@@ -91,7 +91,11 @@ def get_data(data_name='CIFAR10', device='cpu', n_examples=5, data_dir='./data')
 @torch.no_grad()
 def test(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
     global CACHE
-    model = get_model(device=device, model_dir=model_dir)
+    if CACHE.get('model') is None:
+        model = get_model(device=device, model_dir=model_dir)
+        CACHE['model'] = model
+    else:
+        model = CACHE['model']
 
     if CACHE.get('images') is None:
         images, labels = get_data(
@@ -141,9 +145,9 @@ def test(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='
 
 @pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
-    global CACHE
-    if CACHE.get('model') is None:
-        net = train_model()
-        net.eval()
-        CACHE['model'] = net
+    # global CACHE
+    # if CACHE.get('model') is None:
+    #     net = train_model()
+    #     net.eval()
+    #     CACHE['model'] = net
     test(atk_class, device, n_examples, model_dir, data_dir)
