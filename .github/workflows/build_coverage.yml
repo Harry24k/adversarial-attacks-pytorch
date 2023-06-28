@@ -47,7 +47,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-            pip install ruff pytest pytest-cov setuptools==59
+            python -m pip install --upgrade pip
+            pip install ruff pytest pytest-cov setuptools==59.8.0
             if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Set up PyTorch ${{ matrix.pytorch-version }}
