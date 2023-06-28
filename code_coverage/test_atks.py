@@ -141,8 +141,9 @@ def test(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='
 
 @pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
 def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
-    net = train_model()
-    net.eval()
     global CACHE
-    CACHE['model'] = net
+    if CACHE.get('model') is None:
+        net = train_model()
+        net.eval()
+        CACHE['model'] = net
     test(atk_class, device, n_examples, model_dir, data_dir)

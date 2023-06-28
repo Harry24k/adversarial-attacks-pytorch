@@ -18,36 +18,23 @@ jobs:
         os:
           - ubuntu-latest
         python-version: [3.7, 3.8, 3.9, 3.11]
-        pytorch-version: [1.9.1, 1.10.0, 1.11.0, 1.13.1, 2.0.1]
+        pytorch-version: [1.13.1, 2.0.1]
           # 1.5.1, 1.4.0 Model load error in robustbench.
           # 1.8.1, 1.7.1, 1.6.0 'padding==same' error in TIFGSM
-        exclude:
-          - pytorch-version: 1.4.0
-            python-version: 3.9
-          - pytorch-version: 1.5.1
-            python-version: 3.9
-          - pytorch-version: 1.6.0
-            python-version: 3.9
+          # not support old pytorch version 1.9, 1.10 and 1.11
+        # exclude:
+          # - pytorch-version: 1.4.0
+          #   python-version: 3.9
+          # - pytorch-version: 1.5.1
+          #   python-version: 3.9
+          # - pytorch-version: 1.6.0
+          #   python-version: 3.9
           # disabling python 3.9 support with PyTorch 1.7.1 and 1.8.1, to stop repeated pytorch-version test fail.
           # https://github.com/pytorch/ignite/issues/2383
-          - pytorch-version: 1.7.1
-            python-version: 3.9
-          - pytorch-version: 1.8.1
-            python-version: 3.9
-          # - pytorch-version: 1.9.1
-          #   python-version: 3.11
-          # - pytorch-version: 1.10.0
-          #   python-version: 3.7
-          # - pytorch-version: 1.10.0
-          #   python-version: 3.11
-          # - pytorch-version: 1.11.0
-          #   python-version: 3.11
-          # - pytorch-version: 1.13.1
-          #   python-version: 3.11
-          # - pytorch-version: 2.0.1
-          #   python-version: 3.7
-          # - pytorch-version: 2.0.1
-          #   python-version: 3.8
+          # - pytorch-version: 1.7.1
+          #   python-version: 3.9
+          # - pytorch-version: 1.8.1
+          #   python-version: 3.9
 
     runs-on: ${{ matrix.os }}
 
@@ -66,7 +53,8 @@ jobs:
 
       - name: Set up PyTorch ${{ matrix.python-version }}
         run: |
-            python -m pip install torch==${{ matrix.pytorch-version }}+cpu torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+            python -m pip install torch==${{ matrix.pytorch-version }} torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+            export CUDA_VISIBLE_DEVICES=""
 
       - name: Run pytest
         run: |
