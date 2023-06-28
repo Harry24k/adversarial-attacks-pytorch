@@ -76,6 +76,8 @@ def train_model():
             # print statistics
             running_loss += loss.item()
 
+    return net
+
 
 def get_model(model_name='Standard', device='cpu', model_dir='./models'):
     model = load_model(model_name, model_dir=model_dir, norm='Linf')
