@@ -20,3 +20,6 @@ demo/data/*
 demo/models/*
 demo/torchdefenses/*
 TODO.txt
+.vscode/
+coverage.xml
+.coverage
