@@ -11,72 +11,8 @@ import torchattacks  # nopep8
 import torch  # nopep8
 import pytest  # nopep8
 import time  # nopep8
-import torch
-import torchvision
-import torchvision.transforms as transforms
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 
 CACHE = {}
-
-
-class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x, 1)  # flatten all dimensions except batch
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-def train_model():
-    batch_size = 4
-    net = Net()
-
-    transform = transforms.Compose([transforms.ToTensor()])
-    trainset = torchvision.datasets.CIFAR10(
-        root='./data', train=True, download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=batch_size, shuffle=True, num_workers=2)
-
-    # testset = torchvision.datasets.CIFAR10(
-    #     root='./data', train=False, download=True, transform=transform)
-    # testloader = torch.utils.data.DataLoader(
-    #     testset, batch_size=batch_size, shuffle=False, num_workers=2)
-    # classes = ('plane', 'car', 'bird', 'cat', 'deer',
-    #            'dog', 'frog', 'horse', 'ship', 'truck')
-
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
-    for epoch in range(3):  # loop over the dataset multiple times
-        running_loss = 0.0
-        for data in trainloader:
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data
-            # zero the parameter gradients
-            optimizer.zero_grad()
-            # forward + backward + optimize
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-            # print statistics
-            running_loss += loss.item()
-
-    return net
 
 
 def get_model(model_name='Standard', device='cpu', model_dir='./models'):
@@ -91,7 +27,8 @@ def get_data(data_name='CIFAR10', device='cpu', n_examples=5, data_dir='./data')
 
 
 @torch.no_grad()
-def auto_run(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
+@pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
+def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
     global CACHE
     if CACHE.get('model') is None:
         model = get_model(device=device, model_dir=model_dir)
@@ -143,13 +80,3 @@ def auto_run(atk_class, device='cpu', n_examples=5, model_dir='./models', data_d
         print(e)
 
     assert clean_acc >= robust_acc
-
-
-@pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
-def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
-    # global CACHE
-    # if CACHE.get('model') is None:
-    #     net = train_model()
-    #     net.eval()
-    #     CACHE['model'] = net
-    auto_run(atk_class, device, n_examples, model_dir, data_dir)
