@@ -21,26 +21,30 @@ jobs:
         pytorch-version: [1.9.1, 1.10.1, 1.11.0, 1.12.1, 1.13.1, 2.0.1]
           # 1.5.1, 1.4.0 Model load error in robustbench.
           # 1.8.1, 1.7.1, 1.6.0 'padding==same' error in TIFGSM
-          # not support old pytorch version 1.9, 1.10 and 1.11
         exclude:
-          # python 3.7 not support with pytorch 2.0.0 or later
+          # https://github.com/pytorch/vision#installation
+          # pytorch 2.0 support python from 3.8 to 3.11
           - pytorch-version: 2.0.1
             python-version: 3.7
-          # python 3.11 not support with pytorch 1.13.1
+          # pytorch 1.13 support python from 3.7.2 to 3.10
           - pytorch-version: 1.13.1
             python-version: 3.11
-          # - pytorch-version: 1.4.0
-          #   python-version: 3.9
-          # - pytorch-version: 1.5.1
-          #   python-version: 3.9
-          # - pytorch-version: 1.6.0
-          #   python-version: 3.9
-          # disabling python 3.9 support with PyTorch 1.7.1 and 1.8.1, to stop repeated pytorch-version test fail.
-          # https://github.com/pytorch/ignite/issues/2383
-          # - pytorch-version: 1.7.1
-          #   python-version: 3.9
-          # - pytorch-version: 1.8.1
-          #   python-version: 3.9
+          # pytorch 1.12 support python from 3.7 to 3.10
+          - pytorch-version: 1.12.1
+            python-version: 3.11
+          # pytorch 1.11 support python from 3.7 to 3.10
+          - pytorch-version: 1.11.0
+            python-version: 3.11
+          # pytorch 1.10 support python from 3.6 to 3.9
+          - pytorch-version: 1.10.1
+            python-version: 3.10
+          - pytorch-version: 1.10.1
+            python-version: 3.11
+          # pytorch 1.9 support python from 3.6 to 3.9
+          - pytorch-version: 1.9.1
+            python-version: 3.10
+          - pytorch-version: 1.9.1
+            python-version: 3.11
 
     runs-on: ${{ matrix.os }}
 
