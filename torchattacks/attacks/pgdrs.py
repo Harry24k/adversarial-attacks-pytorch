@@ -47,8 +47,8 @@ class PGDRS(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048):
-        super().__init__("PGDRS", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=2/255, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048):
+        super().__init__('PGDRS', model, device)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps

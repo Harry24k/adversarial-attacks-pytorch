@@ -39,8 +39,8 @@ class APGD(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False):
-        super().__init__("APGD", model)
+    def __init__(self, model, device=None, norm='Linf', eps=8/255, steps=10, n_restarts=1, seed=0, loss='ce', eot_iter=1, rho=.75, verbose=False):
+        super().__init__('APGD', model, device)
         self.eps = eps
         self.steps = steps
         self.norm = norm

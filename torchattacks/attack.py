@@ -1,7 +1,5 @@
 import time
-import logging
 from collections import OrderedDict
-from collections.abc import Iterable
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -11,7 +9,7 @@ def wrapper_method(func):
     def wrapper_func(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         for atk in self.__dict__.get('_attacks').values():
-            eval("atk."+func.__name__+"(*args, **kwargs)")
+            eval("atk." + func.__name__ + "(*args, **kwargs)")
         return result
     return wrapper_func
 
@@ -26,7 +24,7 @@ class Attack(object):
         To change this, please see `set_model_training_mode`.
     """
 
-    def __init__(self, name, model):
+    def __init__(self, name, model, device):
         r"""
         Initializes internal attack state.
 
@@ -39,7 +37,15 @@ class Attack(object):
         self._attacks = OrderedDict()
 
         self.set_model(model)
-        self.device = next(model.parameters()).device
+        if device:
+            self.device = device
+        else:
+            try:
+                self.device = next(model.parameters()).device
+            except Exception:
+                self.device = None
+                print(
+                    'Failed to set device automatically, please try set_device() manual.')
 
         # Controls attack mode.
         self.attack_mode = 'default'
@@ -165,6 +171,7 @@ class Attack(object):
             target_map_function (function): Label mapping function.
                 e.g. lambda inputs, labels:(labels+1)%10.
                 None for using input labels as targeted labels. (Default)
+            quiet (bool): Display information message or not. (Default: False)
 
         """
         self._set_mode_targeted('targeted(custom)', quiet)
@@ -176,7 +183,7 @@ class Attack(object):
         Set attack mode as targeted with random labels.
 
         Arguments:
-            num_classses (str): number of classes.
+            quiet (bool): Display information message or not. (Default: False)
 
         """
         self._set_mode_targeted('targeted(random)', quiet)
@@ -189,6 +196,7 @@ class Attack(object):
 
         Arguments:
             kth_min (str): label with the k-th smallest probability used as target labels. (Default: 1)
+            num_classses (str): number of classes. (Default: False)
 
         """
         self._set_mode_targeted('targeted(least-likely)', quiet)
@@ -200,6 +208,9 @@ class Attack(object):
     def set_mode_targeted_by_label(self, quiet=False):
         r"""
         Set attack mode as targeted.
+
+        Arguments:
+            quiet (bool): Display information message or not. (Default: False)
 
         .. note::
             Use user-supplied labels as target labels.
@@ -452,13 +463,16 @@ class Attack(object):
         return target_labels.long().to(self.device)
 
     def __call__(self, images, labels=None, *args, **kwargs):
-        given_training = self.model.training
-        self._change_model_mode(given_training)
-        images = self._check_inputs(images)
-        adv_images = self.forward(images, labels, *args, **kwargs)
-        adv_images = self._check_outputs(adv_images)
-        self._recover_model_mode(given_training)
-        return adv_images
+        if self.device:
+            given_training = self.model.training
+            self._change_model_mode(given_training)
+            images = self._check_inputs(images)
+            adv_images = self.forward(images, labels, *args, **kwargs)
+            adv_images = self._check_outputs(adv_images)
+            self._recover_model_mode(given_training)
+            return adv_images
+        else:
+            print('Device is not set.')
 
     def __repr__(self):
         info = self.__dict__.copy()

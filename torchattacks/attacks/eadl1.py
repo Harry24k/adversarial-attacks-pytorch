@@ -13,13 +13,13 @@ class EADL1(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        kappa (float): how strong the adversarial example should be (also written as 'confidence').
-        lr (float): larger values converge faster to less accurate results.
-        binary_search_steps (int): number of times to adjust the constant with binary search.
-        max_iterations (int): number of iterations to perform gradient descent.
-        abort_early (bool): if we stop improving, abort gradient descent early.
-        initial_const (float): the initial constant c to pick as a first guess.
-        beta (float): hyperparameter trading off L2 minimization for L1 minimization.
+        kappa (float): how strong the adversarial example should be (also written as 'confidence'). (Default: 0)
+        lr (float): larger values converge faster to less accurate results. (Default: 0.01)
+        binary_search_steps (int): number of times to adjust the constant with binary search. (Default: 9)
+        max_iterations (int): number of iterations to perform gradient descent. (Default: 100)
+        abort_early (bool): if we stop improving, abort gradient descent early. (Default: True)
+        initial_const (float): the initial constant c to pick as a first guess. (Default: 0.001)
+        beta (float): hyperparameter trading off L2 minimization for L1 minimization. (Default: 0.001)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -32,8 +32,8 @@ class EADL1(Attack):
 
     """
 
-    def __init__(self, model, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
-        super().__init__("EADL1", model)
+    def __init__(self, model, device=None, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
+        super().__init__('EADL1', model, device)
         self.kappa = kappa
         self.lr = lr
         self.binary_search_steps = binary_search_steps
@@ -57,13 +57,10 @@ class EADL1(Attack):
             labels = self.get_target_label(images, labels)
 
         outputs = self.get_logits(images)
-        # num_classes = outputs.shape[1]
 
         batch_size = images.shape[0]
-        # coeff_lower_bound = images.new_zeros(batch_size)
         lower_bound = torch.zeros(batch_size, device=self.device)
         const = torch.ones(batch_size, device=self.device) * self.initial_const
-        # coeff_upper_bound = images.new_ones(batch_size) * 1e10
         upper_bound = torch.ones(batch_size, device=self.device) * 1e10
 
         final_adv_images = images.clone()
@@ -71,8 +68,6 @@ class EADL1(Attack):
 
         o_bestl1 = [1e10] * batch_size
         o_bestscore = [-1] * batch_size
-        # o_bestl1 = torch.Tensor(o_bestl1).float().to(self.device)
-        # o_bestscore = torch.Tensor(o_bestscore).long().to(self.device)
         o_bestl1 = torch.Tensor(o_bestl1).to(self.device)
         o_bestscore = torch.Tensor(o_bestscore).to(self.device)
 
@@ -88,11 +83,8 @@ class EADL1(Attack):
             bestl1 = [1e10] * batch_size
             bestscore = [-1] * batch_size
 
-            # bestl1 = torch.Tensor(bestl1).float().to(self.device)
-            # bestscore = torch.Tensor(bestscore).long().to(self.device)
             bestl1 = torch.Tensor(bestl1).to(self.device)
             bestscore = torch.Tensor(bestscore).to(self.device)
-
             prevloss = 1e6
 
             if (self.repeat and outer_step == (self.binary_search_steps - 1)):
@@ -164,7 +156,6 @@ class EADL1(Attack):
         # Not same as CW's f function
         other = torch.max((1-one_hot_labels)*output -
                           (one_hot_labels*1e4), dim=1)[0]
-        # other = torch.max((1-one_hot_labels)*output, dim=1)[0]
         real = torch.max(one_hot_labels*output, dim=1)[0]
 
         if self.targeted:

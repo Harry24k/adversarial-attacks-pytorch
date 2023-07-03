@@ -26,8 +26,8 @@ class FFGSM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=10/255):
-        super().__init__("FFGSM", model)
+    def __init__(self, model, device=None, eps=8/255, alpha=10/255):
+        super().__init__('FFGSM', model, device)
         self.eps = eps
         self.alpha = alpha
         self.supported_mode = ['default', 'targeted']

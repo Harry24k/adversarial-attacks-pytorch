@@ -22,8 +22,8 @@ class GN(Attack):
 
     """
 
-    def __init__(self, model, std=0.1):
-        super().__init__("GN", model)
+    def __init__(self, model, device=None, std=0.1):
+        super().__init__('GN', model, device)
         self.std = std
         self.supported_mode = ['default']
 

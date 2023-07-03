@@ -18,8 +18,8 @@ class MultiAttack(Attack):
         >>> adv_images = attack(images, labels)
 
     """
-    def __init__(self, attacks, verbose=False):
-        super().__init__("MultiAttack", attacks[0].model)
+    def __init__(self, attacks, device=None, verbose=False):
+        super().__init__("MultiAttack", attacks[0].model, device)
         self.attacks = attacks
         self.verbose = verbose
         self.supported_mode = ['default']

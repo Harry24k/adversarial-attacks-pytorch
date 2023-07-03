@@ -1,9 +1,9 @@
 # For torchattacks
 # torch>=1.4.0  # It forces to update torch to LTS version.
-scipy>=0.14.0,<=1.7.3
+scipy>=0.14.0
 
 # For robustbench.
-tqdm~=4.56.1 
-requests~=2.25.1
-pandas~=1.2.4
+tqdm>=4.56.1 
+requests>=2.25.1
+pandas>=1.2.4
 numpy>=1.19.4

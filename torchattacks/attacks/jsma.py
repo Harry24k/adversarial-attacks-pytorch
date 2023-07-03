@@ -13,8 +13,8 @@ class JSMA(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        theta (float): perturb length, range is either [theta, 0], [0, theta]
-        gamma (float): highest percentage of pixels can be modified
+        theta (float): perturb length, range is either [theta, 0], [0, theta]. (Default: 1.0)
+        gamma (float): highest percentage of pixels can be modified. (Default: 0.1)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -27,8 +27,8 @@ class JSMA(Attack):
 
     """
 
-    def __init__(self, model, theta=1.0, gamma=0.1):
-        super().__init__("JSMA", model)
+    def __init__(self, model, device=None, theta=1.0, gamma=0.1):
+        super().__init__('JSMA', model, device)
         self.theta = theta
         self.gamma = gamma
         self.supported_mode = ['default', 'targeted']

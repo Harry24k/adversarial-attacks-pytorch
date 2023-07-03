@@ -44,10 +44,10 @@ class Square(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, n_queries=5000, n_restarts=1,
+    def __init__(self, model, device=None, norm='Linf', eps=8/255, n_queries=5000, n_restarts=1,
                  p_init=.8, loss='margin', resc_schedule=True,
                  seed=0, verbose=False):
-        super().__init__("Square", model)
+        super().__init__('Square', model, device)
         self.norm = norm
         self.n_queries = n_queries
         self.eps = eps

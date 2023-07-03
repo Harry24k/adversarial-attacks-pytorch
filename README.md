@@ -48,16 +48,24 @@ adv_images = atk(images, labels)
 
 
 
-### :hammer: Installation
+### :hammer: Installation from pip
 
 ```
 pip install torchattacks
 ```
 
-**or install from source**
+### :hammer: Installation from source (recommended)
 
 ```
 pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
+```
+
+or
+
+```
+git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
+cd adversarial-attacks-pytorch/
+pip install -e .
 ```
 
 
@@ -83,7 +91,7 @@ pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
 * Random target label:
 ```python
 # random labels as target labels.
-atk.set_mode_targeted_random(n_classses)
+atk.set_mode_targeted_random()
 ```
 
 * Least likely label:
@@ -98,11 +106,9 @@ atk.set_mode_targeted_least_likely(kth_min)
 atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
 ```
 
-* By labels:
+* By label:
 ```python
-# label from user provide.
-atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
-atk.set_mode_targeted_by_label(quiet=True) # do not show the message
+atk.set_mode_targeted_by_label(quiet=True)
 # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
 target_labels = (labels + 1) % 10
 adv_images = atk(images, target_labels)
@@ -267,7 +273,8 @@ The distance measure in parentheses.
 | **JSMA**<br />(L0) | The Limitations of Deep Learning in Adversarial Settings ([Papernot, Nicolas, et al., 2016](https://arxiv.org/abs/1511.07528v1))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **EADL1**<br />(L1) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **EADEN**<br />(L1, L2) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-
+| **PIFGSM (PIM)**<br />(Linf) | Patch-wise Attack for Fooling Deep Neural Network ([Gao, Lianli, et al., 2020](https://arxiv.org/abs/2007.06765))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **PIFGSM++ (PIM++)**<br />(Linf) | Patch-wise++ Perturbation for Adversarial Targeted Attacks ([Gao, Lianli, et al., 2021](https://arxiv.org/abs/2012.15503))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 
 ## Performance Comparison
 

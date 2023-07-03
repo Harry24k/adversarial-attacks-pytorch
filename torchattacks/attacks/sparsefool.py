@@ -32,8 +32,8 @@ class SparseFool(Attack):
 
     """
 
-    def __init__(self, model, steps=10, lam=3, overshoot=0.02):
-        super().__init__("SparseFool", model)
+    def __init__(self, model, device=None, steps=10, lam=3, overshoot=0.02):
+        super().__init__('SparseFool', model, device)
         self.steps = steps
         self.lam = lam
         self.overshoot = overshoot
