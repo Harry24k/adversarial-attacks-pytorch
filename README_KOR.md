@@ -235,7 +235,7 @@ atk.save(data_loader, save_path=None, verbose=True)
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
 # Thus, it should be changed to the training mode during the attack.
-atk.set_training_mode(training=False)
+atk.set_model_training_mode(training=False)
 ```
 
 </p></details>

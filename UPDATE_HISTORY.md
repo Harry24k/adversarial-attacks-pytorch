@@ -254,7 +254,7 @@
 
 ### v2.14.1
 
-  * `Attack.set_training_mode`
+  * `Attack.set_model_training_mode`
     * The method to support changing the model to training mode.
     * Note that RNN requires model.training=True to calculate gradient.
 
@@ -354,7 +354,7 @@
 
   * `Attack.*`
 
-    * `set_training_mode`: Now supports changing training mode of `Batchnorm` and `Dropout`.
+    * `set_model_training_mode`: Now supports changing training mode of `Batchnorm` and `Dropout`.
     * `save`: Now supports return values of the last verbose information.
 
   * `MultiAttack`

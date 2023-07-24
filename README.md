@@ -134,7 +134,7 @@ adv_loader = atk.load(load_path="./data.pt")
 ```python
 # For RNN-based models, we cannot calculate gradients with eval mode.
 # Thus, it should be changed to the training mode during the attack.
-atk.set_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
+atk.set_model_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
 ```
 
 
