@@ -161,7 +161,7 @@ class LGV(Attack):
             else:
                 raise NotImplementedError('Targeted attack mode not supported by LGV.')
         # set return type to base attack
-        self.base_attack.set_return_type(self.return_type)
+        # self.base_attack.set_return_type(self.return_type)
 
         adv_images = self.base_attack(images, labels)
         return adv_images
