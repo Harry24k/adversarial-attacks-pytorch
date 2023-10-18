@@ -55,7 +55,7 @@ def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./mod
         kargs = {}
         if atk_class in ['SPSA']:
             kargs['max_batch_size'] = 5
-        atk = eval("torchattacks."+atk_class)(model, device, **kargs)
+        atk = eval("torchattacks."+atk_class)(model, **kargs)
         start = time.time()
         with torch.enable_grad():
             adv_images = atk(images, labels)
