@@ -146,8 +146,8 @@ class LGV(Attack):
             if self._model_training:
                 f_model.eval()
             self.base_attack = self.attack_class(model=f_model.to(self.device), **self.kwargs_att)
-        # set_training_mode() to base attack
-        self.base_attack.set_training_mode(model_training=self._model_training,
+        # set_model_training_mode() to base attack
+        self.base_attack.set_model_training_mode(model_training=self._model_training,
                                            batchnorm_training=self._batchnorm_training,
                                            dropout_training=self._dropout_training)
         # set targeted to base attack
@@ -161,7 +161,7 @@ class LGV(Attack):
             else:
                 raise NotImplementedError('Targeted attack mode not supported by LGV.')
         # set return type to base attack
-        self.base_attack.set_return_type(self.return_type)
+        # self.base_attack.set_return_type(self.return_type)
 
         adv_images = self.base_attack(images, labels)
         return adv_images
