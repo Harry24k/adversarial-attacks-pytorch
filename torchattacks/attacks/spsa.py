@@ -59,8 +59,8 @@ class SPSA(Attack):
 
     """
 
-    def __init__(self, model, device=None, eps=0.3, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
-        super().__init__('SPSA', model, device)
+    def __init__(self, model, eps=0.3, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
+        super().__init__('SPSA', model)
         self.eps = eps
         self.delta = delta
         self.lr = lr

@@ -24,7 +24,7 @@ class Attack(object):
         To change this, please see `set_model_training_mode`.
     """
 
-    def __init__(self, name, model, device):
+    def __init__(self, name, model):
         r"""
         Initializes internal attack state.
 
@@ -37,15 +37,12 @@ class Attack(object):
         self._attacks = OrderedDict()
 
         self.set_model(model)
-        if device:
-            self.device = device
-        else:
-            try:
-                self.device = next(model.parameters()).device
-            except Exception:
-                self.device = None
-                print(
-                    'Failed to set device automatically, please try set_device() manual.')
+        try:
+            self.device = next(model.parameters()).device
+        except Exception:
+            self.device = None
+            print(
+                'Failed to set device automatically, please try set_device() manual.')
 
         # Controls attack mode.
         self.attack_mode = 'default'

@@ -35,8 +35,8 @@ class OnePixel(Attack):
 
     """
 
-    def __init__(self, model, device=None, pixels=1, steps=10, popsize=10, inf_batch=128):
-        super().__init__('OnePixel', model, device)
+    def __init__(self, model, pixels=1, steps=10, popsize=10, inf_batch=128):
+        super().__init__('OnePixel', model)
         self.pixels = pixels
         self.steps = steps
         self.popsize = popsize

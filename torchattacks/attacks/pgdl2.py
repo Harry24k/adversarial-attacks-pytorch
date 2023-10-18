@@ -29,8 +29,8 @@ class PGDL2(Attack):
 
     """
 
-    def __init__(self, model, device=None, eps=1.0, alpha=0.2, steps=10, random_start=True, eps_for_division=1e-10):
-        super().__init__('PGDL2', model, device)
+    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, random_start=True, eps_for_division=1e-10):
+        super().__init__('PGDL2', model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps

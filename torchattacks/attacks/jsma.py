@@ -27,8 +27,8 @@ class JSMA(Attack):
 
     """
 
-    def __init__(self, model, device=None, theta=1.0, gamma=0.1):
-        super().__init__('JSMA', model, device)
+    def __init__(self, model, theta=1.0, gamma=0.1):
+        super().__init__('JSMA', model)
         self.theta = theta
         self.gamma = gamma
         self.supported_mode = ['default', 'targeted']
