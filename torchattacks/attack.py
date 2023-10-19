@@ -111,7 +111,7 @@ class Attack(object):
         std = torch.tensor(std).reshape(1, n_channels, 1, 1)
         self.normalization_used['mean'] = mean
         self.normalization_used['std'] = std
-        self._normalization_applied = True
+        self._set_normalization_applied(True)
 
     def normalize(self, inputs):
         mean = self.normalization_used['mean'].to(inputs.device)
