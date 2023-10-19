@@ -16,9 +16,6 @@ ignore:
 coverage:
   status:
     project:
-      default:
-        # basic
-        target: auto
-        threshold: 0%
-        base: auto 
-        if_ci_failed: ignore #success, failure, error, ignore
+      default: false
+    patch:
+      default: false
