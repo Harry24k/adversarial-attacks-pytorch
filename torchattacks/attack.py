@@ -52,7 +52,7 @@ class Attack(object):
 
         # Controls when normalization is used.
         self.normalization_used = None
-        self._normalization_applied = False
+        self._normalization_applied = None
         if self.model.__class__.__name__ == 'RobModel':
             self._set_rmodel_normalization_used(model)
 
