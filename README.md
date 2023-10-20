@@ -66,25 +66,24 @@ year={2020}
 
 ### Installation
 
-#### From pip
+* pip
 
-```
-pip install torchattacks
-```
+    ```
+    pip install torchattacks
+    ```
+* source
 
-#### From source
+    ```
+    pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
+    ```
 
-```
-pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
-```
+    or
 
-or
-
-```
-git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
-cd adversarial-attacks-pytorch/
-pip install -e .
-```
+    ```
+    git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
+    cd adversarial-attacks-pytorch/
+    pip install -e .
+    ```
 
 
 
@@ -92,86 +91,87 @@ pip install -e .
 
 ###  Precautions
 * **All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.** Considering most models in _torchvision.models_ return one vector of `(N,C)`, where `N` is the number of inputs and `C` is thenumber of classes, _torchattacks_ also only supports limited forms of output.  Please check the shape of the model’s output carefully. 
+* **The domain of inputs should be in the range of [0, 1]**. Since the clipping operation is always applied after the perturbation, the original inputs should have the range of [0, 1], which is the general settings in the vision domain.
 * **`torch.backends.cudnn.deterministic = True` to get same adversarial examples with fixed random seed**. Some operations are non-deterministic with float tensors on GPU [[discuss]](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run `torch.backends.cudnn.deterministic = True`[[ref]](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch).
 
 
 
-### Demos ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb))
+### [Demos](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb)
 
-#### Targeted mode
+* **Targeted mode**
 
-* Random target label:
-```python
-# random labels as target labels.
-atk.set_mode_targeted_random()
-```
+    * Random target label:
+    ```python
+    # random labels as target labels.
+    atk.set_mode_targeted_random()
+    ```
 
-* Least likely label:
-```python
-# labels with the k-th smallest probability as target labels.
-atk.set_mode_targeted_least_likely(kth_min)
-```
+    * Least likely label:
+    ```python
+    # labels with the k-th smallest probability as target labels.
+    atk.set_mode_targeted_least_likely(kth_min)
+    ```
 
-* By custom function:
-```python
-# labels obtained by mapping function as target labels.
-# shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
-atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
-```
+    * By custom function:
+    ```python
+    # labels obtained by mapping function as target labels.
+    # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
+    atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
+    ```
 
-* By label:
-```python
-atk.set_mode_targeted_by_label(quiet=True)
-# shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
-target_labels = (labels + 1) % 10
-adv_images = atk(images, target_labels)
-```
+    * By label:
+    ```python
+    atk.set_mode_targeted_by_label(quiet=True)
+    # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
+    target_labels = (labels + 1) % 10
+    adv_images = atk(images, target_labels)
+    ```
 
-* Return to default:
-```python
-atk.set_mode_default()
-```
+    * Return to default:
+    ```python
+    atk.set_mode_default()
+    ```
 
-####  Save adversarial images
+* **Save adversarial images**
 
-```python
-# Save
-atk.save(data_loader, save_path="./data.pt", verbose=True)
-  
-# Load
-adv_loader = atk.load(load_path="./data.pt")
-```
+    ```python
+    # Save
+    atk.save(data_loader, save_path="./data.pt", verbose=True)
 
-####  Training/Eval during attack
+    # Load
+    adv_loader = atk.load(load_path="./data.pt")
+    ```
 
-```python
-# For RNN-based models, we cannot calculate gradients with eval mode.
-# Thus, it should be changed to the training mode during the attack.
-atk.set_model_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
-```
+* **Training/Eval during attack**
 
-#### Make a set of attacks
+    ```python
+    # For RNN-based models, we cannot calculate gradients with eval mode.
+    # Thus, it should be changed to the training mode during the attack.
+    atk.set_model_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
+    ```
 
-* Strong attacks
-```python
-atk1 = torchattacks.FGSM(model, eps=8/255)
-atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-atk = torchattacks.MultiAttack([atk1, atk2])
-```
+* **Make a set of attacks**
 
-* Binary search for CW
-```python
-atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
-atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
-atk = torchattacks.MultiAttack([atk1, atk2])
-```
+    * Strong attacks
+    ```python
+    atk1 = torchattacks.FGSM(model, eps=8/255)
+    atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+    atk = torchattacks.MultiAttack([atk1, atk2])
+    ```
 
-* Random restarts
-```python
-atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-atk = torchattacks.MultiAttack([atk1, atk2])
-```
+    * Binary search for CW
+    ```python
+    atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
+    atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
+    atk = torchattacks.MultiAttack([atk1, atk2])
+    ```
+
+    * Random restarts
+    ```python
+    atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+    atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+    atk = torchattacks.MultiAttack([atk1, atk2])
+    ```
 
 
 
