@@ -26,33 +26,32 @@ adv_images = atk(images, labels)
 
 
 
-**Citation:** If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
+* **Citation:** If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
 
 ```
 @article{kim2020torchattacks,
-  title={Torchattacks: A pytorch repository for adversarial attacks},
-  author={Kim, Hoki},
-  journal={arXiv preprint arXiv:2010.01950},
-  year={2020}
+title={Torchattacks: A pytorch repository for adversarial attacks},
+author={Kim, Hoki},
+journal={arXiv preprint arXiv:2010.01950},
+year={2020}
 }
 ```
 
 
 
-**Other Recommended Packages**:
+* **Other Recommended Packages**:
 
-* https://github.com/RobustBench/robustbench: *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
+    * [RobustBench](https://github.com/RobustBench/robustbench): *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
 
-* https://github.com/Harry24k/MAIR: *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
+    * [MAIR](https://github.com/Harry24k/MAIR): *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 
 
 
-**Table of Contents**:
-
-1. [Requirements and Installation](#hammer-requirements-and-installation)
-2. [Getting Started](#rocket--getting-started)
-3. [Supported Attacks](#page_with_curl-supported-attacks)
-4. [Performance Comparison](#bar_chart-performance-comparison)
+* **Table of Contents**:
+	1. [Requirements and Installation](#hammer-requirements-and-installation)
+    2. [Getting Started](#rocket--getting-started)
+    3. [Supported Attacks](#page_with_curl-supported-attacks)
+    4. [Performance Comparison](#bar_chart-performance-comparison)
 
 
 
