@@ -4,13 +4,9 @@
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/Harry24k/adversarial-attacks-pytorch?&color=brightgreen" /></a>
   <a href="https://pypi.org/project/torchattacks/"><img alt="Pypi" src="https://img.shields.io/pypi/v/torchattacks.svg?&color=orange" /></a>
   <a href="https://github.com/Harry24k/adversarial-attacks-pytorch/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/Harry24k/adversarial-attacks-pytorch.svg?&color=blue" /></a>
-  <a href="https://arxiv.org/abs/2010.01950"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2010.01950-f9f107.svg" /></a>
   <a href="https://adversarial-attacks-pytorch.readthedocs.io/en/latest/"><img alt="Documentation Status" src="https://readthedocs.org/projects/adversarial-attacks-pytorch/badge/?version=latest" /></a>
-  <a href="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch" > 
- <img src="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch/branch/master/graph/badge.svg?token=00CQ79UTC2"/> 
-  <a href="https://lgtm.com/projects/g/Harry24k/adversarial-attacks-pytorch/" >
- <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
- </a>
+    <a href="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch"><img src="https://codecov.io/gh/Harry24k/adversarial-attacks-pytorch/branch/master/graph/badge.svg?token=00CQ79UTC2"/></a>
+  <a href="https://lgtm.com/projects/g/Harry24k/adversarial-attacks-pytorch/"><img src="https://img.shields.io/pypi/dm/torchattacks?color=blue"/></a>
   <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
