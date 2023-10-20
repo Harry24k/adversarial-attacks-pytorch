@@ -24,7 +24,7 @@ from .attacks.vmifgsm import VMIFGSM
 from .attacks.vnifgsm import VNIFGSM
 from .attacks.spsa import SPSA
 from.attacks.pifgsm import PIFGSM
-from.attacks.pifgsmplusplus import PIFGSMPLUSPLUS
+from.attacks.pifgsmpp import PIFGSMPP
 
 # L2 attacks
 from .attacks.cw import CW

@@ -5,7 +5,7 @@ import numpy as np
 from ..attack import Attack
 
 
-class PIFGSMPLUSPLUS(Attack):
+class PIFGSMPP(Attack):
     r"""
     Patch-wise++ Perturbation for Adversarial Targeted Attacks'
     [https://arxiv.org/abs/2012.15503]
@@ -27,13 +27,13 @@ class PIFGSMPLUSPLUS(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PIFGSMPLUSPLUS(model, eps=16/255, num_iter_set=10)
+        >>> attack = torchattacks.PIFGSMPP(model, eps=16/255, num_iter_set=10)
         >>> adv_images = attack(images, labels)
 
     """
 
     def __init__(self, model, max_epsilon=16/255, num_iter_set=10, momentum=1.0, amplification=10.0, prob=0.7, project_factor=0.8):
-        super().__init__('PIFGSMPLUSPLUS', model)
+        super().__init__('PIFGSMPP', model)
         self.max_epsilon = max_epsilon
         self.num_iter_set = num_iter_set
         self.momentum = momentum
