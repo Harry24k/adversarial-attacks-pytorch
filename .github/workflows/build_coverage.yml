@@ -5,8 +5,14 @@ name: build-coverage
 on:
   push:
     branches: [ master ]
+    paths:
+      - code_coverage/**
+      - torchattacks/**
   pull_request:
     branches: [ master ]
+    paths:
+      - code_coverage/**
+      - torchattacks/**
     
 
 jobs:
