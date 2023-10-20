@@ -51,7 +51,7 @@ from .attacks.square import Square
 from .wrappers.multiattack import MultiAttack
 from .wrappers.lgv import LGV
 
-__version__ = "3.5.0"
+__version__ = "3.5.1"
 __all__ = [
     "VANILA",
     "GN",
@@ -79,7 +79,7 @@ __all__ = [
     "EADL1",
     "EADEN",
     "PIFGSM",
-    "PIFGSMPLUSPLUS",
+    "PIFGSMPP",
     "CW",
     "PGDL2",
     "DeepFool",
