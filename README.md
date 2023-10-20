@@ -12,7 +12,7 @@
  <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
  </a>
 </p>
-**[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides *adversarial attacks* to generate *adversarial examples*.** 
+**[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides adversarial attacks to generate adversarial examples.** 
 It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks.
 
 
@@ -41,18 +41,18 @@ adv_images = atk(images, labels)
 
 **Other Recommended Packages**:
 
-* https://github.com/RobustBench/robustbench: Adversarially Trained Models & Benchmarks - [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).
+* https://github.com/RobustBench/robustbench: *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
 
-* https://github.com/Harry24k/MAIR: Adversarially Trainining Framework - [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).
+* https://github.com/Harry24k/MAIR: *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 
 
 
-## Table of Contents
+**Table of Contents**:
 
-1. [Requirements and Installation](#:hammer:-Requirements-and-Installation)
-2. [Getting Started](#:rocket:-Getting-Started)
-3. [Supported Attacks](#:page_with_curl:-Supported-Attacks)
-4. [Performance Comparison](#:bar_chart:-Performance-Comparison)
+1. [Requirements and Installation](#hammer-requirements-and-installation)
+2. [Getting Started](#rocket--getting-started)
+3. [Supported Attacks](#page_with_curl-supported-attacks)
+4. [Performance Comparison](#bar_chart-performance-comparison)
 
 
 
