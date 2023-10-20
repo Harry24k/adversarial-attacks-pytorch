@@ -20,19 +20,17 @@ It contains *PyTorch-like* interface and functions that make it easier for PyTor
 ```python
 import torchattacks
 atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
-# If, images are normalized:
+# If inputs were normalized, then
 # atk.set_normalization_used(mean=[...], std=[...])
 adv_images = atk(images, labels)
 ```
 
-
-
-**Additional Recommended Packages**
+**Additional Recommended Packages**.
 
 * [MAIR](https://github.com/Harry24k/MAIR): *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 * [RobustBench](https://github.com/RobustBench/robustbench): *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
 
-**Citation**
+**Citation.**
 
 If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
 
@@ -48,14 +46,12 @@ year={2020}
 
 ## :hammer: Requirements and Installation
 
-### Requirements
+**Requirements**
 
 - PyTorch version >=1.4.0
 - Python version >=3.6
 
-
-
-### Installation
+**Installation**
 
 * pip
     ```
@@ -74,16 +70,17 @@ year={2020}
 
 ## :rocket:  Getting Started
 
-###  Precautions
+**Precautions**
+
 * **All models should return ONLY ONE vector of `(N, C)` where `C = number of classes`.** Considering most models in _torchvision.models_ return one vector of `(N,C)`, where `N` is the number of inputs and `C` is thenumber of classes, _torchattacks_ also only supports limited forms of output.  Please check the shape of the model’s output carefully. 
 * **The domain of inputs should be in the range of [0, 1]**. Since the clipping operation is always applied after the perturbation, the original inputs should have the range of [0, 1], which is the general settings in the vision domain.
 * **`torch.backends.cudnn.deterministic = True` to get same adversarial examples with fixed random seed**. Some operations are non-deterministic with float tensors on GPU [[discuss]](https://discuss.pytorch.org/t/inconsistent-gradient-values-for-the-same-input/26179). If you want to get same results with same inputs, please run `torch.backends.cudnn.deterministic = True`[[ref]](https://stackoverflow.com/questions/56354461/reproducibility-and-performance-in-pytorch).
 
 
 
-### [Demos](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb)
+**[Demos](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb)**
 
-* **Targeted mode**
+* Targeted mode
   
     * Random target label
         ```python
@@ -112,11 +109,8 @@ year={2020}
         ```python
         atk.set_mode_default()
         ```
-    ```
     
-    ```
-    
-* **Save adversarial images**
+* Save adversarial images
     ```python
     # Save
     atk.save(data_loader, save_path="./data.pt", verbose=True)
@@ -125,22 +119,21 @@ year={2020}
     adv_loader = atk.load(load_path="./data.pt")
     ```
 
-* **Training/Eval during attack**
+* Training/Eval during attack
   
     ```python
     # For RNN-based models, we cannot calculate gradients with eval mode.
     # Thus, it should be changed to the training mode during the attack.
     atk.set_model_training_mode(model_training=False, batchnorm_training=False, dropout_training=False)
     ```
-```
     
-* **Make a set of attacks**
+* Make a set of attacks
     * Strong attacks
         ```python
         atk1 = torchattacks.FGSM(model, eps=8/255)
         atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
         atk = torchattacks.MultiAttack([atk1, atk2])
-```
+        ```
     * Binary search for CW
         ```python
         atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
