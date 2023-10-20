@@ -5,16 +5,16 @@ import copy
 from ..attack import Attack
 
 
-class Noise():
+class Noise:
     def __init__(self, noise_type, noise_sd):
         self.noise_type = noise_type
         self.noise_sd = noise_sd
 
     def __call__(self, img):
         if self.noise_type == "guassian":
-            noise = torch.randn_like(img.float())*self.noise_sd
+            noise = torch.randn_like(img.float()) * self.noise_sd
         elif self.noise_type == "uniform":
-            noise = (torch.rand_like(img.float()) - 0.5)*2*self.noise_sd
+            noise = (torch.rand_like(img.float()) - 0.5) * 2 * self.noise_sd
         return noise
 
 
@@ -47,23 +47,31 @@ class PGDRS(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, noise_type="guassian", noise_sd=0.5, noise_batch_size=5, batch_max=2048):
-        super().__init__('PGDRS', model)
+    def __init__(
+        self,
+        model,
+        eps=8 / 255,
+        alpha=2 / 255,
+        steps=10,
+        noise_type="guassian",
+        noise_sd=0.5,
+        noise_batch_size=5,
+        batch_max=2048,
+    ):
+        super().__init__("PGDRS", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.noise_func = Noise(noise_type, noise_sd)
         self.noise_batch_size = noise_batch_size
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
         self.batch_max = batch_max
 
     def forward(self, inputs: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
-        if inputs.shape[0]*self.noise_batch_size > self.batch_max:
-            split_num = int(self.batch_max/self.noise_batch_size)
-            inputs_split = torch.split(inputs,
-                                       split_size_or_sections=split_num)
-            labels_split = torch.split(labels,
-                                       split_size_or_sections=split_num)
+        if inputs.shape[0] * self.noise_batch_size > self.batch_max:
+            split_num = int(self.batch_max / self.noise_batch_size)
+            inputs_split = torch.split(inputs, split_size_or_sections=split_num)
+            labels_split = torch.split(labels, split_size_or_sections=split_num)
             img_list = []
             for img_sub, lab_sub in zip(inputs_split, labels_split):
                 img_adv = self._forward(img_sub, lab_sub)
@@ -80,14 +88,22 @@ class PGDRS(Attack):
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         # expend the inputs over noise_batch_size
-        shape = torch.Size([images.shape[0], self.noise_batch_size]) + images.shape[1:]  # nopep8
+        shape = (
+            torch.Size([images.shape[0], self.noise_batch_size]) + images.shape[1:]
+        )  # nopep8
         inputs_exp = images.unsqueeze(1).expand(shape)
-        inputs_exp = inputs_exp.reshape(torch.Size([-1]) + inputs_exp.shape[2:])  # nopep8
+        inputs_exp = inputs_exp.reshape(
+            torch.Size([-1]) + inputs_exp.shape[2:]
+        )  # nopep8
 
         delta = torch.zeros(
-            (len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device)
+            (len(labels), *inputs_exp.shape[1:]), requires_grad=True, device=self.device
+        )
         delta_last = torch.zeros(
-            (len(labels), *inputs_exp.shape[1:]), requires_grad=False, device=self.device)
+            (len(labels), *inputs_exp.shape[1:]),
+            requires_grad=False,
+            device=self.device,
+        )
 
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
@@ -96,7 +112,11 @@ class PGDRS(Attack):
             delta.requires_grad = True
             # img_adv is the perturbed data for randmized smoothing
             # delta.repeat(1,self.noise_batch_size,1,1).view_as(inputs_exp)
-            img_adv = inputs_exp + delta.unsqueeze(1).repeat((1, self.noise_batch_size, 1, 1, 1)).view_as(inputs_exp)  # nopep8
+            img_adv = inputs_exp + delta.unsqueeze(1).repeat(
+                (1, self.noise_batch_size, 1, 1, 1)
+            ).view_as(
+                inputs_exp
+            )  # nopep8
             img_adv = torch.clamp(img_adv, min=0, max=1)
 
             noise_added = self.noise_func(img_adv.view(len(img_adv), -1))
@@ -107,15 +127,22 @@ class PGDRS(Attack):
 
             softmax = F.softmax(logits, dim=1)
             # average the probabilities across noise
-            average_softmax = softmax.reshape(
-                -1, self.noise_batch_size, logits.shape[-1]).mean(1, keepdim=True).squeeze(1)
+            average_softmax = (
+                softmax.reshape(-1, self.noise_batch_size, logits.shape[-1])
+                .mean(1, keepdim=True)
+                .squeeze(1)
+            )
             logsoftmax = torch.log(average_softmax.clamp(min=1e-20))
-            ce_loss = F.nll_loss(
-                logsoftmax, labels) if not self.targeted else -F.nll_loss(logsoftmax, target_labels)
+            ce_loss = (
+                F.nll_loss(logsoftmax, labels)
+                if not self.targeted
+                else -F.nll_loss(logsoftmax, target_labels)
+            )
 
             grad = torch.autograd.grad(
-                ce_loss, delta, retain_graph=False, create_graph=False)[0]
-            delta = delta_last + self.alpha*torch.sign(grad)
+                ce_loss, delta, retain_graph=False, create_graph=False
+            )[0]
+            delta = delta_last + self.alpha * torch.sign(grad)
             delta = torch.clamp(delta, min=-self.eps, max=self.eps)
             delta_last.data = copy.deepcopy(delta.data)
 

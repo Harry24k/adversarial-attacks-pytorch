@@ -27,12 +27,12 @@ class RFGSM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
-        super().__init__('RFGSM', model)
+    def __init__(self, model, eps=8 / 255, alpha=2 / 255, steps=10):
+        super().__init__("RFGSM", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -47,7 +47,7 @@ class RFGSM(Attack):
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images = images + self.alpha*torch.randn_like(images).sign()
+        adv_images = images + self.alpha * torch.randn_like(images).sign()
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for _ in range(self.steps):
@@ -61,11 +61,11 @@ class RFGSM(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
-            adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images,
-                                min=-self.eps, max=self.eps)
+            grad = torch.autograd.grad(
+                cost, adv_images, retain_graph=False, create_graph=False
+            )[0]
+            adv_images = adv_images.detach() + self.alpha * grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

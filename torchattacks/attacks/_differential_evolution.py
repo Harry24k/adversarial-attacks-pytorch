@@ -11,31 +11,42 @@ Added by Andrew Nelson 2014
 from __future__ import division, print_function, absolute_import
 import numpy as np
 from scipy.optimize import OptimizeResult, minimize
+
 # from scipy.optimize.optimize import _status_message % for version < 1.8
 # from scipy.optimize.optimize_ import _status_message % for version >= 1.8
 from scipy._lib._util import check_random_state
 
 
-__all__ = ['differential_evolution']
-_status_message = {'success': 'Optimization terminated successfully.',
-                   'maxfev': 'Maximum number of function evaluations has '
-                              'been exceeded.',
-                   'maxiter': 'Maximum number of iterations has been '
-                              'exceeded.',
-                   'pr_loss': 'Desired error not necessarily achieved due '
-                              'to precision loss.',
-                   'nan': 'NaN result encountered.',
-                   'out_of_bounds': 'The result is outside of the provided '
-                                    'bounds.'}
+__all__ = ["differential_evolution"]
+_status_message = {
+    "success": "Optimization terminated successfully.",
+    "maxfev": "Maximum number of function evaluations has " "been exceeded.",
+    "maxiter": "Maximum number of iterations has been " "exceeded.",
+    "pr_loss": "Desired error not necessarily achieved due " "to precision loss.",
+    "nan": "NaN result encountered.",
+    "out_of_bounds": "The result is outside of the provided " "bounds.",
+}
 
 _MACHEPS = np.finfo(np.float64).eps
 
 
-def differential_evolution(func, bounds, args=(), strategy='best1bin',
-                           maxiter=1000, popsize=15, tol=0.01,
-                           mutation=(0.5, 1), recombination=0.7, seed=None,
-                           callback=None, disp=False, polish=True,
-                           init='latinhypercube', atol=0):
+def differential_evolution(
+    func,
+    bounds,
+    args=(),
+    strategy="best1bin",
+    maxiter=1000,
+    popsize=15,
+    tol=0.01,
+    mutation=(0.5, 1),
+    recombination=0.7,
+    seed=None,
+    callback=None,
+    disp=False,
+    polish=True,
+    init="latinhypercube",
+    atol=0,
+):
     """Finds the global minimum of a multivariate function.
     Differential Evolution is stochastic in nature (does not use gradient
     methods) to find the minimium, and can search large areas of candidate
@@ -210,14 +221,23 @@ def differential_evolution(func, bounds, args=(), strategy='best1bin',
     .. [3] http://en.wikipedia.org/wiki/Differential_evolution
     """
 
-    solver = DifferentialEvolutionSolver(func, bounds, args=args,
-                                         strategy=strategy, maxiter=maxiter,
-                                         popsize=popsize, tol=tol,
-                                         mutation=mutation,
-                                         recombination=recombination,
-                                         seed=seed, polish=polish,
-                                         callback=callback,
-                                         disp=disp, init=init, atol=atol)
+    solver = DifferentialEvolutionSolver(
+        func,
+        bounds,
+        args=args,
+        strategy=strategy,
+        maxiter=maxiter,
+        popsize=popsize,
+        tol=tol,
+        mutation=mutation,
+        recombination=recombination,
+        seed=seed,
+        polish=polish,
+        callback=callback,
+        disp=disp,
+        init=init,
+        atol=atol,
+    )
     return solver.solve()
 
 
@@ -330,28 +350,48 @@ class DifferentialEvolutionSolver(object):
     """
 
     # Dispatch of mutation strategy method (binomial or exponential).
-    _binomial = {'best1bin': '_best1',
-                 'randtobest1bin': '_randtobest1',
-                 'currenttobest1bin': '_currenttobest1',
-                 'best2bin': '_best2',
-                 'rand2bin': '_rand2',
-                 'rand1bin': '_rand1'}
-    _exponential = {'best1exp': '_best1',
-                    'rand1exp': '_rand1',
-                    'randtobest1exp': '_randtobest1',
-                    'currenttobest1exp': '_currenttobest1',
-                    'best2exp': '_best2',
-                    'rand2exp': '_rand2'}
+    _binomial = {
+        "best1bin": "_best1",
+        "randtobest1bin": "_randtobest1",
+        "currenttobest1bin": "_currenttobest1",
+        "best2bin": "_best2",
+        "rand2bin": "_rand2",
+        "rand1bin": "_rand1",
+    }
+    _exponential = {
+        "best1exp": "_best1",
+        "rand1exp": "_rand1",
+        "randtobest1exp": "_randtobest1",
+        "currenttobest1exp": "_currenttobest1",
+        "best2exp": "_best2",
+        "rand2exp": "_rand2",
+    }
 
-    __init_error_msg = ("The population initialization method must be one of "
-                        "'latinhypercube' or 'random', or an array of shape "
-                        "(M, N) where N is the number of parameters and M>5")
+    __init_error_msg = (
+        "The population initialization method must be one of "
+        "'latinhypercube' or 'random', or an array of shape "
+        "(M, N) where N is the number of parameters and M>5"
+    )
 
-    def __init__(self, func, bounds, args=(),
-                 strategy='best1bin', maxiter=1000, popsize=15,
-                 tol=0.01, mutation=(0.5, 1), recombination=0.7, seed=None,
-                 maxfun=np.inf, callback=None, disp=False, polish=True,
-                 init='latinhypercube', atol=0):
+    def __init__(
+        self,
+        func,
+        bounds,
+        args=(),
+        strategy="best1bin",
+        maxiter=1000,
+        popsize=15,
+        tol=0.01,
+        mutation=(0.5, 1),
+        recombination=0.7,
+        seed=None,
+        maxfun=np.inf,
+        callback=None,
+        disp=False,
+        polish=True,
+        init="latinhypercube",
+        atol=0,
+    ):
 
         if strategy in self._binomial:
             self.mutation_func = getattr(self, self._binomial[strategy])
@@ -370,15 +410,19 @@ class DifferentialEvolutionSolver(object):
         # Mutation constant should be in [0, 2). If specified as a sequence
         # then dithering is performed.
         self.scale = mutation
-        if (not np.all(np.isfinite(mutation)) or
-                np.any(np.array(mutation) >= 2) or
-                np.any(np.array(mutation) < 0)):
-            raise ValueError('The mutation constant must be a float in '
-                             'U[0, 2), or specified as a tuple(min, max)'
-                             ' where min < max and min, max are in U[0, 2).')
+        if (
+            not np.all(np.isfinite(mutation))
+            or np.any(np.array(mutation) >= 2)
+            or np.any(np.array(mutation) < 0)
+        ):
+            raise ValueError(
+                "The mutation constant must be a float in "
+                "U[0, 2), or specified as a tuple(min, max)"
+                " where min < max and min, max are in U[0, 2)."
+            )
 
         self.dither = None
-        if hasattr(mutation, '__iter__') and len(mutation) > 1:
+        if hasattr(mutation, "__iter__") and len(mutation) > 1:
             self.dither = [mutation[0], mutation[1]]
             self.dither.sort()
 
@@ -390,12 +434,13 @@ class DifferentialEvolutionSolver(object):
         # convert tuple of lower and upper bounds to limits
         # [(low_0, high_0), ..., (low_n, high_n]
         #     -> [[low_0, ..., low_n], [high_0, ..., high_n]]
-        self.limits = np.array(bounds, dtype='float').T
-        if (np.size(self.limits, 0) != 2 or not
-                np.all(np.isfinite(self.limits))):
-            raise ValueError('bounds should be a sequence containing '
-                             'real valued (min, max) pairs for each value'
-                             ' in x')
+        self.limits = np.array(bounds, dtype="float").T
+        if np.size(self.limits, 0) != 2 or not np.all(np.isfinite(self.limits)):
+            raise ValueError(
+                "bounds should be a sequence containing "
+                "real valued (min, max) pairs for each value"
+                " in x"
+            )
 
         if maxiter is None:  # the default used to be None
             maxiter = 1000
@@ -421,14 +466,13 @@ class DifferentialEvolutionSolver(object):
         # least 5 long
         self.num_population_members = max(5, popsize * self.parameter_count)
 
-        self.population_shape = (self.num_population_members,
-                                 self.parameter_count)
+        self.population_shape = (self.num_population_members, self.parameter_count)
 
         self._nfev = 0
         if isinstance(init, str):
-            if init == 'latinhypercube':
+            if init == "latinhypercube":
                 self.init_population_lhs()
-            elif init == 'random':
+            elif init == "random":
                 self.init_population_random()
             else:
                 raise ValueError(self.__init_error_msg)
@@ -453,11 +497,13 @@ class DifferentialEvolutionSolver(object):
 
         # Within each segment we sample from a uniform random distribution.
         # We need to do this sampling for each parameter.
-        samples = (segsize * rng.random_sample(self.population_shape)
-
-                   # Offset each segment to cover the entire parameter range [0, 1)
-                   + np.linspace(0., 1., self.num_population_members,
-                                 endpoint=False)[:, np.newaxis])
+        samples = (
+            segsize * rng.random_sample(self.population_shape)
+            # Offset each segment to cover the entire parameter range [0, 1)
+            + np.linspace(0.0, 1.0, self.num_population_members, endpoint=False)[
+                :, np.newaxis
+            ]
+        )
 
         # Create an array for population of candidate solutions.
         self.population = np.zeros_like(samples)
@@ -469,8 +515,7 @@ class DifferentialEvolutionSolver(object):
             self.population[:, j] = samples[order, j]
 
         # reset population energies
-        self.population_energies = (np.ones(self.num_population_members) *
-                                    np.inf)
+        self.population_energies = np.ones(self.num_population_members) * np.inf
 
         # reset number of function evaluations counter
         self._nfev = 0
@@ -484,8 +529,7 @@ class DifferentialEvolutionSolver(object):
         self.population = rng.random_sample(self.population_shape)
 
         # reset population energies
-        self.population_energies = (np.ones(self.num_population_members) *
-                                    np.inf)
+        self.population_energies = np.ones(self.num_population_members) * np.inf
 
         # reset number of function evaluations counter
         self._nfev = 0
@@ -503,23 +547,25 @@ class DifferentialEvolutionSolver(object):
         # make sure you're using a float array
         popn = np.asfarray(init)
 
-        if (np.size(popn, 0) < 5 or
-                popn.shape[1] != self.parameter_count or
-                len(popn.shape) != 2):
-            raise ValueError("The population supplied needs to have shape"
-                             " (M, len(x)), where M > 4.")
+        if (
+            np.size(popn, 0) < 5
+            or popn.shape[1] != self.parameter_count
+            or len(popn.shape) != 2
+        ):
+            raise ValueError(
+                "The population supplied needs to have shape"
+                " (M, len(x)), where M > 4."
+            )
 
         # scale values and clip to bounds, assigning to population
         self.population = np.clip(self._unscale_parameters(popn), 0, 1)
 
         self.num_population_members = np.size(self.population, 0)
 
-        self.population_shape = (self.num_population_members,
-                                 self.parameter_count)
+        self.population_shape = (self.num_population_members, self.parameter_count)
 
         # reset population energies
-        self.population_energies = (np.ones(self.num_population_members) *
-                                    np.inf)
+        self.population_energies = np.ones(self.num_population_members) * np.inf
 
         # reset number of function evaluations counter
         self._nfev = 0
@@ -541,8 +587,9 @@ class DifferentialEvolutionSolver(object):
         The standard deviation of the population energies divided by their
         mean.
         """
-        return (np.std(self.population_energies) /
-                np.abs(np.mean(self.population_energies) + _MACHEPS))
+        return np.std(self.population_energies) / np.abs(
+            np.mean(self.population_energies) + _MACHEPS
+        )
 
     def solve(self):
         """
@@ -559,7 +606,7 @@ class DifferentialEvolutionSolver(object):
             then OptimizeResult also contains the ``jac`` attribute.
         """
         nit, warning_flag = 0, False
-        status_message = _status_message['success']
+        status_message = _status_message["success"]
 
         # The population may have just been initialized (all entries are
         # np.inf). If it has you have to calculate the initial energies.
@@ -576,13 +623,14 @@ class DifferentialEvolutionSolver(object):
                 next(self)
             except StopIteration:
                 warning_flag = True
-                status_message = _status_message['maxfev']
+                status_message = _status_message["maxfev"]
                 break
 
             if self.disp:
-                print("differential_evolution step %d: f(x)= %g"
-                      % (nit,
-                         self.population_energies[0]))
+                print(
+                    "differential_evolution step %d: f(x)= %g"
+                    % (nit, self.population_energies[0])
+                )
 
             # should the solver terminate?
             convergence = self.convergence
@@ -590,29 +638,34 @@ class DifferentialEvolutionSolver(object):
                 conv = self.tol / convergence
             else:
                 if np.sign(self.tol) > 0:
-                    conv = float('inf')
+                    conv = float("inf")
                 elif np.sign(self.tol) == 0:
                     conv = 1  # 0/0 = 1
                 else:
-                    conv = float('-inf')
+                    conv = float("-inf")
 
-            if (self.callback and
-                    self.callback(self._scale_parameters(self.population[0]),
-                                  convergence=conv) is True):
+            if (
+                self.callback
+                and self.callback(
+                    self._scale_parameters(self.population[0]), convergence=conv
+                )
+                is True
+            ):
 
                 warning_flag = True
-                status_message = ('callback function requested stop early '
-                                  'by returning True')
+                status_message = (
+                    "callback function requested stop early " "by returning True"
+                )
                 break
 
-            intol = (np.std(self.population_energies) <=
-                     self.atol +
-                     self.tol * np.abs(np.mean(self.population_energies)))
+            intol = np.std(self.population_energies) <= self.atol + self.tol * np.abs(
+                np.mean(self.population_energies)
+            )
             if warning_flag or intol:
                 break
 
         else:
-            status_message = _status_message['maxiter']
+            status_message = _status_message["maxiter"]
             warning_flag = True
 
         DE_result = OptimizeResult(
@@ -621,14 +674,17 @@ class DifferentialEvolutionSolver(object):
             nfev=self._nfev,
             nit=nit,
             message=status_message,
-            success=(warning_flag is not True))
+            success=(warning_flag is not True),
+        )
 
         if self.polish:
-            result = minimize(self.func,
-                              np.copy(DE_result.x),
-                              method='L-BFGS-B',
-                              bounds=self.limits.T,
-                              args=self.args)
+            result = minimize(
+                self.func,
+                np.copy(DE_result.x),
+                method="L-BFGS-B",
+                bounds=self.limits.T,
+                args=self.args,
+            )
 
             self._nfev += result.nfev
             DE_result.nfev = self._nfev
@@ -653,11 +709,11 @@ class DifferentialEvolutionSolver(object):
         ##############
         # CHANGES: self.func operates on the entire parameters array
         ##############
-        itersize = max(0, min(len(self.population),
-                       self.maxfun - self._nfev + 1))
+        itersize = max(0, min(len(self.population), self.maxfun - self._nfev + 1))
         candidates = self.population[:itersize]
-        parameters = np.array([self._scale_parameters(c)
-                              for c in candidates])  # TODO: vectorize
+        parameters = np.array(
+            [self._scale_parameters(c) for c in candidates]
+        )  # TODO: vectorize
         energies = self.func(parameters, *self.args)
         self.population_energies = energies
         self._nfev += itersize
@@ -702,21 +758,22 @@ class DifferentialEvolutionSolver(object):
             self._calculate_population_energies()
 
         if self.dither is not None:
-            self.scale = (self.random_number_generator.rand()
-                          * (self.dither[1] - self.dither[0]) + self.dither[0])
+            self.scale = (
+                self.random_number_generator.rand() * (self.dither[1] - self.dither[0])
+                + self.dither[0]
+            )
 
         ##############
         # CHANGES: self.func operates on the entire parameters array
         ##############
 
-        itersize = max(0, min(self.num_population_members,
-                       self.maxfun - self._nfev + 1))
-        trials = np.array([self._mutate(c)
-                          for c in range(itersize)])  # TODO: vectorize
+        itersize = max(
+            0, min(self.num_population_members, self.maxfun - self._nfev + 1)
+        )
+        trials = np.array([self._mutate(c) for c in range(itersize)])  # TODO: vectorize
         for trial in trials:
             self._ensure_constraint(trial)
-        parameters = np.array([self._scale_parameters(trial)
-                              for trial in trials])
+        parameters = np.array([self._scale_parameters(trial) for trial in trials])
         energies = self.func(parameters, *self.args)
         self._nfev += itersize
 
@@ -809,9 +866,8 @@ class DifferentialEvolutionSolver(object):
 
         fill_point = rng.randint(0, self.parameter_count)
 
-        if self.strategy in ['currenttobest1exp', 'currenttobest1bin']:
-            bprime = self.mutation_func(candidate,
-                                        self._select_samples(candidate, 5))
+        if self.strategy in ["currenttobest1exp", "currenttobest1bin"]:
+            bprime = self.mutation_func(candidate, self._select_samples(candidate, 5))
         else:
             bprime = self.mutation_func(self._select_samples(candidate, 5))
 
@@ -828,8 +884,7 @@ class DifferentialEvolutionSolver(object):
 
         elif self.strategy in self._exponential:
             i = 0
-            while (i < self.parameter_count and
-                   rng.rand() < self.cross_over_probability):
+            while i < self.parameter_count and rng.rand() < self.cross_over_probability:
 
                 trial[fill_point] = bprime[fill_point]
                 fill_point = (fill_point + 1) % self.parameter_count
@@ -842,16 +897,18 @@ class DifferentialEvolutionSolver(object):
         best1bin, best1exp
         """
         r0, r1 = samples[:2]
-        return (self.population[0] + self.scale *
-                (self.population[r0] - self.population[r1]))
+        return self.population[0] + self.scale * (
+            self.population[r0] - self.population[r1]
+        )
 
     def _rand1(self, samples):
         """
         rand1bin, rand1exp
         """
         r0, r1, r2 = samples[:3]
-        return (self.population[r0] + self.scale *
-                (self.population[r1] - self.population[r2]))
+        return self.population[r0] + self.scale * (
+            self.population[r1] - self.population[r2]
+        )
 
     def _randtobest1(self, samples):
         """
@@ -860,8 +917,7 @@ class DifferentialEvolutionSolver(object):
         r0, r1, r2 = samples[:3]
         bprime = np.copy(self.population[r0])
         bprime += self.scale * (self.population[0] - bprime)
-        bprime += self.scale * (self.population[r1] -
-                                self.population[r2])
+        bprime += self.scale * (self.population[r1] - self.population[r2])
         return bprime
 
     def _currenttobest1(self, candidate, samples):
@@ -869,9 +925,12 @@ class DifferentialEvolutionSolver(object):
         currenttobest1bin, currenttobest1exp
         """
         r0, r1 = samples[:2]
-        bprime = (self.population[candidate] + self.scale *
-                  (self.population[0] - self.population[candidate] +
-                   self.population[r0] - self.population[r1]))
+        bprime = self.population[candidate] + self.scale * (
+            self.population[0]
+            - self.population[candidate]
+            + self.population[r0]
+            - self.population[r1]
+        )
         return bprime
 
     def _best2(self, samples):
@@ -879,9 +938,12 @@ class DifferentialEvolutionSolver(object):
         best2bin, best2exp
         """
         r0, r1, r2, r3 = samples[:4]
-        bprime = (self.population[0] + self.scale *
-                  (self.population[r0] + self.population[r1] -
-                   self.population[r2] - self.population[r3]))
+        bprime = self.population[0] + self.scale * (
+            self.population[r0]
+            + self.population[r1]
+            - self.population[r2]
+            - self.population[r3]
+        )
 
         return bprime
 
@@ -890,9 +952,12 @@ class DifferentialEvolutionSolver(object):
         rand2bin, rand2exp
         """
         r0, r1, r2, r3, r4 = samples
-        bprime = (self.population[r0] + self.scale *
-                  (self.population[r1] + self.population[r2] -
-                   self.population[r3] - self.population[r4]))
+        bprime = self.population[r0] + self.scale * (
+            self.population[r1]
+            + self.population[r2]
+            - self.population[r3]
+            - self.population[r4]
+        )
 
         return bprime
 

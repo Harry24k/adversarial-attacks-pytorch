@@ -26,11 +26,11 @@ class FFGSM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=10/255):
-        super().__init__('FFGSM', model)
+    def __init__(self, model, eps=8 / 255, alpha=10 / 255):
+        super().__init__("FFGSM", model)
         self.eps = eps
         self.alpha = alpha
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -45,7 +45,9 @@ class FFGSM(Attack):
 
         loss = nn.CrossEntropyLoss()
 
-        adv_images = images + torch.randn_like(images).uniform_(-self.eps, self.eps)  # nopep8
+        adv_images = images + torch.randn_like(images).uniform_(
+            -self.eps, self.eps
+        )  # nopep8
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
         adv_images.requires_grad = True
 
@@ -58,10 +60,11 @@ class FFGSM(Attack):
             cost = loss(outputs, labels)
 
         # Update adversarial images
-        grad = torch.autograd.grad(cost, adv_images,
-                                   retain_graph=False, create_graph=False)[0]
+        grad = torch.autograd.grad(
+            cost, adv_images, retain_graph=False, create_graph=False
+        )[0]
 
-        adv_images = adv_images + self.alpha*grad.sign()
+        adv_images = adv_images + self.alpha * grad.sign()
         delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
         adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 

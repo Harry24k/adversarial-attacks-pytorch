@@ -29,14 +29,22 @@ class PGDL2(Attack):
 
     """
 
-    def __init__(self, model, eps=1.0, alpha=0.2, steps=10, random_start=True, eps_for_division=1e-10):
-        super().__init__('PGDL2', model)
+    def __init__(
+        self,
+        model,
+        eps=1.0,
+        alpha=0.2,
+        steps=10,
+        random_start=True,
+        eps_for_division=1e-10,
+    ):
+        super().__init__("PGDL2", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.random_start = random_start
         self.eps_for_division = eps_for_division
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -60,7 +68,7 @@ class PGDL2(Attack):
             d_flat = delta.view(adv_images.size(0), -1)
             n = d_flat.norm(p=2, dim=1).view(adv_images.size(0), 1, 1, 1)
             r = torch.zeros_like(n).uniform_(0, 1)
-            delta *= r/n*self.eps
+            delta *= r / n * self.eps
             adv_images = torch.clamp(adv_images + delta, min=0, max=1).detach()
 
         for _ in range(self.steps):
@@ -74,9 +82,13 @@ class PGDL2(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
-            grad_norms = torch.norm(grad.view(batch_size, -1), p=2, dim=1) + self.eps_for_division  # nopep8
+            grad = torch.autograd.grad(
+                cost, adv_images, retain_graph=False, create_graph=False
+            )[0]
+            grad_norms = (
+                torch.norm(grad.view(batch_size, -1), p=2, dim=1)
+                + self.eps_for_division
+            )  # nopep8
             grad = grad / grad_norms.view(batch_size, 1, 1, 1)
             adv_images = adv_images.detach() + self.alpha * grad
 

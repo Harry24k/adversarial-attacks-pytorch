@@ -29,15 +29,15 @@ class BIM(Attack):
         >>> adv_images = attack(images, labels)
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10):
-        super().__init__('BIM', model)
+    def __init__(self, model, eps=8 / 255, alpha=2 / 255, steps=10):
+        super().__init__("BIM", model)
         self.eps = eps
         self.alpha = alpha
         if steps == 0:
-            self.steps = int(min(eps*255 + 4, 1.25*eps*255))
+            self.steps = int(min(eps * 255 + 4, 1.25 * eps * 255))
         else:
             self.steps = steps
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -65,14 +65,18 @@ class BIM(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, images,
-                                       retain_graph=False,
-                                       create_graph=False)[0]
+            grad = torch.autograd.grad(
+                cost, images, retain_graph=False, create_graph=False
+            )[0]
 
-            adv_images = images + self.alpha*grad.sign()
+            adv_images = images + self.alpha * grad.sign()
             a = torch.clamp(ori_images - self.eps, min=0)
-            b = (adv_images >= a).float()*adv_images + (adv_images < a).float()*a  # nopep8
-            c = (b > ori_images+self.eps).float()*(ori_images+self.eps) + (b <= ori_images + self.eps).float()*b  # nopep8
+            b = (adv_images >= a).float() * adv_images + (
+                adv_images < a
+            ).float() * a  # nopep8
+            c = (b > ori_images + self.eps).float() * (ori_images + self.eps) + (
+                b <= ori_images + self.eps
+            ).float() * b  # nopep8
             images = torch.clamp(c, max=1).detach()
 
         return images

@@ -23,9 +23,9 @@ class GN(Attack):
     """
 
     def __init__(self, model, std=0.1):
-        super().__init__('GN', model)
+        super().__init__("GN", model)
         self.std = std
-        self.supported_mode = ['default']
+        self.supported_mode = ["default"]
 
     def forward(self, images, labels=None):
         r"""
@@ -33,7 +33,7 @@ class GN(Attack):
         """
 
         images = images.clone().detach().to(self.device)
-        adv_images = images + self.std*torch.randn_like(images)
+        adv_images = images + self.std * torch.randn_like(images)
         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         return adv_images

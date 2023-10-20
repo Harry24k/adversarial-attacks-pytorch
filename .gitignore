@@ -25,3 +25,4 @@ TODO.txt
 .vscode/
 coverage.xml
 .coverage
+black.ipynb

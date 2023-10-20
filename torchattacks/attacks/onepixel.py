@@ -36,12 +36,12 @@ class OnePixel(Attack):
     """
 
     def __init__(self, model, pixels=1, steps=10, popsize=10, inf_batch=128):
-        super().__init__('OnePixel', model)
+        super().__init__("OnePixel", model)
         self.pixels = pixels
         self.steps = steps
         self.popsize = popsize
         self.inf_batch = inf_batch
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -56,17 +56,17 @@ class OnePixel(Attack):
 
         batch_size, channel, height, width = images.shape
 
-        bounds = [(0, height), (0, width)]+[(0, 1)]*channel
-        bounds = bounds*self.pixels
+        bounds = [(0, height), (0, width)] + [(0, 1)] * channel
+        bounds = bounds * self.pixels
 
-        popmul = max(1, int(self.popsize/len(bounds)))
+        popmul = max(1, int(self.popsize / len(bounds)))
 
         adv_images = []
         for idx in range(batch_size):
-            image, label = images[idx:idx+1], labels[idx:idx+1]
+            image, label = images[idx : idx + 1], labels[idx : idx + 1]
 
             if self.targeted:
-                target_label = target_labels[idx:idx+1]
+                target_label = target_labels[idx : idx + 1]
 
                 def func(delta):
                     return self._loss(image, target_label, delta)
@@ -75,20 +75,25 @@ class OnePixel(Attack):
                     return self._attack_success(image, target_label, delta)
 
             else:
+
                 def func(delta):
                     return self._loss(image, label, delta)
 
                 def callback(delta, convergence):
                     return self._attack_success(image, label, delta)
 
-            delta = differential_evolution(func=func,
-                                           bounds=bounds,
-                                           callback=callback,
-                                           maxiter=self.steps, popsize=popmul,
-                                           init='random',
-                                           recombination=1, atol=-1,
-                                           polish=False).x
-            delta = np.split(delta, len(delta)/len(bounds))
+            delta = differential_evolution(
+                func=func,
+                bounds=bounds,
+                callback=callback,
+                maxiter=self.steps,
+                popsize=popmul,
+                init="random",
+                recombination=1,
+                atol=-1,
+                polish=False,
+            ).x
+            delta = np.split(delta, len(delta) / len(bounds))
             adv_image = self._perturb(image, delta)
             adv_images.append(adv_image)
 
@@ -99,7 +104,7 @@ class OnePixel(Attack):
         adv_images = self._perturb(image, delta)  # Mutiple delta
         prob = self._get_prob(adv_images)[:, label]
         if self.targeted:
-            return 1-prob  # If targeted, increase prob
+            return 1 - prob  # If targeted, increase prob
         else:
             return prob  # If non-targeted, decrease prob
 
@@ -130,7 +135,7 @@ class OnePixel(Attack):
             delta = np.array([delta])
         num_delta = len(delta)
         adv_image = image.clone().detach().to(self.device)
-        adv_images = torch.cat([adv_image]*num_delta, dim=0)
+        adv_images = torch.cat([adv_image] * num_delta, dim=0)
         for idx in range(num_delta):
             pixel_info = delta[idx].reshape(self.pixels, -1)
             for pixel in pixel_info:

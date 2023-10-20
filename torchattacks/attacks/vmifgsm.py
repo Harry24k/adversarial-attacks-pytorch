@@ -32,15 +32,17 @@ class VMIFGSM(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10, decay=1.0, N=5, beta=3/2):
-        super().__init__('VMIFGSM', model)
+    def __init__(
+        self, model, eps=8 / 255, alpha=2 / 255, steps=10, decay=1.0, N=5, beta=3 / 2
+    ):
+        super().__init__("VMIFGSM", model)
         self.eps = eps
         self.steps = steps
         self.decay = decay
         self.alpha = alpha
         self.N = N
         self.beta = beta
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -69,20 +71,22 @@ class VMIFGSM(Attack):
                 cost = loss(outputs, labels)
 
             # Update adversarial images
-            adv_grad = torch.autograd.grad(cost, adv_images,
-                                           retain_graph=False, create_graph=False)[0]
+            adv_grad = torch.autograd.grad(
+                cost, adv_images, retain_graph=False, create_graph=False
+            )[0]
 
-            grad = (adv_grad + v) / torch.mean(torch.abs(adv_grad + v),
-                                               dim=(1, 2, 3), keepdim=True)
+            grad = (adv_grad + v) / torch.mean(
+                torch.abs(adv_grad + v), dim=(1, 2, 3), keepdim=True
+            )
             grad = grad + momentum * self.decay
             momentum = grad
 
             # Calculate Gradient Variance
             GV_grad = torch.zeros_like(images).detach().to(self.device)
             for _ in range(self.N):
-                neighbor_images = adv_images.detach() + \
-                    torch.randn_like(images).uniform_(-self.eps *
-                                                      self.beta, self.eps*self.beta)
+                neighbor_images = adv_images.detach() + torch.randn_like(
+                    images
+                ).uniform_(-self.eps * self.beta, self.eps * self.beta)
                 neighbor_images.requires_grad = True
                 outputs = self.get_logits(neighbor_images)
 
@@ -91,14 +95,14 @@ class VMIFGSM(Attack):
                     cost = -loss(outputs, target_labels)
                 else:
                     cost = loss(outputs, labels)
-                GV_grad += torch.autograd.grad(cost, neighbor_images,
-                                               retain_graph=False, create_graph=False)[0]
+                GV_grad += torch.autograd.grad(
+                    cost, neighbor_images, retain_graph=False, create_graph=False
+                )[0]
             # obtaining the gradient variance
             v = GV_grad / self.N - adv_grad
 
-            adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images,
-                                min=-self.eps, max=self.eps)
+            adv_images = adv_images.detach() + self.alpha * grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

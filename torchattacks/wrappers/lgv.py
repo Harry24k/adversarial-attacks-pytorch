@@ -7,10 +7,12 @@ from random import shuffle, sample
 
 from ..attack import Attack
 from ..attacks.bim import BIM
+
 # fail-safe import of tqdm
 try:
     from tqdm import tqdm
 except ImportError:
+
     def tqdm(iterator, *args, **kwargs):
         return iterator
 
@@ -50,8 +52,20 @@ class LGV(Attack):
         >>> attack.save_models('./models/lgv/')
         >>> adv_images = attack(images, labels)
     """
-    def __init__(self, model, trainloader, lr=0.05, epochs=10, nb_models_epoch=4, wd=1e-4, n_grad=1, verbose=True,
-                 attack_class=BIM, **kwargs):
+
+    def __init__(
+        self,
+        model,
+        trainloader,
+        lr=0.05,
+        epochs=10,
+        nb_models_epoch=4,
+        wd=1e-4,
+        n_grad=1,
+        verbose=True,
+        attack_class=BIM,
+        **kwargs,
+    ):
         model = copy.deepcopy(model)  # deep copy the model to train it
         super().__init__("LGV", model)
         self.trainloader = trainloader
@@ -60,17 +74,17 @@ class LGV(Attack):
         self.nb_models_epoch = nb_models_epoch
         self.wd = wd
         self.n_grad = n_grad
-        self.order = 'shuffle'
+        self.order = "shuffle"
         self.attack_class = attack_class
         self.verbose = verbose
         self.kwargs_att = kwargs
         if not isinstance(lr, float) or lr < 0:
-            raise ValueError('lr should be a non-negative float')
+            raise ValueError("lr should be a non-negative float")
         if not isinstance(epochs, int) or epochs < 0:
-            raise ValueError('epochs should be a non-negative integer')
+            raise ValueError("epochs should be a non-negative integer")
         if not isinstance(nb_models_epoch, int) or nb_models_epoch < 0:
-            raise ValueError('nb_models_epoch should be a non-negative integer')
-        self.supported_mode = ['default', 'targeted']
+            raise ValueError("nb_models_epoch should be a non-negative integer")
+        self.supported_mode = ["default", "targeted"]
         self.list_models = []
         self.base_attack = None  # will be initialized after model collection
 
@@ -86,12 +100,14 @@ class LGV(Attack):
         loss_fn = nn.CrossEntropyLoss()
         epoch_frac = 1.0 / self.nb_models_epoch
         n_batches = int(len(self.trainloader) * epoch_frac)
-        for i_sample in tqdm(range(self.epochs * self.nb_models_epoch), 'Collecting models'):
+        for i_sample in tqdm(
+            range(self.epochs * self.nb_models_epoch), "Collecting models"
+        ):
             loader = itertools.islice(self.trainloader, n_batches)
             for j, (input, target) in enumerate(loader):
                 if torch.cuda.is_available():
-                    input = input.to('cuda', non_blocking=True)
-                    target = target.to('cuda', non_blocking=True)
+                    input = input.to("cuda", non_blocking=True)
+                    target = target.to("cuda", non_blocking=True)
                 pred = self.get_logits(input)
                 loss = loss_fn(pred, target)
                 optimizer.zero_grad()
@@ -123,11 +139,11 @@ class LGV(Attack):
         path (str): directory where to save models.
         """
         if len(self.list_models) == 0:
-            raise RuntimeError('Call collect_models() before saving collected models.')
+            raise RuntimeError("Call collect_models() before saving collected models.")
         os.makedirs(path, exist_ok=True)
         for i, model in enumerate(self.list_models):
-            path_i = os.path.join(path, f'lgv_model_{i:05}.pt')
-            torch.save({'state_dict': model.state_dict()}, path_i)
+            path_i = os.path.join(path, f"lgv_model_{i:05}.pt")
+            torch.save({"state_dict": model.state_dict()}, path_i)
 
     def forward(self, images, labels):
         r"""
@@ -140,26 +156,36 @@ class LGV(Attack):
 
         if not self.base_attack:
             if self.verbose:
-                print(f"Phase 2: craft adversarial examples with {self.attack_class.__name__}")
+                print(
+                    f"Phase 2: craft adversarial examples with {self.attack_class.__name__}"
+                )
             self.list_models = [model.to(self.device) for model in self.list_models]
-            f_model = LightEnsemble(self.list_models, order=self.order, n_grad=self.n_grad)
+            f_model = LightEnsemble(
+                self.list_models, order=self.order, n_grad=self.n_grad
+            )
             if self._model_training:
                 f_model.eval()
-            self.base_attack = self.attack_class(model=f_model.to(self.device), **self.kwargs_att)
+            self.base_attack = self.attack_class(
+                model=f_model.to(self.device), **self.kwargs_att
+            )
         # set_model_training_mode() to base attack
-        self.base_attack.set_model_training_mode(model_training=self._model_training,
-                                           batchnorm_training=self._batchnorm_training,
-                                           dropout_training=self._dropout_training)
+        self.base_attack.set_model_training_mode(
+            model_training=self._model_training,
+            batchnorm_training=self._batchnorm_training,
+            dropout_training=self._dropout_training,
+        )
         # set targeted to base attack
         if self.targeted:
-            if self.attack_mode == 'targeted':
-                self.base_attack.set_mode_targeted_by_function(target_map_function=self._target_map_function)
+            if self.attack_mode == "targeted":
+                self.base_attack.set_mode_targeted_by_function(
+                    target_map_function=self._target_map_function
+                )
             elif self.attack_mode == "targeted(least-likely)":
                 self.base_attack.set_mode_targeted_least_likely(kth_min=self._kth_min)
             elif self.attack_mode == "targeted(random)":
                 self.base_attack.set_mode_targeted_random()
             else:
-                raise NotImplementedError('Targeted attack mode not supported by LGV.')
+                raise NotImplementedError("Targeted attack mode not supported by LGV.")
         # set return type to base attack
         # self.base_attack.set_return_type(self.return_type)
 
@@ -168,8 +194,7 @@ class LGV(Attack):
 
 
 class LightEnsemble(nn.Module):
-
-    def __init__(self, list_models, order='shuffle', n_grad=1):
+    def __init__(self, list_models, order="shuffle", n_grad=1):
         """
         Perform a single forward pass to one of the models when call forward()
 
@@ -183,15 +208,15 @@ class LightEnsemble(nn.Module):
         super(LightEnsemble, self).__init__()
         self.n_models = len(list_models)
         if self.n_models < 1:
-            raise ValueError('Empty list of models')
+            raise ValueError("Empty list of models")
         if not (n_grad > 0 or n_grad == -1):
-            raise ValueError('n_grad should be strictly positive or equal to -1')
-        if order == 'shuffle':
+            raise ValueError("n_grad should be strictly positive or equal to -1")
+        if order == "shuffle":
             shuffle(list_models)
-        elif order in [None, 'random']:
+        elif order in [None, "random"]:
             pass
         else:
-            raise ValueError('Not supported order')
+            raise ValueError("Not supported order")
         self.models = nn.ModuleList(list_models)
         self.order = order
         self.n_grad = n_grad
@@ -200,16 +225,21 @@ class LightEnsemble(nn.Module):
     def forward(self, x):
         if self.n_grad >= self.n_models or self.n_grad < 0:
             indexes = list(range(self.n_models))
-        elif self.order == 'random':
+        elif self.order == "random":
             indexes = sample(range(self.n_models), self.n_grad)
         else:
-            indexes = [i % self.n_models for i in list(range(self.f_count, self.f_count + self.n_grad))]
+            indexes = [
+                i % self.n_models
+                for i in list(range(self.f_count, self.f_count + self.n_grad))
+            ]
             self.f_count += self.n_grad
         if self.n_grad == 1:
             x = self.models[indexes[0]](x)
         else:
             # clone to make sure x is not changed by inplace methods
-            x_list = [model(x.clone()) for i, model in enumerate(self.models) if i in indexes]
+            x_list = [
+                model(x.clone()) for i, model in enumerate(self.models) if i in indexes
+            ]
             x = torch.stack(x_list)
             x = torch.mean(x, dim=0, keepdim=False)
         return x

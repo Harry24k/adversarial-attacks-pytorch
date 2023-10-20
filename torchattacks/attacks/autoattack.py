@@ -36,52 +36,155 @@ class AutoAttack(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, version='standard', n_classes=10, seed=None, verbose=False):
-        super().__init__('AutoAttack', model)
+    def __init__(
+        self,
+        model,
+        norm="Linf",
+        eps=8 / 255,
+        version="standard",
+        n_classes=10,
+        seed=None,
+        verbose=False,
+    ):
+        super().__init__("AutoAttack", model)
         self.norm = norm
         self.eps = eps
         self.version = version
         self.n_classes = n_classes
         self.seed = seed
         self.verbose = verbose
-        self.supported_mode = ['default']
+        self.supported_mode = ["default"]
 
-        if version == 'standard':  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
-            self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
-                     verbose=verbose, loss='ce', n_restarts=1),
-                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(),
-                      verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(
-                ), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
-                Square(model, eps=eps, norm=norm, seed=self.get_seed(),
-                       verbose=verbose, n_queries=5000, n_restarts=1),
-            ])
+        if version == "standard":  # ['apgd-ce', 'apgd-t', 'fab-t', 'square']
+            self._autoattack = MultiAttack(
+                [
+                    APGD(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        loss="ce",
+                        n_restarts=1,
+                    ),
+                    APGDT(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        n_classes=n_classes,
+                        n_restarts=1,
+                    ),
+                    FAB(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        multi_targeted=True,
+                        n_classes=n_classes,
+                        n_restarts=1,
+                    ),
+                    Square(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        n_queries=5000,
+                        n_restarts=1,
+                    ),
+                ]
+            )
 
         # ['apgd-ce', 'apgd-dlr', 'fab', 'square', 'apgd-t', 'fab-t']
-        elif version == 'plus':
-            self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
-                     verbose=verbose, loss='ce', n_restarts=5),
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
-                     verbose=verbose, loss='dlr', n_restarts=5),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(),
-                    verbose=verbose, n_classes=n_classes, n_restarts=5),
-                Square(model, eps=eps, norm=norm, seed=self.get_seed(),
-                       verbose=verbose, n_queries=5000, n_restarts=1),
-                APGDT(model, eps=eps, norm=norm, seed=self.get_seed(),
-                      verbose=verbose, n_classes=n_classes, n_restarts=1),
-                FAB(model, eps=eps, norm=norm, seed=self.get_seed(
-                ), verbose=verbose, multi_targeted=True, n_classes=n_classes, n_restarts=1),
-            ])
+        elif version == "plus":
+            self._autoattack = MultiAttack(
+                [
+                    APGD(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        loss="ce",
+                        n_restarts=5,
+                    ),
+                    APGD(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        loss="dlr",
+                        n_restarts=5,
+                    ),
+                    FAB(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        n_classes=n_classes,
+                        n_restarts=5,
+                    ),
+                    Square(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        n_queries=5000,
+                        n_restarts=1,
+                    ),
+                    APGDT(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        n_classes=n_classes,
+                        n_restarts=1,
+                    ),
+                    FAB(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        multi_targeted=True,
+                        n_classes=n_classes,
+                        n_restarts=1,
+                    ),
+                ]
+            )
 
-        elif version == 'rand':  # ['apgd-ce', 'apgd-dlr']
-            self._autoattack = MultiAttack([
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
-                     verbose=verbose, loss='ce', eot_iter=20, n_restarts=1),
-                APGD(model, eps=eps, norm=norm, seed=self.get_seed(),
-                     verbose=verbose, loss='dlr', eot_iter=20, n_restarts=1),
-            ])
+        elif version == "rand":  # ['apgd-ce', 'apgd-dlr']
+            self._autoattack = MultiAttack(
+                [
+                    APGD(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        loss="ce",
+                        eot_iter=20,
+                        n_restarts=1,
+                    ),
+                    APGD(
+                        model,
+                        eps=eps,
+                        norm=norm,
+                        seed=self.get_seed(),
+                        verbose=verbose,
+                        loss="dlr",
+                        eot_iter=20,
+                        n_restarts=1,
+                    ),
+                ]
+            )
 
         else:
             raise ValueError("Not valid version. ['standard', 'plus', 'rand']")

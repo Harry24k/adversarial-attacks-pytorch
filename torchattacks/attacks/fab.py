@@ -8,6 +8,7 @@ import math
 
 import torch
 import torch.nn.functional as F
+
 # zero_gradients deprecated in torch >= 1.9.
 # zero_gradients is re-defined in the bottom of the code.
 # from torch.autograd.gradcheck import zero_gradients
@@ -49,13 +50,25 @@ class FAB(Attack):
 
     """
 
-    def __init__(self, model, norm='Linf', eps=8/255, steps=10, n_restarts=1,
-                 alpha_max=0.1, eta=1.05, beta=0.9, verbose=False, seed=0,
-                 multi_targeted=False, n_classes=10):
-        super().__init__('FAB', model)
+    def __init__(
+        self,
+        model,
+        norm="Linf",
+        eps=8 / 255,
+        steps=10,
+        n_restarts=1,
+        alpha_max=0.1,
+        eta=1.05,
+        beta=0.9,
+        verbose=False,
+        seed=0,
+        multi_targeted=False,
+        n_classes=10,
+    ):
+        super().__init__("FAB", model)
         self.norm = norm
         self.n_restarts = n_restarts
-        Default_EPS_DICT_BY_NORM = {'Linf': .3, 'L2': 1., 'L1': 5.0}
+        Default_EPS_DICT_BY_NORM = {"Linf": 0.3, "L2": 1.0, "L1": 5.0}
         self.eps = eps if eps is not None else Default_EPS_DICT_BY_NORM[norm]
         self.alpha_max = alpha_max
         self.eta = eta
@@ -66,7 +79,7 @@ class FAB(Attack):
         self.target_class = None
         self.multi_targeted = multi_targeted
         self.n_target_classes = n_classes - 1
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -148,7 +161,7 @@ class FAB(Attack):
         pred = y_pred == y
         corr_classified = pred.float().sum()
         if self.verbose:
-            print('Clean accuracy: {:.2%}'.format(pred.float().mean()))
+            print("Clean accuracy: {:.2%}".format(pred.float().mean()))
         if pred.sum() == 0:
             return x
         pred = self.check_shape(pred.nonzero().squeeze())
@@ -171,35 +184,61 @@ class FAB(Attack):
 
         while counter_restarts < 1:
             if use_rand_start:
-                if self.norm == 'Linf':
+                if self.norm == "Linf":
                     t = 2 * torch.rand(x1.shape).to(self.device) - 1
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / (t.reshape([t.shape[0], -1]).abs()
-                                         .max(dim=1, keepdim=True)[0]
-                                         .reshape([-1, *[1]*self.ndims])) * .5
-                elif self.norm == 'L2':
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            t.reshape([t.shape[0], -1])
+                            .abs()
+                            .max(dim=1, keepdim=True)[0]
+                            .reshape([-1, *[1] * self.ndims])
+                        )
+                        * 0.5
+                    )
+                elif self.norm == "L2":
                     t = torch.randn(x1.shape).to(self.device)
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / ((t ** 2)
-                                         .view(t.shape[0], -1)
-                                         .sum(dim=-1)
-                                         .sqrt()
-                                         .view(t.shape[0], *[1]*self.ndims)) * .5
-                elif self.norm == 'L1':
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            (t ** 2)
+                            .view(t.shape[0], -1)
+                            .sum(dim=-1)
+                            .sqrt()
+                            .view(t.shape[0], *[1] * self.ndims)
+                        )
+                        * 0.5
+                    )
+                elif self.norm == "L1":
                     t = torch.randn(x1.shape).to(self.device)
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / (t.abs().view(t.shape[0], -1)
-                                         .sum(dim=-1)
-                                         .view(t.shape[0], *[1]*self.ndims)) / 2
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            t.abs()
+                            .view(t.shape[0], -1)
+                            .sum(dim=-1)
+                            .view(t.shape[0], *[1] * self.ndims)
+                        )
+                        / 2
+                    )
 
                 x1 = x1.clamp(0.0, 1.0)
 
@@ -207,86 +246,126 @@ class FAB(Attack):
             while counter_iter < self.steps:
                 with torch.no_grad():
                     df, dg = self.get_diff_logits_grads_batch(x1, la2)
-                    if self.norm == 'Linf':
-                        dist1 = df.abs() / (1e-12 +
-                                            dg.abs()
-                                            .view(dg.shape[0], dg.shape[1], -1)
-                                            .sum(dim=-1))
-                    elif self.norm == 'L2':
-                        dist1 = df.abs() / (1e-12 + (dg ** 2)
-                                            .view(dg.shape[0], dg.shape[1], -1)
-                                            .sum(dim=-1).sqrt())
-                    elif self.norm == 'L1':
-                        dist1 = df.abs() / (1e-12 + dg.abs().reshape(
-                            [df.shape[0], df.shape[1], -1]).max(dim=2)[0])
+                    if self.norm == "Linf":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + dg.abs().view(dg.shape[0], dg.shape[1], -1).sum(dim=-1)
+                        )
+                    elif self.norm == "L2":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + (dg ** 2)
+                            .view(dg.shape[0], dg.shape[1], -1)
+                            .sum(dim=-1)
+                            .sqrt()
+                        )
+                    elif self.norm == "L1":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + dg.abs()
+                            .reshape([df.shape[0], df.shape[1], -1])
+                            .max(dim=2)[0]
+                        )
                     else:
-                        raise ValueError('norm not supported')
+                        raise ValueError("norm not supported")
                     ind = dist1.min(dim=1)[1]
                     dg2 = dg[u1, ind]
-                    b = (- df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1)
-                         .sum(dim=-1))
+                    b = -df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1).sum(dim=-1)
                     w = dg2.reshape([bs, -1])
 
-                    if self.norm == 'Linf':
+                    if self.norm == "Linf":
                         d3 = projection_linf(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
-                    elif self.norm == 'L2':
+                            torch.cat((b, b), 0),
+                        )
+                    elif self.norm == "L2":
                         d3 = projection_l2(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
-                    elif self.norm == 'L1':
+                            torch.cat((b, b), 0),
+                        )
+                    elif self.norm == "L1":
                         d3 = projection_l1(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
+                            torch.cat((b, b), 0),
+                        )
                     d1 = torch.reshape(d3[:bs], x1.shape)
                     d2 = torch.reshape(d3[-bs:], x1.shape)
-                    if self.norm == 'Linf':
-                        a0 = d3.abs().max(dim=1, keepdim=True)[0]\
-                            .view(-1, *[1]*self.ndims)
-                    elif self.norm == 'L2':
-                        a0 = (d3 ** 2).sum(dim=1, keepdim=True).sqrt()\
-                            .view(-1, *[1]*self.ndims)
-                    elif self.norm == 'L1':
-                        a0 = d3.abs().sum(dim=1, keepdim=True)\
-                            .view(-1, *[1]*self.ndims)
-                    a0 = torch.max(a0, 1e-8 * torch.ones(
-                        a0.shape).to(self.device))
+                    if self.norm == "Linf":
+                        a0 = (
+                            d3.abs()
+                            .max(dim=1, keepdim=True)[0]
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    elif self.norm == "L2":
+                        a0 = (
+                            (d3 ** 2)
+                            .sum(dim=1, keepdim=True)
+                            .sqrt()
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    elif self.norm == "L1":
+                        a0 = (
+                            d3.abs()
+                            .sum(dim=1, keepdim=True)
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    a0 = torch.max(a0, 1e-8 * torch.ones(a0.shape).to(self.device))
                     a1 = a0[:bs]
                     a2 = a0[-bs:]
-                    alpha = torch.min(torch.max(a1 / (a1 + a2),
-                                                torch.zeros(a1.shape)
-                                                .to(self.device)),
-                                      self.alpha_max * torch.ones(a1.shape)
-                                      .to(self.device))
-                    x1 = ((x1 + self.eta * d1) * (1 - alpha) +
-                          (im2 + d2 * self.eta) * alpha).clamp(0.0, 1.0)
+                    alpha = torch.min(
+                        torch.max(
+                            a1 / (a1 + a2), torch.zeros(a1.shape).to(self.device)
+                        ),
+                        self.alpha_max * torch.ones(a1.shape).to(self.device),
+                    )
+                    x1 = (
+                        (x1 + self.eta * d1) * (1 - alpha)
+                        + (im2 + d2 * self.eta) * alpha
+                    ).clamp(0.0, 1.0)
 
                     is_adv = self._get_predicted_label(x1) != la2
 
                     if is_adv.sum() > 0:
                         ind_adv = is_adv.nonzero().squeeze()
                         ind_adv = self.check_shape(ind_adv)
-                        if self.norm == 'Linf':
-                            t = (x1[ind_adv] - im2[ind_adv]).reshape(
-                                [ind_adv.shape[0], -1]).abs().max(dim=1)[0]
-                        elif self.norm == 'L2':
-                            t = ((x1[ind_adv] - im2[ind_adv]) ** 2)\
-                                .view(ind_adv.shape[0], -1).sum(dim=-1).sqrt()
-                        elif self.norm == 'L1':
-                            t = (x1[ind_adv] - im2[ind_adv])\
-                                .abs().view(ind_adv.shape[0], -1).sum(dim=-1)
-                        adv[ind_adv] = x1[ind_adv] * (t < res2[ind_adv]).\
-                            float().reshape([-1, *[1]*self.ndims]) + adv[ind_adv]\
-                            * (t >= res2[ind_adv]).float().reshape(
-                            [-1, *[1]*self.ndims])
-                        res2[ind_adv] = t * (t < res2[ind_adv]).float()\
+                        if self.norm == "Linf":
+                            t = (
+                                (x1[ind_adv] - im2[ind_adv])
+                                .reshape([ind_adv.shape[0], -1])
+                                .abs()
+                                .max(dim=1)[0]
+                            )
+                        elif self.norm == "L2":
+                            t = (
+                                ((x1[ind_adv] - im2[ind_adv]) ** 2)
+                                .view(ind_adv.shape[0], -1)
+                                .sum(dim=-1)
+                                .sqrt()
+                            )
+                        elif self.norm == "L1":
+                            t = (
+                                (x1[ind_adv] - im2[ind_adv])
+                                .abs()
+                                .view(ind_adv.shape[0], -1)
+                                .sum(dim=-1)
+                            )
+                        adv[ind_adv] = x1[ind_adv] * (
+                            t < res2[ind_adv]
+                        ).float().reshape([-1, *[1] * self.ndims]) + adv[ind_adv] * (
+                            t >= res2[ind_adv]
+                        ).float().reshape(
+                            [-1, *[1] * self.ndims]
+                        )
+                        res2[ind_adv] = (
+                            t * (t < res2[ind_adv]).float()
                             + res2[ind_adv] * (t >= res2[ind_adv]).float()
-                        x1[ind_adv] = im2[ind_adv] + (
-                            x1[ind_adv] - im2[ind_adv]) * self.beta
+                        )
+                        x1[ind_adv] = (
+                            im2[ind_adv] + (x1[ind_adv] - im2[ind_adv]) * self.beta
+                        )
 
                     counter_iter += 1
 
@@ -294,10 +373,14 @@ class FAB(Attack):
 
         ind_succ = res2 < 1e10
         if self.verbose:
-            print('success rate: {:.0f}/{:.0f}'
-                  .format(ind_succ.float().sum(), corr_classified) +
-                  ' (on correctly classified points) in {:.1f} s'
-                  .format(time.time() - startt))
+            print(
+                "success rate: {:.0f}/{:.0f}".format(
+                    ind_succ.float().sum(), corr_classified
+                )
+                + " (on correctly classified points) in {:.1f} s".format(
+                    time.time() - startt
+                )
+            )
 
         res_c[pred] = res2 * ind_succ.float() + 1e10 * (1 - ind_succ.float())
         ind_succ = self.check_shape(ind_succ.nonzero().squeeze())
@@ -327,7 +410,7 @@ class FAB(Attack):
         pred = y_pred == y
         corr_classified = pred.float().sum()
         if self.verbose:
-            print('Clean accuracy: {:.2%}'.format(pred.float().mean()))
+            print("Clean accuracy: {:.2%}".format(pred.float().mean()))
         if pred.sum() == 0:
             return x
         pred = self.check_shape(pred.nonzero().squeeze())
@@ -357,35 +440,61 @@ class FAB(Attack):
 
         while counter_restarts < 1:
             if use_rand_start:
-                if self.norm == 'Linf':
+                if self.norm == "Linf":
                     t = 2 * torch.rand(x1.shape).to(self.device) - 1
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / (t.reshape([t.shape[0], -1]).abs()
-                                         .max(dim=1, keepdim=True)[0]
-                                         .reshape([-1, *[1]*self.ndims])) * .5
-                elif self.norm == 'L2':
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            t.reshape([t.shape[0], -1])
+                            .abs()
+                            .max(dim=1, keepdim=True)[0]
+                            .reshape([-1, *[1] * self.ndims])
+                        )
+                        * 0.5
+                    )
+                elif self.norm == "L2":
                     t = torch.randn(x1.shape).to(self.device)
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / ((t ** 2)
-                                         .view(t.shape[0], -1)
-                                         .sum(dim=-1)
-                                         .sqrt()
-                                         .view(t.shape[0], *[1]*self.ndims)) * .5
-                elif self.norm == 'L1':
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            (t ** 2)
+                            .view(t.shape[0], -1)
+                            .sum(dim=-1)
+                            .sqrt()
+                            .view(t.shape[0], *[1] * self.ndims)
+                        )
+                        * 0.5
+                    )
+                elif self.norm == "L1":
                     t = torch.randn(x1.shape).to(self.device)
-                    x1 = im2 + (torch.min(res2,
-                                          self.eps * torch.ones(res2.shape)
-                                          .to(self.device)
-                                          ).reshape([-1, *[1]*self.ndims])
-                                ) * t / (t.abs().view(t.shape[0], -1)
-                                         .sum(dim=-1)
-                                         .view(t.shape[0], *[1]*self.ndims)) / 2
+                    x1 = (
+                        im2
+                        + (
+                            torch.min(
+                                res2, self.eps * torch.ones(res2.shape).to(self.device)
+                            ).reshape([-1, *[1] * self.ndims])
+                        )
+                        * t
+                        / (
+                            t.abs()
+                            .view(t.shape[0], -1)
+                            .sum(dim=-1)
+                            .view(t.shape[0], *[1] * self.ndims)
+                        )
+                        / 2
+                    )
 
                 x1 = x1.clamp(0.0, 1.0)
 
@@ -393,88 +502,129 @@ class FAB(Attack):
             while counter_iter < self.steps:
                 with torch.no_grad():
                     df, dg = self.get_diff_logits_grads_batch_targeted(
-                        x1, la2, la_target2)
-                    if self.norm == 'Linf':
-                        dist1 = df.abs() / (1e-12 +
-                                            dg.abs()
-                                            .view(dg.shape[0], dg.shape[1], -1)
-                                            .sum(dim=-1))
-                    elif self.norm == 'L2':
-                        dist1 = df.abs() / (1e-12 + (dg ** 2)
-                                            .view(dg.shape[0], dg.shape[1], -1)
-                                            .sum(dim=-1).sqrt())
-                    elif self.norm == 'L1':
-                        dist1 = df.abs() / (1e-12 + dg.abs().reshape(
-                            [df.shape[0], df.shape[1], -1]).max(dim=2)[0])
+                        x1, la2, la_target2
+                    )
+                    if self.norm == "Linf":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + dg.abs().view(dg.shape[0], dg.shape[1], -1).sum(dim=-1)
+                        )
+                    elif self.norm == "L2":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + (dg ** 2)
+                            .view(dg.shape[0], dg.shape[1], -1)
+                            .sum(dim=-1)
+                            .sqrt()
+                        )
+                    elif self.norm == "L1":
+                        dist1 = df.abs() / (
+                            1e-12
+                            + dg.abs()
+                            .reshape([df.shape[0], df.shape[1], -1])
+                            .max(dim=2)[0]
+                        )
                     else:
-                        raise ValueError('norm not supported')
+                        raise ValueError("norm not supported")
                     ind = dist1.min(dim=1)[1]
 
                     dg2 = dg[u1, ind]
-                    b = (- df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1)
-                         .sum(dim=-1))
+                    b = -df[u1, ind] + (dg2 * x1).view(x1.shape[0], -1).sum(dim=-1)
                     w = dg2.reshape([bs, -1])
 
-                    if self.norm == 'Linf':
+                    if self.norm == "Linf":
                         d3 = projection_linf(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
-                    elif self.norm == 'L2':
+                            torch.cat((b, b), 0),
+                        )
+                    elif self.norm == "L2":
                         d3 = projection_l2(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
-                    elif self.norm == 'L1':
+                            torch.cat((b, b), 0),
+                        )
+                    elif self.norm == "L1":
                         d3 = projection_l1(
                             torch.cat((x1.reshape([bs, -1]), x0), 0),
                             torch.cat((w, w), 0),
-                            torch.cat((b, b), 0))
+                            torch.cat((b, b), 0),
+                        )
                     d1 = torch.reshape(d3[:bs], x1.shape)
                     d2 = torch.reshape(d3[-bs:], x1.shape)
-                    if self.norm == 'Linf':
-                        a0 = d3.abs().max(dim=1, keepdim=True)[0]\
-                            .view(-1, *[1]*self.ndims)
-                    elif self.norm == 'L2':
-                        a0 = (d3 ** 2).sum(dim=1, keepdim=True).sqrt()\
-                            .view(-1, *[1]*self.ndims)
-                    elif self.norm == 'L1':
-                        a0 = d3.abs().sum(dim=1, keepdim=True)\
-                            .view(-1, *[1]*self.ndims)
-                    a0 = torch.max(a0, 1e-8 * torch.ones(
-                        a0.shape).to(self.device))
+                    if self.norm == "Linf":
+                        a0 = (
+                            d3.abs()
+                            .max(dim=1, keepdim=True)[0]
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    elif self.norm == "L2":
+                        a0 = (
+                            (d3 ** 2)
+                            .sum(dim=1, keepdim=True)
+                            .sqrt()
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    elif self.norm == "L1":
+                        a0 = (
+                            d3.abs()
+                            .sum(dim=1, keepdim=True)
+                            .view(-1, *[1] * self.ndims)
+                        )
+                    a0 = torch.max(a0, 1e-8 * torch.ones(a0.shape).to(self.device))
                     a1 = a0[:bs]
                     a2 = a0[-bs:]
-                    alpha = torch.min(torch.max(a1 / (a1 + a2),
-                                                torch.zeros(a1.shape)
-                                                .to(self.device)),
-                                      self.alpha_max * torch.ones(a1.shape)
-                                      .to(self.device))
-                    x1 = ((x1 + self.eta * d1) * (1 - alpha) +
-                          (im2 + d2 * self.eta) * alpha).clamp(0.0, 1.0)
+                    alpha = torch.min(
+                        torch.max(
+                            a1 / (a1 + a2), torch.zeros(a1.shape).to(self.device)
+                        ),
+                        self.alpha_max * torch.ones(a1.shape).to(self.device),
+                    )
+                    x1 = (
+                        (x1 + self.eta * d1) * (1 - alpha)
+                        + (im2 + d2 * self.eta) * alpha
+                    ).clamp(0.0, 1.0)
 
                     is_adv = self._get_predicted_label(x1) != la2
 
                     if is_adv.sum() > 0:
                         ind_adv = is_adv.nonzero().squeeze()
                         ind_adv = self.check_shape(ind_adv)
-                        if self.norm == 'Linf':
-                            t = (x1[ind_adv] - im2[ind_adv]).reshape(
-                                [ind_adv.shape[0], -1]).abs().max(dim=1)[0]
-                        elif self.norm == 'L2':
-                            t = ((x1[ind_adv] - im2[ind_adv]) ** 2)\
-                                .view(ind_adv.shape[0], -1).sum(dim=-1).sqrt()
-                        elif self.norm == 'L1':
-                            t = (x1[ind_adv] - im2[ind_adv])\
-                                .abs().view(ind_adv.shape[0], -1).sum(dim=-1)
-                        adv[ind_adv] = x1[ind_adv] * (t < res2[ind_adv]).\
-                            float().reshape([-1, *[1]*self.ndims]) + adv[ind_adv]\
-                            * (t >= res2[ind_adv]).float().reshape(
-                            [-1, *[1]*self.ndims])
-                        res2[ind_adv] = t * (t < res2[ind_adv]).float()\
+                        if self.norm == "Linf":
+                            t = (
+                                (x1[ind_adv] - im2[ind_adv])
+                                .reshape([ind_adv.shape[0], -1])
+                                .abs()
+                                .max(dim=1)[0]
+                            )
+                        elif self.norm == "L2":
+                            t = (
+                                ((x1[ind_adv] - im2[ind_adv]) ** 2)
+                                .view(ind_adv.shape[0], -1)
+                                .sum(dim=-1)
+                                .sqrt()
+                            )
+                        elif self.norm == "L1":
+                            t = (
+                                (x1[ind_adv] - im2[ind_adv])
+                                .abs()
+                                .view(ind_adv.shape[0], -1)
+                                .sum(dim=-1)
+                            )
+                        adv[ind_adv] = x1[ind_adv] * (
+                            t < res2[ind_adv]
+                        ).float().reshape([-1, *[1] * self.ndims]) + adv[ind_adv] * (
+                            t >= res2[ind_adv]
+                        ).float().reshape(
+                            [-1, *[1] * self.ndims]
+                        )
+                        res2[ind_adv] = (
+                            t * (t < res2[ind_adv]).float()
                             + res2[ind_adv] * (t >= res2[ind_adv]).float()
-                        x1[ind_adv] = im2[ind_adv] + (
-                            x1[ind_adv] - im2[ind_adv]) * self.beta
+                        )
+                        x1[ind_adv] = (
+                            im2[ind_adv] + (x1[ind_adv] - im2[ind_adv]) * self.beta
+                        )
 
                     counter_iter += 1
 
@@ -482,10 +632,14 @@ class FAB(Attack):
 
         ind_succ = res2 < 1e10
         if self.verbose:
-            print('success rate: {:.0f}/{:.0f}'
-                  .format(ind_succ.float().sum(), corr_classified) +
-                  ' (on correctly classified points) in {:.1f} s'
-                  .format(time.time() - startt))
+            print(
+                "success rate: {:.0f}/{:.0f}".format(
+                    ind_succ.float().sum(), corr_classified
+                )
+                + " (on correctly classified points) in {:.1f} s".format(
+                    time.time() - startt
+                )
+            )
 
         res_c[pred] = res2 * ind_succ.float() + 1e10 * (1 - ind_succ.float())
         ind_succ = self.check_shape(ind_succ.nonzero().squeeze())
@@ -509,21 +663,35 @@ class FAB(Attack):
                     if len(ind_to_fool.shape) == 0:
                         ind_to_fool = ind_to_fool.unsqueeze(0)
                     if ind_to_fool.numel() != 0:
-                        x_to_fool, y_to_fool = x[ind_to_fool].clone(), y[ind_to_fool].clone()  # nopep8
+                        x_to_fool, y_to_fool = (
+                            x[ind_to_fool].clone(),
+                            y[ind_to_fool].clone(),
+                        )  # nopep8
 
                         if targeted:
                             adv_curr = self.attack_single_run_targeted(
-                                x_to_fool, y_to_fool, use_rand_start=(counter > 0))
+                                x_to_fool, y_to_fool, use_rand_start=(counter > 0)
+                            )
                         else:
                             adv_curr = self.attack_single_run(
-                                x_to_fool, y_to_fool, use_rand_start=(counter > 0))
+                                x_to_fool, y_to_fool, use_rand_start=(counter > 0)
+                            )
 
-                        acc_curr = self.get_logits(adv_curr).max(1)[
-                            1] == y_to_fool
-                        if self.norm == 'Linf':
-                            res = (x_to_fool - adv_curr).abs().view(x_to_fool.shape[0], -1).max(1)[0]  # nopep8
-                        elif self.norm == 'L2':
-                            res = ((x_to_fool - adv_curr)**2).view(x_to_fool.shape[0], -1).sum(dim=-1).sqrt()  # nopep8
+                        acc_curr = self.get_logits(adv_curr).max(1)[1] == y_to_fool
+                        if self.norm == "Linf":
+                            res = (
+                                (x_to_fool - adv_curr)
+                                .abs()
+                                .view(x_to_fool.shape[0], -1)
+                                .max(1)[0]
+                            )  # nopep8
+                        elif self.norm == "L2":
+                            res = (
+                                ((x_to_fool - adv_curr) ** 2)
+                                .view(x_to_fool.shape[0], -1)
+                                .sum(dim=-1)
+                                .sqrt()
+                            )  # nopep8
                         acc_curr = torch.max(acc_curr, res > self.eps)
 
                         ind_curr = (acc_curr == 0).nonzero().squeeze()
@@ -532,11 +700,24 @@ class FAB(Attack):
 
                         if self.verbose:
                             if targeted:
-                                print('restart {} - target_class {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s'.format(
-                                    counter, self.target_class, acc.float().mean(), self.eps, time.time() - startt))
+                                print(
+                                    "restart {} - target_class {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s".format(
+                                        counter,
+                                        self.target_class,
+                                        acc.float().mean(),
+                                        self.eps,
+                                        time.time() - startt,
+                                    )
+                                )
                             else:
-                                print('restart {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s'.format(
-                                    counter, acc.float().mean(), self.eps, time.time() - startt))
+                                print(
+                                    "restart {} - robust accuracy: {:.2%} at eps = {:.5f} - cum. time: {:.1f} s".format(
+                                        counter,
+                                        acc.float().mean(),
+                                        self.eps,
+                                        time.time() - startt,
+                                    )
+                                )
 
             if self.multi_targeted:
                 for target_class in range(2, self.n_target_classes + 2):
@@ -569,7 +750,7 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
 
     indp2 = indp.flip((1,))
     ws = w.gather(1, indp2)
-    bs2 = - ws * d.gather(1, indp2)
+    bs2 = -ws * d.gather(1, indp2)
 
     s = torch.cumsum(ws.abs(), dim=1)
     sb = torch.cumsum(bs2, dim=1) + b0.unsqueeze(1)
@@ -587,7 +768,11 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
 
         counter2 = counter4.long().unsqueeze(1)
         indcurr = indp_.gather(1, indp_.size(1) - 1 - counter2)
-        b2 = (sb_.gather(1, counter2) - s_.gather(1, counter2) * p_.gather(1, indcurr)).squeeze(1)  # nopep8
+        b2 = (
+            sb_.gather(1, counter2) - s_.gather(1, counter2) * p_.gather(1, indcurr)
+        ).squeeze(
+            1
+        )  # nopep8
         c = b_ - b2 > 0
 
         lb = torch.where(c, counter4, lb)
@@ -597,13 +782,14 @@ def projection_linf(points_to_project, w_hyperplane, b_hyperplane):
 
     if c_l.any():
         lmbd_opt = torch.clamp_min(
-            (b[c_l] - sb[c_l, -1]) / (-s[c_l, -1]), min=0).unsqueeze(-1)
+            (b[c_l] - sb[c_l, -1]) / (-s[c_l, -1]), min=0
+        ).unsqueeze(-1)
         d[c_l] = (2 * a[c_l] - 1) * lmbd_opt
 
-    lmbd_opt = torch.clamp_min(
-        (b[c2] - sb[c2, lb]) / (-s[c2, lb]), min=0).unsqueeze(-1)
-    d[c2] = torch.min(lmbd_opt, d[c2]) * a[c2] + \
-        torch.max(-lmbd_opt, d[c2]) * (1 - a[c2])
+    lmbd_opt = torch.clamp_min((b[c2] - sb[c2, lb]) / (-s[c2, lb]), min=0).unsqueeze(-1)
+    d[c2] = torch.min(lmbd_opt, d[c2]) * a[c2] + torch.max(-lmbd_opt, d[c2]) * (
+        1 - a[c2]
+    )
 
     return d * (w != 0).float()
 
@@ -631,7 +817,8 @@ def projection_l2(points_to_project, w_hyperplane, b_hyperplane):
     d = -(r * w)
     d.mul_((w.abs() > 1e-8).float())
     s = torch.cat(
-        (-w5 * rs[:, 0:1], torch.cumsum((-rs2 + rs) * ws, dim=1) - w5 * rs[:, 0:1]), 1)
+        (-w5 * rs[:, 0:1], torch.cumsum((-rs2 + rs) * ws, dim=1) - w5 * rs[:, 0:1]), 1
+    )
 
     c4 = s[:, 0] + c < 0
     c3 = (d * w).sum(dim=1) + c > 0
@@ -702,11 +889,10 @@ def projection_l1(points_to_project, w_hyperplane, b_hyperplane):
     if c2.any():
         indr = indr[c2].gather(1, lb2.unsqueeze(1)).squeeze(1)
         u = torch.arange(0, w.shape[0], device=device).unsqueeze(1)
-        u2 = torch.arange(0, w.shape[1], device=device,
-                          dtype=torch.float).unsqueeze(0)
+        u2 = torch.arange(0, w.shape[1], device=device, dtype=torch.float).unsqueeze(0)
         alpha = -s[c2, lb2] / w[c2, indr]
         c5 = u2 < lb.unsqueeze(-1)
-        u3 = c5[u[:c5.shape[0]], indr_rev[c2]]
+        u3 = c5[u[: c5.shape[0]], indr_rev[c2]]
         d[c2] = d[c2] * u3.float()
         d[c2, indr] = alpha
 

@@ -23,8 +23,8 @@ from .attacks.sinifgsm import SINIFGSM
 from .attacks.vmifgsm import VMIFGSM
 from .attacks.vnifgsm import VNIFGSM
 from .attacks.spsa import SPSA
-from.attacks.pifgsm import PIFGSM
-from.attacks.pifgsmpp import PIFGSMPP
+from .attacks.pifgsm import PIFGSM
+from .attacks.pifgsmpp import PIFGSMPP
 
 # L2 attacks
 from .attacks.cw import CW
@@ -51,23 +51,49 @@ from .attacks.square import Square
 from .wrappers.multiattack import MultiAttack
 from .wrappers.lgv import LGV
 
-__version__ = '3.5.0'
+__version__ = "3.5.0"
 __all__ = [
-    "VANILA", "GN",
-
-    "FGSM", "BIM", "RFGSM", "PGD", "EOTPGD", "FFGSM",
-    "TPGD", "MIFGSM", "UPGD", "APGD", "APGDT", "DIFGSM",
-    "TIFGSM", "Jitter", "NIFGSM", "PGDRS", "SINIFGSM",
-    "VMIFGSM", "VNIFGSM", "SPSA", "JSMA", "EADL1", "EADEN", "PIFGSM", "PIFGSMPLUSPLUS",
-
-    "CW", "PGDL2", "DeepFool", "PGDRSL2",
-
-    "SparseFool", "OnePixel", "Pixle",
-
-    "FAB", "AutoAttack", "Square",
-
-    "MultiAttack", "LGV",
+    "VANILA",
+    "GN",
+    "FGSM",
+    "BIM",
+    "RFGSM",
+    "PGD",
+    "EOTPGD",
+    "FFGSM",
+    "TPGD",
+    "MIFGSM",
+    "UPGD",
+    "APGD",
+    "APGDT",
+    "DIFGSM",
+    "TIFGSM",
+    "Jitter",
+    "NIFGSM",
+    "PGDRS",
+    "SINIFGSM",
+    "VMIFGSM",
+    "VNIFGSM",
+    "SPSA",
+    "JSMA",
+    "EADL1",
+    "EADEN",
+    "PIFGSM",
+    "PIFGSMPLUSPLUS",
+    "CW",
+    "PGDL2",
+    "DeepFool",
+    "PGDRSL2",
+    "SparseFool",
+    "OnePixel",
+    "Pixle",
+    "FAB",
+    "AutoAttack",
+    "Square",
+    "MultiAttack",
+    "LGV",
 ]
 __wrapper__ = [
-    "LGV", "MultiAttack",
+    "LGV",
+    "MultiAttack",
 ]

@@ -8,9 +8,10 @@ from torch.utils.data import DataLoader, TensorDataset
 def wrapper_method(func):
     def wrapper_func(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
-        for atk in self.__dict__.get('_attacks').values():
+        for atk in self.__dict__.get("_attacks").values():
             eval("atk." + func.__name__ + "(*args, **kwargs)")
         return result
+
     return wrapper_func
 
 
@@ -41,19 +42,18 @@ class Attack(object):
             self.device = next(model.parameters()).device
         except Exception:
             self.device = None
-            print(
-                'Failed to set device automatically, please try set_device() manual.')
+            print("Failed to set device automatically, please try set_device() manual.")
 
         # Controls attack mode.
-        self.attack_mode = 'default'
-        self.supported_mode = ['default']
+        self.attack_mode = "default"
+        self.supported_mode = ["default"]
         self.targeted = False
         self._target_map_function = None
 
         # Controls when normalization is used.
         self.normalization_used = None
         self._normalization_applied = None
-        if self.model.__class__.__name__ == 'RobModel':
+        if self.model.__class__.__name__ == "RobModel":
             self._set_rmodel_normalization_used(model)
 
         # Controls model mode during attack.
@@ -93,8 +93,8 @@ class Attack(object):
         Set attack normalization for MAIR [https://github.com/Harry24k/MAIR].
 
         """
-        mean = getattr(model, 'mean', None)
-        std = getattr(model, 'std', None)
+        mean = getattr(model, "mean", None)
+        std = getattr(model, "std", None)
         if (mean is not None) and (std is not None):
             if isinstance(mean, torch.Tensor):
                 mean = mean.cpu().numpy()
@@ -109,19 +109,19 @@ class Attack(object):
         n_channels = len(mean)
         mean = torch.tensor(mean).reshape(1, n_channels, 1, 1)
         std = torch.tensor(std).reshape(1, n_channels, 1, 1)
-        self.normalization_used['mean'] = mean
-        self.normalization_used['std'] = std
+        self.normalization_used["mean"] = mean
+        self.normalization_used["std"] = std
         self._set_normalization_applied(True)
 
     def normalize(self, inputs):
-        mean = self.normalization_used['mean'].to(inputs.device)
-        std = self.normalization_used['std'].to(inputs.device)
+        mean = self.normalization_used["mean"].to(inputs.device)
+        std = self.normalization_used["std"].to(inputs.device)
         return (inputs - mean) / std
 
     def inverse_normalize(self, inputs):
-        mean = self.normalization_used['mean'].to(inputs.device)
-        std = self.normalization_used['std'].to(inputs.device)
-        return inputs*std + mean
+        mean = self.normalization_used["mean"].to(inputs.device)
+        std = self.normalization_used["std"].to(inputs.device)
+        return inputs * std + mean
 
     def get_mode(self):
         r"""
@@ -136,7 +136,7 @@ class Attack(object):
         Set attack mode as default mode.
 
         """
-        self.attack_mode = 'default'
+        self.attack_mode = "default"
         self.targeted = False
         print("Attack mode is changed to 'default.'")
 
@@ -161,7 +161,7 @@ class Attack(object):
             quiet (bool): Display information message or not. (Default: False)
 
         """
-        self._set_mode_targeted('targeted(custom)', quiet)
+        self._set_mode_targeted("targeted(custom)", quiet)
         self._target_map_function = target_map_function
 
     @wrapper_method
@@ -173,7 +173,7 @@ class Attack(object):
             quiet (bool): Display information message or not. (Default: False)
 
         """
-        self._set_mode_targeted('targeted(random)', quiet)
+        self._set_mode_targeted("targeted(random)", quiet)
         self._target_map_function = self.get_random_target_label
 
     @wrapper_method
@@ -186,8 +186,8 @@ class Attack(object):
             num_classses (str): number of classes. (Default: False)
 
         """
-        self._set_mode_targeted('targeted(least-likely)', quiet)
-        assert (kth_min > 0)
+        self._set_mode_targeted("targeted(least-likely)", quiet)
+        assert kth_min > 0
         self._kth_min = kth_min
         self._target_map_function = self.get_least_likely_label
 
@@ -202,11 +202,13 @@ class Attack(object):
         .. note::
             Use user-supplied labels as target labels.
         """
-        self._set_mode_targeted('targeted(label)', quiet)
-        self._target_map_function = 'function is a string'
+        self._set_mode_targeted("targeted(label)", quiet)
+        self._target_map_function = "function is a string"
 
     @wrapper_method
-    def set_model_training_mode(self, model_training=False, batchnorm_training=False, dropout_training=False):
+    def set_model_training_mode(
+        self, model_training=False, batchnorm_training=False, dropout_training=False
+    ):
         r"""
         Set training mode during attack process.
 
@@ -229,10 +231,10 @@ class Attack(object):
             self.model.train()
             for _, m in self.model.named_modules():
                 if not self._batchnorm_training:
-                    if 'BatchNorm' in m.__class__.__name__:
+                    if "BatchNorm" in m.__class__.__name__:
                         m = m.eval()
                 if not self._dropout_training:
-                    if 'Dropout' in m.__class__.__name__:
+                    if "Dropout" in m.__class__.__name__:
                         m = m.eval()
         else:
             self.model.eval()
@@ -242,8 +244,16 @@ class Attack(object):
         if given_training:
             self.model.train()
 
-    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False,
-             save_predictions=False, save_clean_inputs=False, save_type='float'):
+    def save(
+        self,
+        data_loader,
+        save_path=None,
+        verbose=True,
+        return_verbose=False,
+        save_predictions=False,
+        save_clean_inputs=False,
+        save_type="float",
+    ):
         r"""
         Save adversarial inputs as torch.tensor from given torch.utils.data.DataLoader.
 
@@ -283,22 +293,28 @@ class Attack(object):
                     # Calculate robust accuracy
                     _, pred = torch.max(outputs.data, 1)
                     total += labels.size(0)
-                    right_idx = (pred == labels.to(self.device))
+                    right_idx = pred == labels.to(self.device)
                     correct += right_idx.sum()
                     rob_acc = 100 * float(correct) / total
 
                     # Calculate l2 distance
-                    delta = (adv_inputs - inputs.to(self.device)).view(batch_size, -1)  # nopep8
-                    l2_distance.append(torch.norm(delta[~right_idx], p=2, dim=1))  # nopep8
+                    delta = (adv_inputs - inputs.to(self.device)).view(
+                        batch_size, -1
+                    )  # nopep8
+                    l2_distance.append(
+                        torch.norm(delta[~right_idx], p=2, dim=1)
+                    )  # nopep8
                     l2 = torch.cat(l2_distance).mean().item()
 
                     # Calculate time computation
-                    progress = (step+1)/total_batch*100
+                    progress = (step + 1) / total_batch * 100
                     end = time.time()
-                    elapsed_time = end-start
+                    elapsed_time = end - start
 
                     if verbose:
-                        self._save_print(progress, rob_acc, l2, elapsed_time, end='\r')  # nopep8
+                        self._save_print(
+                            progress, rob_acc, l2, elapsed_time, end="\r"
+                        )  # nopep8
 
             if save_path is not None:
                 adv_input_list.append(adv_inputs.detach().cpu())
@@ -307,34 +323,45 @@ class Attack(object):
                 adv_input_list_cat = torch.cat(adv_input_list, 0)
                 label_list_cat = torch.cat(label_list, 0)
 
-                save_dict = {'adv_inputs': adv_input_list_cat, 'labels': label_list_cat}  # nopep8
+                save_dict = {
+                    "adv_inputs": adv_input_list_cat,
+                    "labels": label_list_cat,
+                }  # nopep8
 
                 if save_predictions:
                     pred_list.append(pred.detach().cpu())
                     pred_list_cat = torch.cat(pred_list, 0)
-                    save_dict['preds'] = pred_list_cat
+                    save_dict["preds"] = pred_list_cat
 
                 if save_clean_inputs:
                     input_list.append(inputs.detach().cpu())
                     input_list_cat = torch.cat(input_list, 0)
-                    save_dict['clean_inputs'] = input_list_cat
+                    save_dict["clean_inputs"] = input_list_cat
 
                 if self.normalization_used is not None:
-                    save_dict['adv_inputs'] = self.inverse_normalize(save_dict['adv_inputs'])  # nopep8
+                    save_dict["adv_inputs"] = self.inverse_normalize(
+                        save_dict["adv_inputs"]
+                    )  # nopep8
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.inverse_normalize(save_dict['clean_inputs'])  # nopep8
+                        save_dict["clean_inputs"] = self.inverse_normalize(
+                            save_dict["clean_inputs"]
+                        )  # nopep8
 
-                if save_type == 'int':
-                    save_dict['adv_inputs'] = self.to_type(save_dict['adv_inputs'], 'int')  # nopep8
+                if save_type == "int":
+                    save_dict["adv_inputs"] = self.to_type(
+                        save_dict["adv_inputs"], "int"
+                    )  # nopep8
                     if save_clean_inputs:
-                        save_dict['clean_inputs'] = self.to_type(save_dict['clean_inputs'], 'int')  # nopep8
+                        save_dict["clean_inputs"] = self.to_type(
+                            save_dict["clean_inputs"], "int"
+                        )  # nopep8
 
-                save_dict['save_type'] = save_type
+                save_dict["save_type"] = save_type
                 torch.save(save_dict, save_path)
 
         # To avoid erasing the printed information.
         if verbose:
-            self._save_print(progress, rob_acc, l2, elapsed_time, end='\n')
+            self._save_print(progress, rob_acc, l2, elapsed_time, end="\n")
 
         if given_training:
             self.model.train()
@@ -347,50 +374,67 @@ class Attack(object):
         r"""
         Return inputs as int if float is given.
         """
-        if type == 'int':
-            if isinstance(inputs, torch.FloatTensor) or isinstance(inputs, torch.cuda.FloatTensor):
-                return (inputs*255).type(torch.uint8)
-        elif type == 'float':
-            if isinstance(inputs, torch.ByteTensor) or isinstance(inputs, torch.cuda.ByteTensor):
-                return inputs.float()/255
+        if type == "int":
+            if isinstance(inputs, torch.FloatTensor) or isinstance(
+                inputs, torch.cuda.FloatTensor
+            ):
+                return (inputs * 255).type(torch.uint8)
+        elif type == "float":
+            if isinstance(inputs, torch.ByteTensor) or isinstance(
+                inputs, torch.cuda.ByteTensor
+            ):
+                return inputs.float() / 255
         else:
-            raise ValueError(
-                type + " is not a valid type. [Options: float, int]")
+            raise ValueError(type + " is not a valid type. [Options: float, int]")
         return inputs
 
     @staticmethod
     def _save_print(progress, rob_acc, l2, elapsed_time, end):
-        print('- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t'
-              % (progress, rob_acc, l2, elapsed_time), end=end)
+        print(
+            "- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t"
+            % (progress, rob_acc, l2, elapsed_time),
+            end=end,
+        )
 
     @staticmethod
-    def load(load_path, batch_size=128, shuffle=False, normalize=None,
-             load_predictions=False, load_clean_inputs=False):
+    def load(
+        load_path,
+        batch_size=128,
+        shuffle=False,
+        normalize=None,
+        load_predictions=False,
+        load_clean_inputs=False,
+    ):
         save_dict = torch.load(load_path)
-        keys = ['adv_inputs', 'labels']
+        keys = ["adv_inputs", "labels"]
 
         if load_predictions:
-            keys.append('preds')
+            keys.append("preds")
         if load_clean_inputs:
-            keys.append('clean_inputs')
+            keys.append("clean_inputs")
 
-        if save_dict['save_type'] == 'int':
-            save_dict['adv_inputs'] = save_dict['adv_inputs'].float()/255
+        if save_dict["save_type"] == "int":
+            save_dict["adv_inputs"] = save_dict["adv_inputs"].float() / 255
             if load_clean_inputs:
-                save_dict['clean_inputs'] = save_dict['clean_inputs'].float() / 255  # nopep8
+                save_dict["clean_inputs"] = (
+                    save_dict["clean_inputs"].float() / 255
+                )  # nopep8
 
         if normalize is not None:
-            n_channels = len(normalize['mean'])
-            mean = torch.tensor(normalize['mean']).reshape(1, n_channels, 1, 1)
-            std = torch.tensor(normalize['std']).reshape(1, n_channels, 1, 1)
-            save_dict['adv_inputs'] = (save_dict['adv_inputs'] - mean) / std
+            n_channels = len(normalize["mean"])
+            mean = torch.tensor(normalize["mean"]).reshape(1, n_channels, 1, 1)
+            std = torch.tensor(normalize["std"]).reshape(1, n_channels, 1, 1)
+            save_dict["adv_inputs"] = (save_dict["adv_inputs"] - mean) / std
             if load_clean_inputs:
-                save_dict['clean_inputs'] = (save_dict['clean_inputs'] - mean) / std  # nopep8
+                save_dict["clean_inputs"] = (
+                    save_dict["clean_inputs"] - mean
+                ) / std  # nopep8
 
         adv_data = TensorDataset(*[save_dict[key] for key in keys])
-        adv_loader = DataLoader(
-            adv_data, batch_size=batch_size, shuffle=shuffle)
-        print("Data is loaded in the following order: [%s]" % (", ".join(keys)))  # nopep8
+        adv_loader = DataLoader(adv_data, batch_size=batch_size, shuffle=shuffle)
+        print(
+            "Data is loaded in the following order: [%s]" % (", ".join(keys))
+        )  # nopep8
         return adv_loader
 
     @torch.no_grad()
@@ -410,8 +454,9 @@ class Attack(object):
         """
         if self._target_map_function is None:
             raise ValueError(
-                'target_map_function is not initialized by set_mode_targeted.')
-        if self.attack_mode == 'targeted(label)':
+                "target_map_function is not initialized by set_mode_targeted."
+            )
+        if self.attack_mode == "targeted(label)":
             target_labels = labels
         else:
             target_labels = self._target_map_function(inputs, labels)
@@ -444,7 +489,7 @@ class Attack(object):
         for counter in range(labels.shape[0]):
             l = list(range(n_classses))
             l.remove(labels[counter])
-            t = (len(l)*torch.rand([1])).long().to(self.device)
+            t = (len(l) * torch.rand([1])).long().to(self.device)
             target_labels[counter] = l[t]
 
         return target_labels.long().to(self.device)
@@ -473,7 +518,7 @@ class Attack(object):
     def __repr__(self):
         info = self.__dict__.copy()
 
-        del_keys = ['model', 'attack', 'supported_mode']
+        del_keys = ["model", "attack", "supported_mode"]
 
         for key in info.keys():
             if key[0] == "_":
@@ -482,23 +527,30 @@ class Attack(object):
         for key in del_keys:
             del info[key]
 
-        info['attack_mode'] = self.attack_mode
-        info['normalization_used'] = True if self.normalization_used is not None else False
+        info["attack_mode"] = self.attack_mode
+        info["normalization_used"] = (
+            True if self.normalization_used is not None else False
+        )
 
-        return self.attack + "(" + ', '.join('{}={}'.format(key, val) for key, val in info.items()) + ")"
+        return (
+            self.attack
+            + "("
+            + ", ".join("{}={}".format(key, val) for key, val in info.items())
+            + ")"
+        )
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
 
-        attacks = self.__dict__.get('_attacks')
+        attacks = self.__dict__.get("_attacks")
 
         # Get all items in iterable items.
         def get_all_values(items, stack=[]):
-            if (items not in stack):
+            if items not in stack:
                 stack.append(items)
                 if isinstance(items, list) or isinstance(items, dict):
                     if isinstance(items, dict):
-                        items = (list(items.keys())+list(items.values()))
+                        items = list(items.keys()) + list(items.values())
                     for item in items:
                         yield from get_all_values(item, stack)
                 else:
@@ -509,6 +561,6 @@ class Attack(object):
                     yield items
 
         for num, value in enumerate(get_all_values(value)):
-            attacks[name+"."+str(num)] = value
-            for subname, subvalue in value.__dict__.get('_attacks').items():
-                attacks[name+"."+subname] = subvalue
+            attacks[name + "." + str(num)] = value
+            for subname, subvalue in value.__dict__.get("_attacks").items():
+                attacks[name + "." + subname] = subvalue

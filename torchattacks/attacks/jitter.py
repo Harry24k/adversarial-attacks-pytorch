@@ -31,16 +31,24 @@ class Jitter(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
-                 scale=10, std=0.1, random_start=True):
-        super().__init__('Jitter', model)
+    def __init__(
+        self,
+        model,
+        eps=8 / 255,
+        alpha=2 / 255,
+        steps=10,
+        scale=10,
+        std=0.1,
+        random_start=True,
+    ):
+        super().__init__("Jitter", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.random_start = random_start
         self.scale = scale
         self.std = std
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -53,14 +61,15 @@ class Jitter(Attack):
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
 
-        loss = nn.MSELoss(reduction='none')
+        loss = nn.MSELoss(reduction="none")
 
         adv_images = images.clone().detach()
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images = adv_images + \
-                torch.empty_like(adv_images).uniform_(-self.eps, self.eps)
+            adv_images = adv_images + torch.empty_like(adv_images).uniform_(
+                -self.eps, self.eps
+            )
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for _ in range(self.steps):
@@ -68,35 +77,41 @@ class Jitter(Attack):
             logits = self.get_logits(adv_images)
 
             _, pre = torch.max(logits, dim=1)
-            wrong = (pre != labels)
+            wrong = pre != labels
 
-            norm_z = torch.norm(logits, p=float('inf'), dim=1, keepdim=True)
-            hat_z = nn.Softmax(dim=1)(self.scale*logits/norm_z)
+            norm_z = torch.norm(logits, p=float("inf"), dim=1, keepdim=True)
+            hat_z = nn.Softmax(dim=1)(self.scale * logits / norm_z)
 
             if self.std != 0:
-                hat_z = hat_z + self.std*torch.randn_like(hat_z)
+                hat_z = hat_z + self.std * torch.randn_like(hat_z)
 
             # Calculate loss
             if self.targeted:
                 target_Y = F.one_hot(
-                    target_labels, num_classes=logits.shape[-1]).float()
+                    target_labels, num_classes=logits.shape[-1]
+                ).float()
                 cost = -loss(hat_z, target_Y).mean(dim=1)
             else:
                 Y = F.one_hot(labels, num_classes=logits.shape[-1]).float()
                 cost = loss(hat_z, Y).mean(dim=1)
 
-            norm_r = torch.norm((adv_images - images), p=float('inf'), dim=[1, 2, 3])  # nopep8
-            nonzero_r = (norm_r != 0)
-            cost[wrong*nonzero_r] /= norm_r[wrong*nonzero_r]
+            norm_r = torch.norm(
+                (adv_images - images), p=float("inf"), dim=[1, 2, 3]
+            )  # nopep8
+            nonzero_r = norm_r != 0
+            cost[wrong * nonzero_r] /= norm_r[wrong * nonzero_r]
 
             cost = cost.mean()
 
             # Update adversarial images
-            grad = torch.autograd.grad(cost, adv_images,
-                                       retain_graph=False, create_graph=False)[0]
+            grad = torch.autograd.grad(
+                cost, adv_images, retain_graph=False, create_graph=False
+            )[0]
 
-            adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images-images, min=-self.eps, max=self.eps)  # nopep8
+            adv_images = adv_images.detach() + self.alpha * grad.sign()
+            delta = torch.clamp(
+                adv_images - images, min=-self.eps, max=self.eps
+            )  # nopep8
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

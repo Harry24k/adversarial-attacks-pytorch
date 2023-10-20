@@ -33,12 +33,12 @@ class SparseFool(Attack):
     """
 
     def __init__(self, model, steps=10, lam=3, overshoot=0.02):
-        super().__init__('SparseFool', model)
+        super().__init__("SparseFool", model)
         self.steps = steps
         self.lam = lam
         self.overshoot = overshoot
         self.deepfool = DeepFool(model)
-        self.supported_mode = ['default']
+        self.supported_mode = ["default"]
 
     def forward(self, images, labels):
         r"""
@@ -49,18 +49,18 @@ class SparseFool(Attack):
         labels = labels.clone().detach().to(self.device)
 
         batch_size = len(images)
-        correct = torch.tensor([True]*batch_size)
+        correct = torch.tensor([True] * batch_size)
         curr_steps = 0
 
         adv_images = []
         for idx in range(batch_size):
-            image = images[idx:idx+1].clone().detach()
+            image = images[idx : idx + 1].clone().detach()
             adv_images.append(image)
 
         while (True in correct) and (curr_steps < self.steps):
             for idx in range(batch_size):
-                image = images[idx:idx+1]
-                label = labels[idx:idx+1]
+                image = images[idx : idx + 1]
+                label = labels[idx : idx + 1]
                 adv_image = adv_images[idx]
 
                 fs = self.get_logits(adv_image)[0]
@@ -69,8 +69,10 @@ class SparseFool(Attack):
                     correct[idx] = False
                     continue
 
-                adv_image, target_label = self.deepfool.forward_return_target_labels(adv_image, label)
-                adv_image = image + self.lam*(adv_image - image)
+                adv_image, target_label = self.deepfool.forward_return_target_labels(
+                    adv_image, label
+                )
+                adv_image = image + self.lam * (adv_image - image)
 
                 adv_image.requires_grad = True
                 fs = self.get_logits(adv_image)[0]
@@ -80,12 +82,13 @@ class SparseFool(Attack):
                     pre = target_label
 
                 cost = fs[pre] - fs[label]
-                grad = torch.autograd.grad(cost, adv_image,
-                                           retain_graph=False, create_graph=False)[0]
+                grad = torch.autograd.grad(
+                    cost, adv_image, retain_graph=False, create_graph=False
+                )[0]
                 grad = grad / grad.norm()
 
                 adv_image = self._linear_solver(image, grad, adv_image)
-                adv_image = image + (1+self.overshoot)*(adv_image - image)
+                adv_image = image + (1 + self.overshoot) * (adv_image - image)
                 adv_images[idx] = torch.clamp(adv_image, min=0, max=1).detach()
 
             curr_steps += 1
@@ -115,7 +118,9 @@ class SparseFool(Attack):
             pert = f_k.abs() / coord_vec.abs().max()
 
             mask = torch.zeros_like(coord_vec)
-            mask[np.unravel_index(torch.argmax(coord_vec.abs()).cpu(), input_shape)] = 1.  # nopep8
+            mask[
+                np.unravel_index(torch.argmax(coord_vec.abs()).cpu(), input_shape)
+            ] = 1.0  # nopep8
 
             r_i = torch.clamp(pert, min=1e-4) * mask * coord_vec.sign()
 

@@ -1,6 +1,6 @@
-'''
+"""
 Code is from https://github.com/BorealisAI/advertorch/blob/master/advertorch/attacks/spsa.py
-'''
+"""
 
 import torch
 from torch.nn.modules.loss import _Loss
@@ -14,9 +14,7 @@ class MarginalLoss(_Loss):
         top_logits, top_classes = torch.topk(logits, 2, dim=-1)
         target_logits = logits[torch.arange(logits.shape[0]), targets]
         max_nontarget_logits = torch.where(
-            top_classes[..., 0] == targets,
-            top_logits[..., 1],
-            top_logits[..., 0],
+            top_classes[..., 0] == targets, top_logits[..., 1], top_logits[..., 0],
         )
 
         loss = max_nontarget_logits - target_logits
@@ -59,8 +57,17 @@ class SPSA(Attack):
 
     """
 
-    def __init__(self, model, eps=0.3, delta=0.01, lr=0.01, nb_iter=1, nb_sample=128, max_batch_size=64):
-        super().__init__('SPSA', model)
+    def __init__(
+        self,
+        model,
+        eps=0.3,
+        delta=0.01,
+        lr=0.01,
+        nb_iter=1,
+        nb_sample=128,
+        max_batch_size=64,
+    ):
+        super().__init__("SPSA", model)
         self.eps = eps
         self.delta = delta
         self.lr = lr
@@ -68,7 +75,7 @@ class SPSA(Attack):
         self.nb_sample = nb_sample
         self.max_batch_size = max_batch_size
         self.loss_fn = MarginalLoss(reduction="none")
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -144,9 +151,9 @@ class SPSA(Attack):
             x_ = x_.view(-1, *images.shape[2:])
             y_ = y_.view(-1, *labels.shape[2:])
             v_ = v_.view(-1, *v.shape[2:])
-            df = f(x_+delta*v_, y_) - f(x_-delta*v_, y_)
+            df = f(x_ + delta * v_, y_) - f(x_ - delta * v_, y_)
             df = df.view(-1, *[1 for _ in v_.shape[1:]])
-            grad_ = df / (2.*delta*v_)
+            grad_ = df / (2.0 * delta * v_)
             grad_ = grad_.view(x_shape)
             grad_ = grad_.sum(dim=0, keepdim=False)
             grad += grad_
@@ -161,7 +168,8 @@ class SPSA(Attack):
         for _ in range(self.nb_iter):
             optimizer.zero_grad()
             dx.grad = self.spsa_grad(
-                x + dx, y, self.delta, self.nb_sample, self.max_batch_size)
+                x + dx, y, self.delta, self.nb_sample, self.max_batch_size
+            )
             optimizer.step()
             dx = self.linf_clamp_(dx, x, self.eps)
 

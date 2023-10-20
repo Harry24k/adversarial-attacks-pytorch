@@ -18,11 +18,12 @@ class MultiAttack(Attack):
         >>> adv_images = attack(images, labels)
 
     """
+
     def __init__(self, attacks, verbose=False):
         super().__init__("MultiAttack", attacks[0].model)
         self.attacks = attacks
         self.verbose = verbose
-        self.supported_mode = ['default']
+        self.supported_mode = ["default"]
 
         self.check_validity()
 
@@ -35,7 +36,9 @@ class MultiAttack(Attack):
 
         ids = [id(attack.model) for attack in self.attacks]
         if len(set(ids)) != 1:
-            raise ValueError("At least one of attacks is referencing a different model.")
+            raise ValueError(
+                "At least one of attacks is referencing a different model."
+            )
 
     def forward(self, images, labels):
         r"""
@@ -54,11 +57,13 @@ class MultiAttack(Attack):
             outputs = self.get_logits(adv_images)
             _, pre = torch.max(outputs.data, 1)
 
-            corrects = (pre == labels[fails])
+            corrects = pre == labels[fails]
             wrongs = ~corrects
 
             succeeds = torch.masked_select(fails, wrongs)
-            succeeds_of_fails = torch.masked_select(torch.arange(fails.shape[0]).to(self.device), wrongs)
+            succeeds_of_fails = torch.masked_select(
+                torch.arange(fails.shape[0]).to(self.device), wrongs
+            )
 
             final_images[succeeds] = adv_images[succeeds_of_fails]
 
@@ -80,19 +85,29 @@ class MultiAttack(Attack):
         self._multi_atk_records = [0.0]
 
     def _covert_to_success_rates(self, multi_atk_records):
-        sr = [((1-multi_atk_records[i]/multi_atk_records[0])*100) for i in range(1, len(multi_atk_records))]
+        sr = [
+            ((1 - multi_atk_records[i] / multi_atk_records[0]) * 100)
+            for i in range(1, len(multi_atk_records))
+        ]
         return sr
 
     def _return_sr_record(self, multi_atk_records):
         sr = self._covert_to_success_rates(multi_atk_records)
-        return "Attack success rate: "+" | ".join(["%2.2f %%"%item for item in sr])
+        return "Attack success rate: " + " | ".join(["%2.2f %%" % item for item in sr])
 
     def _update_multi_atk_records(self, multi_atk_records):
         for i, item in enumerate(multi_atk_records):
             self._multi_atk_records[i] += item
 
-    def save(self, data_loader, save_path=None, verbose=True, return_verbose=False,
-             save_predictions=False, save_clean_images=False):
+    def save(
+        self,
+        data_loader,
+        save_path=None,
+        verbose=True,
+        return_verbose=False,
+        save_predictions=False,
+        save_clean_images=False,
+    ):
         r"""
         Overridden.
         """
@@ -105,20 +120,34 @@ class MultiAttack(Attack):
             self._multi_atk_records.append(0.0)
 
         if return_verbose:
-            rob_acc, l2, elapsed_time = super().save(data_loader, save_path,
-                                                     verbose, return_verbose,
-                                                     save_predictions,
-                                                     save_clean_images)
+            rob_acc, l2, elapsed_time = super().save(
+                data_loader,
+                save_path,
+                verbose,
+                return_verbose,
+                save_predictions,
+                save_clean_images,
+            )
             sr = self._covert_to_success_rates(self._multi_atk_records)
         elif verbose:
-            super().save(data_loader, save_path, verbose,
-                         return_verbose, save_predictions,
-                         save_clean_images)
+            super().save(
+                data_loader,
+                save_path,
+                verbose,
+                return_verbose,
+                save_predictions,
+                save_clean_images,
+            )
             sr = self._covert_to_success_rates(self._multi_atk_records)
         else:
-            super().save(data_loader, save_path, False,
-                         False, save_predictions,
-                         save_clean_images)
+            super().save(
+                data_loader,
+                save_path,
+                False,
+                False,
+                save_predictions,
+                save_clean_images,
+            )
 
         self._clear_multi_atk_records()
         self._accumulate_multi_atk_records = False
@@ -131,6 +160,11 @@ class MultiAttack(Attack):
         r"""
         Overridden.
         """
-        print("- Save progress: %2.2f %% / Robust accuracy: %2.2f %%"%(progress, rob_acc)+\
-              " / "+self._return_sr_record(self._multi_atk_records)+\
-              ' / L2: %1.5f (%2.3f it/s) \t'%(l2, elapsed_time), end=end)
+        print(
+            "- Save progress: %2.2f %% / Robust accuracy: %2.2f %%"
+            % (progress, rob_acc)
+            + " / "
+            + self._return_sr_record(self._multi_atk_records)
+            + " / L2: %1.5f (%2.3f it/s) \t" % (l2, elapsed_time),
+            end=end,
+        )

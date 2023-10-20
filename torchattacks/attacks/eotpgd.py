@@ -29,15 +29,16 @@ class EOTPGD(Attack):
 
     """
 
-    def __init__(self, model, eps=8/255, alpha=2/255, steps=10,
-                 eot_iter=2, random_start=True):
-        super().__init__('EOTPGD', model)
+    def __init__(
+        self, model, eps=8 / 255, alpha=2 / 255, steps=10, eot_iter=2, random_start=True
+    ):
+        super().__init__("EOTPGD", model)
         self.eps = eps
         self.alpha = alpha
         self.steps = steps
         self.eot_iter = eot_iter
         self.random_start = random_start
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -56,7 +57,9 @@ class EOTPGD(Attack):
 
         if self.random_start:
             # Starting at a uniformly random point
-            adv_images = adv_images + torch.empty_like(adv_images).uniform_(-self.eps, self.eps)  # nopep8
+            adv_images = adv_images + torch.empty_like(adv_images).uniform_(
+                -self.eps, self.eps
+            )  # nopep8
             adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
         for _ in range(self.steps):
@@ -73,14 +76,13 @@ class EOTPGD(Attack):
                     cost = loss(outputs, labels)
 
                 # Update adversarial images
-                grad += torch.autograd.grad(cost, adv_images,
-                                            retain_graph=False,
-                                            create_graph=False)[0]
+                grad += torch.autograd.grad(
+                    cost, adv_images, retain_graph=False, create_graph=False
+                )[0]
 
             # (grad/self.eot_iter).sign() == grad.sign()
-            adv_images = adv_images.detach() + self.alpha*grad.sign()
-            delta = torch.clamp(adv_images - images,
-                                min=-self.eps, max=self.eps)
+            adv_images = adv_images.detach() + self.alpha * grad.sign()
+            delta = torch.clamp(adv_images - images, min=-self.eps, max=self.eps)
             adv_images = torch.clamp(images + delta, min=0, max=1).detach()
 
         return adv_images

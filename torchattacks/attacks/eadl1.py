@@ -32,8 +32,18 @@ class EADL1(Attack):
 
     """
 
-    def __init__(self, model, kappa=0, lr=0.01, binary_search_steps=9, max_iterations=100, abort_early=True, initial_const=0.001, beta=0.001):
-        super().__init__('EADL1', model)
+    def __init__(
+        self,
+        model,
+        kappa=0,
+        lr=0.01,
+        binary_search_steps=9,
+        max_iterations=100,
+        abort_early=True,
+        initial_const=0.001,
+        beta=0.001,
+    ):
+        super().__init__("EADL1", model)
         self.kappa = kappa
         self.lr = lr
         self.binary_search_steps = binary_search_steps
@@ -43,7 +53,7 @@ class EADL1(Attack):
         self.beta = beta
         # The last iteration (if we run many steps) repeat the search once.
         self.repeat = binary_search_steps >= 10
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -87,7 +97,7 @@ class EADL1(Attack):
             bestscore = torch.Tensor(bestscore).to(self.device)
             prevloss = 1e6
 
-            if (self.repeat and outer_step == (self.binary_search_steps - 1)):
+            if self.repeat and outer_step == (self.binary_search_steps - 1):
                 const = upper_bound
 
             lr = self.lr
@@ -113,17 +123,24 @@ class EADL1(Attack):
                     y_k -= y_k.grad * lr
 
                 # Ploynomial decay of learning rate
-                lr = self.lr * (1 - self.global_step / self.max_iterations)**0.5  # nopep8
+                lr = (
+                    self.lr * (1 - self.global_step / self.max_iterations) ** 0.5
+                )  # nopep8
                 x_k, y_k = self.FISTA(images, x_k, y_k)
                 # Loss ElasticNet or L1 over x_k
                 with torch.no_grad():
                     output = self.get_logits(x_k)
                     L2_loss = self.L2_loss(x_k, images)
                     L1_loss = self.L1_loss(x_k, images)
-                    loss = self.EAD_loss(output, y_one_hot, L1_loss, L2_loss, const)  # nopep8
+                    loss = self.EAD_loss(
+                        output, y_one_hot, L1_loss, L2_loss, const
+                    )  # nopep8
 
                     # print('loss: {}, prevloss: {}'.format(loss, prevloss))
-                    if self.abort_early and iteration % (self.max_iterations // 10) == 0:
+                    if (
+                        self.abort_early
+                        and iteration % (self.max_iterations // 10) == 0
+                    ):
                         if loss > prevloss * 0.999999:
                             break
                         prevloss = loss
@@ -131,21 +148,29 @@ class EADL1(Attack):
                     # L1 attack key step!
                     cost = L1_loss
                     self.adjust_best_result(
-                        x_k, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images)
+                        x_k,
+                        labels,
+                        output,
+                        cost,
+                        bestl1,
+                        bestscore,
+                        o_bestl1,
+                        o_bestscore,
+                        final_adv_images,
+                    )
 
-            self.adjust_constant(
-                labels, bestscore, const, upper_bound, lower_bound)
+            self.adjust_constant(labels, bestscore, const, upper_bound, lower_bound)
 
         return final_adv_images
 
     def L1_loss(self, x1, x2):
         Flatten = nn.Flatten()
-        L1_loss = torch.abs(Flatten(x1)-Flatten(x2)).sum(dim=1)
+        L1_loss = torch.abs(Flatten(x1) - Flatten(x2)).sum(dim=1)
         # L1_loss = L1.sum()
         return L1_loss
 
     def L2_loss(self, x1, x2):
-        MSELoss = nn.MSELoss(reduction='none')
+        MSELoss = nn.MSELoss(reduction="none")
         Flatten = nn.Flatten()
         L2_loss = MSELoss(Flatten(x1), Flatten(x2)).sum(dim=1)
         # L2_loss = L2.sum()
@@ -154,20 +179,24 @@ class EADL1(Attack):
     def EAD_loss(self, output, one_hot_labels, L1_loss, L2_loss, const):
 
         # Not same as CW's f function
-        other = torch.max((1-one_hot_labels)*output -
-                          (one_hot_labels*1e4), dim=1)[0]
-        real = torch.max(one_hot_labels*output, dim=1)[0]
+        other = torch.max(
+            (1 - one_hot_labels) * output - (one_hot_labels * 1e4), dim=1
+        )[0]
+        real = torch.max(one_hot_labels * output, dim=1)[0]
 
         if self.targeted:
-            F_loss = torch.clamp((other-real), min=-self.kappa)
+            F_loss = torch.clamp((other - real), min=-self.kappa)
         else:
-            F_loss = torch.clamp((real-other), min=-self.kappa)
+            F_loss = torch.clamp((real - other), min=-self.kappa)
 
         if isinstance(L1_loss, type(None)):
             loss = torch.sum(const * F_loss) + torch.sum(L2_loss)
         else:
-            loss = torch.sum(const * F_loss) + \
-                torch.sum(L2_loss) + torch.sum(self.beta * L1_loss)
+            loss = (
+                torch.sum(const * F_loss)
+                + torch.sum(L2_loss)
+                + torch.sum(self.beta * L1_loss)
+            )
 
         return loss
 
@@ -205,7 +234,18 @@ class EADL1(Attack):
         else:
             return output != labels
 
-    def adjust_best_result(self, adv_img, labels, output, cost, bestl1, bestscore, o_bestl1, o_bestscore, final_adv_images):
+    def adjust_best_result(
+        self,
+        adv_img,
+        labels,
+        output,
+        cost,
+        bestl1,
+        bestscore,
+        o_bestl1,
+        o_bestscore,
+        final_adv_images,
+    ):
         output_label = torch.argmax(output, 1).float()
         mask = (cost < bestl1) & self.compare(output, labels)
         bestl1[mask] = cost[mask]

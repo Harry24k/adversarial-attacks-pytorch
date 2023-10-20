@@ -28,10 +28,10 @@ class JSMA(Attack):
     """
 
     def __init__(self, model, theta=1.0, gamma=0.1):
-        super().__init__('JSMA', model)
+        super().__init__("JSMA", model)
         self.theta = theta
         self.gamma = gamma
-        self.supported_mode = ['default', 'targeted']
+        self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
         r"""
@@ -61,7 +61,8 @@ class JSMA(Attack):
             # Shape of MNIST is [-1, 1, 28, 28],
             # and shape of CIFAR10 is [-1, 3, 32, 32].
             pert_image = self.perturbation_single(
-                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0))
+                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0)
+            )
             try:
                 adv_images = torch.cat((adv_images, pert_image), 0)
             except Exception:
@@ -82,12 +83,16 @@ class JSMA(Attack):
                 var_image.grad.zero_()
             output[0][i].backward(retain_graph=True)
             # Copy the derivative to the target place
-            jacobian[i] = var_image.grad.squeeze().view(-1, num_features).clone()  # nopep8
+            jacobian[i] = (
+                var_image.grad.squeeze().view(-1, num_features).clone()
+            )  # nopep8
 
         return jacobian.to(self.device)
 
     @torch.no_grad()
-    def saliency_map(self, jacobian, target_label, increasing, search_space, nb_features):
+    def saliency_map(
+        self, jacobian, target_label, increasing, search_space, nb_features
+    ):
         # The search domain
         domain = torch.eq(search_space, 1).float()
         # The sum of all features' derivative with respect to each class
@@ -101,21 +106,20 @@ class JSMA(Attack):
         if increasing:
             increase_coef = 2 * (torch.eq(domain, 0)).float().to(self.device)
         else:
-            increase_coef = -1 * 2 * \
-                (torch.eq(domain, 0)).float().to(self.device)
+            increase_coef = -1 * 2 * (torch.eq(domain, 0)).float().to(self.device)
         increase_coef = increase_coef.view(-1, nb_features)
 
         # Calculate sum of target forward derivative of any 2 features.
         target_tmp = target_grad.clone()
         target_tmp -= increase_coef * torch.max(torch.abs(target_grad))
         # PyTorch will automatically extend the dimensions
-        alpha = target_tmp.view(-1, 1, nb_features) + \
-            target_tmp.view(-1, nb_features, 1)
+        alpha = target_tmp.view(-1, 1, nb_features) + target_tmp.view(
+            -1, nb_features, 1
+        )
         # Calculate sum of other forward derivative of any 2 features.
         others_tmp = others_grad.clone()
         others_tmp += increase_coef * torch.max(torch.abs(others_grad))
-        beta = others_tmp.view(-1, 1, nb_features) + \
-            others_tmp.view(-1, nb_features, 1)
+        beta = others_tmp.view(-1, 1, nb_features) + others_tmp.view(-1, nb_features, 1)
 
         # Zero out the situation where a feature sums with itself
         tmp = np.ones((nb_features, nb_features), int)
@@ -134,22 +138,20 @@ class JSMA(Attack):
         # Apply the mask to the saliency map
         mask = torch.mul(torch.mul(mask1, mask2), zero_diagonal.view_as(mask1))
         # Do the multiplication according to formula 10 in the paper
-        saliency_map = torch.mul(
-            torch.mul(alpha, torch.abs(beta)), mask.float())
+        saliency_map = torch.mul(torch.mul(alpha, torch.abs(beta)), mask.float())
         # Get the most significant two pixels
-        max_idx = torch.argmax(
-            saliency_map.view(-1, nb_features * nb_features), dim=1)
+        max_idx = torch.argmax(saliency_map.view(-1, nb_features * nb_features), dim=1)
         # p = max_idx // nb_features
-        p = torch.div(max_idx, nb_features, rounding_mode='floor')
+        p = torch.div(max_idx, nb_features, rounding_mode="floor")
         # q = max_idx % nb_features
         q = max_idx - p * nb_features
         return p, q
 
     def perturbation_single(self, image, target_label):
-        '''
+        """
         image: only one element
         label: only one element
-        '''
+        """
         var_image = image
         var_label = target_label
         var_image = var_image.to(self.device)
@@ -177,12 +179,17 @@ class JSMA(Attack):
         current_pred = torch.argmax(output.data, 1)
 
         iter = 0
-        while (iter < max_iters) and (current_pred != target_label) and (search_domain.sum() != 0):
+        while (
+            (iter < max_iters)
+            and (current_pred != target_label)
+            and (search_domain.sum() != 0)
+        ):
             # Calculate Jacobian matrix of forward derivative
             jacobian = self.compute_jacobian(var_image)
             # Get the saliency map and calculate the two pixels that have the greatest influence
-            p1, p2 = self.saliency_map(jacobian, var_label,
-                                       increasing, search_domain, num_features)
+            p1, p2 = self.saliency_map(
+                jacobian, var_label, increasing, search_domain, num_features
+            )
             # Apply modifications
             # var_sample_flatten = var_image.view(-1, num_features).clone().detach_()
             var_sample_flatten = var_image.view(-1, num_features)
