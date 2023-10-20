@@ -11,7 +11,9 @@
   <a href="https://lgtm.com/projects/g/Harry24k/adversarial-attacks-pytorch/" >
  <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
  </a>
+  <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
+
 <strong>Torchattacks  is a PyTorch library that provides adversarial attacks to generate adversarial examples.</strong> 
 
 It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks.
