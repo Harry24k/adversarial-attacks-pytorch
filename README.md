@@ -30,9 +30,7 @@ adv_images = atk(images, labels)
 * [MAIR](https://github.com/Harry24k/MAIR): *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 * [RobustBench](https://github.com/RobustBench/robustbench): *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
 
-**Citation.**
-
-If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
+**Citation.** If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
 
 ```
 @article{kim2020torchattacks,
@@ -53,20 +51,18 @@ year={2020}
 
 **Installation**
 
-* pip
-    ```
-    pip install torchattacks
-    ```
-* source
-    ```
-    pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
-    ### or ###
-    git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
-    cd adversarial-attacks-pytorch/
-    pip install -e .
-    ```
+```
+#  pip
+pip install torchattacks
 
+#  source
+pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
 
+#  git clone
+git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
+cd adversarial-attacks-pytorch/
+pip install -e .
+```
 
 ## :rocket:  Getting Started
 
