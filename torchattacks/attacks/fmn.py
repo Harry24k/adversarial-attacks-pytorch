@@ -228,6 +228,110 @@ class FMN(Attack):
             labels = self.get_target_label(images, labels)
 
         adv_images = images.clone().detach()
+
         batch_size = len(images)
 
-        return
+        dual, projection, _ = self._dual_projection_mid_points[self.norm]
+        batch_view = lambda tensor: tensor.view(batch_size, *[1] * (images.ndim - 1))
+
+        delta = torch.zeros_like(images, device=self.device)
+        is_adv = None
+
+        if self.starting_points is not None:
+            epsilon, delta, is_adv = self._boundary_search(images, labels)
+
+        if self.norm == 0:
+            epsilon = torch.ones(batch_size,
+                                 device=self.device) if self.starting_points is None else delta.flatten(1).norm(p=0,
+                                                                                                                dim=0)
+        else:
+            epsilon = torch.full((batch_size,), float('inf'), device=self.device)
+
+        _worst_norm = torch.maximum(images, 1 - images).flatten(1).norm(p=self.norm, dim=1).detach()
+
+        init_trackers = {
+            'worst_norm': _worst_norm.to(self.device),
+            'best_norm': _worst_norm.clone().to(self.device),
+            'best_adv': images.clone(),
+            'adv_found': torch.zeros(batch_size, dtype=torch.bool, device=self.device)
+        }
+
+        multiplier = 1 if self.targeted else -1
+        delta.requires_grad_(True)
+
+        optimizer = SGD([delta], lr=self.alpha_init)
+        scheduler = CosineAnnealingLR(optimizer, T_max=self.steps)
+
+        for i in range(self.steps):
+            optimizer.zero_grad()
+
+            cosine = (1 + math.cos(math.pi * i / self.steps)) / 2
+            gamma = self.gamma_final + (self.gamma_init - self.gamma_final) * cosine
+
+            delta_norm = delta.data.flatten(1).norm(p=self.norm, dim=1)
+            adv_images = images + delta
+            adv_images = adv_images.to(self.device)
+
+            logits = self.model(adv_images)
+            pred_labels = logits.argmax(dim=1)
+
+            if i == 0:
+                labels_infhot = torch.zeros_like(logits).scatter_(
+                    1,
+                    labels.unsqueeze(1),
+                    float('inf')
+                )
+                logit_diff_func = partial(
+                    self._difference_of_logits,
+                    labels=labels,
+                    labels_infhot=labels_infhot
+                )
+
+            logit_diffs = logit_diff_func(logits=logits)
+            loss = -(multiplier * logit_diffs)
+
+            loss.sum().backward()
+
+            delta_grad = delta.grad.data
+
+            is_adv = (pred_labels == labels) if self.targeted else (pred_labels != labels)
+            is_smaller = delta_norm < init_trackers['best_norm']
+            is_both = is_adv & is_smaller
+            init_trackers['adv_found'].logical_or_(is_adv)
+            init_trackers['best_norm'] = torch.where(is_both, delta_norm, init_trackers['best_norm'])
+            init_trackers['best_adv'] = torch.where(batch_view(is_both), adv_images.detach(),
+                                                    init_trackers['best_adv'])
+
+            if self.norm == 0:
+                epsilon = torch.where(is_adv,
+                                      torch.minimum(torch.minimum(epsilon - 1,
+                                                                  (epsilon * (1 - gamma)).floor_()),
+                                                    init_trackers['best_norm']),
+                                      torch.maximum(epsilon + 1, (epsilon * (1 + gamma)).floor_()))
+                epsilon.clamp_(min=0)
+            else:
+                distance_to_boundary = loss.detach().abs() / delta_grad.flatten(1).norm(p=dual, dim=1).clamp_(min=1e-12)
+                epsilon = torch.where(is_adv,
+                                      torch.minimum(epsilon * (1 - gamma), init_trackers['best_norm']),
+                                      torch.where(init_trackers['adv_found'],
+                                                  epsilon * (1 + gamma),
+                                                  delta_norm + distance_to_boundary)
+                                      )
+
+            # clip epsilon
+            epsilon = torch.minimum(epsilon, init_trackers['worst_norm'])
+
+            # normalize gradient
+            grad_l2_norms = delta_grad.flatten(1).norm(p=2, dim=1).clamp_(min=1e-12)
+            delta_grad.div_(batch_view(grad_l2_norms))
+
+            optimizer.step()
+
+            # project in place
+            projection(delta=delta.data, epsilon=epsilon)
+            # clamp
+            delta.data.add_(images).clamp_(min=0, max=1).sub_(images)
+
+            scheduler.step()
+
+        return init_trackers['best_adv']

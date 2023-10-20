@@ -47,6 +47,9 @@ from .attacks.fab import FAB
 from .attacks.autoattack import AutoAttack
 from .attacks.square import Square
 
+# L0, L1, L2, Linf attacks
+from .attacks.fmn import FMN
+
 # Wrapper Class
 from .wrappers.multiattack import MultiAttack
 from .wrappers.lgv import LGV
@@ -92,6 +95,7 @@ __all__ = [
     "Square",
     "MultiAttack",
     "LGV",
+    "FMN"
 ]
 __wrapper__ = [
     "LGV",
