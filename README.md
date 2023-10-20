@@ -12,7 +12,7 @@
  <img src="https://img.shields.io/pypi/dm/torchattacks?color=red"/> 
  </a>
 </p>
-**[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides adversarial attacks to generate adversarial examples.** 
+<strong>[Torchattacks](https://adversarial-attacks-pytorch.readthedocs.io/en/latest/index.html) is a PyTorch library that provides adversarial attacks to generate adversarial examples.</strong> 
 It contains *PyTorch-like* interface and functions that make it easier for PyTorch users to implement adversarial attacks.
 
 
@@ -23,8 +23,6 @@ atk = torchattacks.PGD(model, eps=8/255, alpha=2/255, steps=4)
 # atk.set_normalization_used(mean=[...], std=[...])
 adv_images = atk(images, labels)
 ```
-
-
 
 * **Citation:** If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
 
@@ -37,18 +35,12 @@ year={2020}
 }
 ```
 
-
-
 * **Other Recommended Packages**:
-
     * [RobustBench](https://github.com/RobustBench/robustbench): *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
-
     * [MAIR](https://github.com/Harry24k/MAIR): *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 
-
-
 * **Table of Contents**:
-	1. [Requirements and Installation](#hammer-requirements-and-installation)
+    1. [Requirements and Installation](#hammer-requirements-and-installation)
     2. [Getting Started](#rocket--getting-started)
     3. [Supported Attacks](#page_with_curl-supported-attacks)
     4. [Performance Comparison](#bar_chart-performance-comparison)
@@ -67,18 +59,14 @@ year={2020}
 ### Installation
 
 * pip
-
     ```
     pip install torchattacks
     ```
 * source
-
     ```
     pip install git+https://github.com/Harry24k/adversarial-attacks-pytorch.git
     ```
-
     or
-
     ```
     git clone https://github.com/Harry24k/adversarial-attacks-pytorch.git
     cd adversarial-attacks-pytorch/
@@ -99,41 +87,35 @@ year={2020}
 ### [Demos](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demo/White-box%20Attack%20on%20ImageNet.ipynb)
 
 * **Targeted mode**
-
     * Random target label:
-    ```python
-    # random labels as target labels.
-    atk.set_mode_targeted_random()
-    ```
-
+        ```python
+        # random labels as target labels.
+        atk.set_mode_targeted_random()
+        ```
     * Least likely label:
-    ```python
-    # labels with the k-th smallest probability as target labels.
-    atk.set_mode_targeted_least_likely(kth_min)
-    ```
-
+        ```python
+        # labels with the k-th smallest probability as target labels.
+        atk.set_mode_targeted_least_likely(kth_min)
+        ```
     * By custom function:
-    ```python
-    # labels obtained by mapping function as target labels.
-    # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
-    atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
-    ```
-
+        ```python
+        # labels obtained by mapping function as target labels.
+        # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
+        atk.set_mode_targeted_by_function(target_map_function=lambda images, labels:(labels+1)%10)
+        ```
     * By label:
-    ```python
-    atk.set_mode_targeted_by_label(quiet=True)
-    # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
-    target_labels = (labels + 1) % 10
-    adv_images = atk(images, target_labels)
-    ```
-
+        ```python
+        atk.set_mode_targeted_by_label(quiet=True)
+        # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
+        target_labels = (labels + 1) % 10
+        adv_images = atk(images, target_labels)
+        ```
     * Return to default:
-    ```python
-    atk.set_mode_default()
-    ```
+        ```python
+        atk.set_mode_default()
+        ```
 
 * **Save adversarial images**
-
     ```python
     # Save
     atk.save(data_loader, save_path="./data.pt", verbose=True)
@@ -143,7 +125,6 @@ year={2020}
     ```
 
 * **Training/Eval during attack**
-
     ```python
     # For RNN-based models, we cannot calculate gradients with eval mode.
     # Thus, it should be changed to the training mode during the attack.
@@ -151,27 +132,24 @@ year={2020}
     ```
 
 * **Make a set of attacks**
-
     * Strong attacks
-    ```python
-    atk1 = torchattacks.FGSM(model, eps=8/255)
-    atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-    atk = torchattacks.MultiAttack([atk1, atk2])
-    ```
-
+        ```python
+        atk1 = torchattacks.FGSM(model, eps=8/255)
+        atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+        atk = torchattacks.MultiAttack([atk1, atk2])
+        ```
     * Binary search for CW
-    ```python
-    atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
-    atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
-    atk = torchattacks.MultiAttack([atk1, atk2])
-    ```
-
+        ```python
+        atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
+        atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
+        atk = torchattacks.MultiAttack([atk1, atk2])
+        ```
     * Random restarts
-    ```python
-    atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-    atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
-    atk = torchattacks.MultiAttack([atk1, atk2])
-    ```
+        ```python
+        atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+        atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
+        atk = torchattacks.MultiAttack([atk1, atk2])
+        ```
 
 
 
@@ -219,7 +197,6 @@ The distance measure in parentheses.
 ## :bar_chart: Performance Comparison
 
 As for the comparison packages, currently updated and the most cited methods were selected:
-
 * **Foolbox**: [611](https://scholar.google.com/scholar?cites=10871007443931887615&as_sdt=2005&sciodt=0,5&hl=ko) citations and last update 2023.10.
 * **ART**: [467](https://scholar.google.com/scholar?cites=16247708270610532647&as_sdt=2005&sciodt=0,5&hl=ko) citations and last update 2023.10.
 
