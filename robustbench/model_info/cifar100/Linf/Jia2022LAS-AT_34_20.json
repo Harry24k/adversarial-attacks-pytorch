@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2203.06616",
+  "name": "LAS-AT: Adversarial Training with Learnable Attack Strategy",
+  "authors": "Xiaojun Jia, Yong Zhang, Baoyuan Wu, Ke Ma, Jue Wang, Xiaochun Cao",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "arXiv, Mar 2022",
+  "architecture": "WideResNet-34-20",
+  "eps": "8/255",
+  "clean_acc": "67.31",
+  "reported": "31.91",
+  "autoattack_acc": "31.91",
+  "footnote": "",
+  "unreliable": false
+}

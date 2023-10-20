@@ -1,0 +1,16 @@
+{
+  "link": "https://openreview.net/forum?id=BuD2LmNaU3a",
+  "name": "Helper-based Adversarial Training: Reducing Excessive Margin to Achieve a Better Accuracy vs. Robustness Trade-off",
+  "authors": "Rahul Rade and Seyed-Mohsen Moosavi-Dezfooli",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "OpenReview, Jun 2021",
+  "architecture": "PreActResNet-18",
+  "eps": "8/255",
+  "clean_acc": "61.50",
+  "reported": "28.88",
+  "footnote": "It uses additional 1M synthetic images in training.",
+  "autoattack_acc": "28.88",
+  "unreliable": false
+}

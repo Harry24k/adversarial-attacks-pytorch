@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2002.08619",
+  "name": "Boosting Adversarial Training with Hypersphere Embedding",
+  "authors": "Tianyu Pang, Xiao Yang, Yinpeng Dong, Kun Xu, Hang Su, Jun Zhu",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2020",
+  "architecture": "WideResNet-34-20",
+  "eps": "8/255",
+  "clean_acc": "85.14",
+  "reported": "53.74",
+  "autoattack_acc": "53.74",
+  "unreliable": false
+}

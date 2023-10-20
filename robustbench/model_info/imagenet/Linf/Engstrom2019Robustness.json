@@ -1,0 +1,15 @@
+{
+  "link": "https://github.com/MadryLab/robustness",
+  "name": "Robustness library",
+  "authors": "Logan Engstrom, Andrew Ilyas, Hadi Salman, Shibani Santurkar, Dimitris Tsipras",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "GitHub,<br>Oct 2019",
+  "architecture": "ResNet-50",
+  "eps": "4/255",
+  "clean_acc": "62.56",
+  "reported": "33.38",
+  "autoattack_acc": "29.22",
+  "unreliable": false
+}

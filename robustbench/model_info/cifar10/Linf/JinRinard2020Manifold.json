@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/2003.04286",
+  "name": "Manifold Regularization for Adversarial Robustness",
+  "authors": "Charles Jin, Martin Rinard",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "arXiv, Mar 2020",
+  "architecture": "ResNet-18",
+  "eps": "8/255",
+  "clean_acc": "90.84",
+  "reported": "71.22",
+  "autoattack_acc": "1.35"
+}

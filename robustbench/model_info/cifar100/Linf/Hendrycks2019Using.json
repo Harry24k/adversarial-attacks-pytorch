@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/1901.09960",
+  "name": "Using Pre-Training Can Improve Model Robustness and Uncertainty",
+  "authors": "Dan Hendrycks, Kimin Lee, Mantas Mazeika",
+  "additional_data": true,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICML 2019",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "59.23",
+  "reported": "33.5",
+  "autoattack_acc": "28.42"
+}

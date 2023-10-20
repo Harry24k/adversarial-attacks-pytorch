@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2003.12862",
+  "name": "Adversarial Robustness: From Self-Supervised Pre-Training to Fine-Tuning",
+  "authors": "Tianlong Chen, Sijia Liu, Shiyu Chang, Yu Cheng, Lisa Amini, Zhangyang Wang",
+  "additional_data": false,
+  "number_forward_passes": 3,
+  "dataset": "cifar10",
+  "venue": "CVPR 2020",
+  "architecture": "ResNet-50",
+  "eps": "8/255",
+  "clean_acc": "86.04",
+  "reported": "54.64",
+  "footnote": "Uses ensembles of 3 models.",
+  "autoattack_acc": "51.56"
+}

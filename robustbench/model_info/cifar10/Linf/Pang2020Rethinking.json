@@ -1,0 +1,14 @@
+{
+  "link": "https://arxiv.org/abs/1905.10626",
+  "name": "Rethinking Softmax Cross-Entropy Loss for Adversarial Robustness",
+  "authors": "Tianyu Pang, Kun Xu, Yinpeng Dong, Chao Du, Ning Chen, Jun Zhu",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICLR 2020",
+  "architecture": "ResNet-32",
+  "eps": "8/255",
+  "clean_acc": "80.89",
+  "reported": "55.00",
+  "autoattack_acc": "43.48"
+}

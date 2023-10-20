@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/2007.08489",
+  "name": "Do Adversarially Robust ImageNet Models Transfer Better?",
+  "authors": "Hadi Salman, Andrew Ilyas, Logan Engstrom, Ashish Kapoor, Aleksander Madry",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "NeurIPS 2020",
+  "architecture": "WideResNet-50-2",
+  "eps": "4/255",
+  "clean_acc": "68.46",
+  "reported": "",
+  "corruptions_acc_2d": "35.69",
+  "corruptions_acc_3d": "39.71",
+  "corruptions_mce_2d": "80.42",
+  "corruptions_mce_3d": "79.65"
+}

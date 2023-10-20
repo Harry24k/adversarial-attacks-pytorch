@@ -1,0 +1,14 @@
+{
+  "link": "https://openreview.net/forum?id=Syejj0NYvr&noteId=Syejj0NYvr",
+  "name": "Adversarial Interpolation Training: A Simple Approach for Improving Model Robustness",
+  "authors": "Haichao Zhang, Wei Xu",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "OpenReview, Sep 2019",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "90.25",
+  "reported": "68.7",
+  "autoattack_acc": "36.45"
+}

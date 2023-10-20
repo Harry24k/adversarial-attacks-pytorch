@@ -1,0 +1,17 @@
+{
+  "link": "https://github.com/RobustBench/robustbench/",
+  "name": "Standardly trained model",
+  "authors": "Torchvision",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "imagenet",
+  "venue": "N/A",
+  "architecture": "ResNet-50",
+  "eps": null,
+  "clean_acc": "76.52",
+  "reported": "",
+  "corruptions_acc_2d": "39.23",
+  "corruptions_acc_3d": "44.77",
+  "corruptions_mce_2d": "76.64",
+  "corruptions_mce_3d": "72.95"
+}

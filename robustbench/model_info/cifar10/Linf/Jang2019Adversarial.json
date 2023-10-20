@@ -1,0 +1,14 @@
+{
+  "link": "http://openaccess.thecvf.com/content_ICCV_2019/html/Jang_Adversarial_Defense_via_Learning_to_Generate_Diverse_Attacks_ICCV_2019_paper.html",
+  "name": "Adversarial Defense via Learning to Generate Diverse Attacks",
+  "authors": "Yunseok Jang, Tianchen Zhao, Seunghoon Hong, Honglak Lee",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "ICCV 2019",
+  "architecture": "ResNet-20",
+  "eps": "8/255",
+  "clean_acc": "78.91",
+  "reported": "37.40",
+  "autoattack_acc": "34.95"
+}

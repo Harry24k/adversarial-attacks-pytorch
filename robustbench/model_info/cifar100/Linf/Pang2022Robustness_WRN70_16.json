@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/pdf/2202.10103.pdf",
+  "name": " Robustness and Accuracy Could Be Reconcilable by (Proper) Definition",
+  "authors": "Tianyu Pang, Min Lin, Xiao Yang, Jun Zhu, Shuicheng Yan",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "ICML 2022",
+  "architecture": "WideResNet-70-16",
+  "eps": "8/255",
+  "clean_acc": "65.56",
+  "reported": "33.05",
+  "autoattack_acc": "33.05",
+  "footnote": "It uses additional 1M synthetic images in training.",
+  "unreliable": false
+}

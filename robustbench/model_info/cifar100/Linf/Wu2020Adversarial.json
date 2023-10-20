@@ -1,0 +1,16 @@
+{
+  "link": "https://arxiv.org/abs/2004.05884",
+  "name": "Adversarial Weight Perturbation Helps Robust Generalization",
+  "authors": "Dongxian Wu, Shu-tao Xia, Yisen Wang",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar100",
+  "venue": "NeurIPS 2020",
+  "architecture": "WideResNet-34-10",
+  "eps": "8/255",
+  "clean_acc": "60.38",
+  "reported": "28.86",
+  "autoattack_acc": "28.86",
+  "footnote": null,
+  "unreliable": false
+}

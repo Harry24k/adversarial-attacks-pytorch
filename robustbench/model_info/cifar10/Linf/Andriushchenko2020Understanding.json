@@ -1,0 +1,15 @@
+{
+  "link": "https://arxiv.org/abs/2007.02617",
+  "name": "Understanding and Improving Fast Adversarial Training",
+  "authors": "Maksym Andriushchenko, Nicolas Flammarion",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2020",
+  "architecture": "PreActResNet-18",
+  "eps": "8/255",
+  "clean_acc": "79.84",
+  "reported": "44.54",
+  "footnote": "Focuses on fast adversarial training.",
+  "autoattack_acc": "43.93"
+}

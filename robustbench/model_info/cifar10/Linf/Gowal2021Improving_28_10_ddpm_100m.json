@@ -1,0 +1,17 @@
+{
+  "link": "https://arxiv.org/abs/2110.09468",
+  "name": "Improving Robustness using Generated Data",
+  "authors": "Sven Gowal, Sylvestre-Alvise Rebuffi, Olivia Wiles, Florian Stimberg, Dan Andrei Calian, Timothy Mann",
+  "additional_data": false,
+  "number_forward_passes": 1,
+  "dataset": "cifar10",
+  "venue": "NeurIPS 2021",
+  "architecture": "WideResNet-28-10",
+  "eps": "8/255",
+  "clean_acc": "87.50",
+  "reported": "63.38",
+  "autoattack_acc": "63.44",
+  "external": "63.38",
+  "footnote": "It uses additional 100M synthetic images in training. 63.38% robust accuracy is due to the original evaluation (AutoAttack + MultiTargeted)",
+  "unreliable": false
+}
