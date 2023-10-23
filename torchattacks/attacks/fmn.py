@@ -41,7 +41,6 @@ class FMN(Attack):
     """
     def __init__(self,
                  model: nn.Module,
-                 device = 'cpu',
                  norm: float = float('inf'),
                  steps: int = 10,
                  alpha_init: float = 1.0,
@@ -52,7 +51,6 @@ class FMN(Attack):
                  binary_search_steps: int = 10
                  ):
         super().__init__('FMN', model)
-        self.device = device
         self.norm = norm
         self.steps = steps
         self.alpha_init = alpha_init
