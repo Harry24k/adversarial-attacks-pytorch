@@ -123,7 +123,8 @@ class FMN(Attack):
             John Duchi, Shai Shalev-Shwartz, Yoram Singer, and Tushar Chandra.
             International Conference on Machine Learning (ICML 2008)
         """
-        if (to_project := x.norm(p=1, dim=1) > epsilon).any():
+        to_project = x.norm(p=1, dim=1) > epsilon
+        if to_project.any():
             x_to_project = x[to_project]
             epsilon_ = epsilon[to_project] if isinstance(epsilon, Tensor) else torch.tensor([epsilon], device=x.device)
             if not inplace:
