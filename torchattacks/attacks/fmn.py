@@ -20,7 +20,6 @@ class FMN(Attack):
 
     Args:
         model (nn.Module): The model to be attacked.
-        device: The device to run the attack on. If None, the default device will be used.
         norm (float): The norm for distance measure. Defaults to float('inf').
         steps (int): The number of steps for the attack. Defaults to 10.
         alpha_init (float): The initial alpha for the attack. Defaults to 1.0.
@@ -31,14 +30,12 @@ class FMN(Attack):
         binary_search_steps (int): The number of binary search steps. Defaults to 10.
 
     Shape:
-        - images: (N, C, H, W) where N is the number of batches, C is the number of channels, H is the height,
-          and W is the width. It must have a range [0, 1].
-        - labels: (N) where each value yi is 0 <= yi <= number of labels.
-        - output: (N, C, H, W).
+        - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
+        - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
+        - output: :math:`(N, C, H, W)`.
 
     Examples:
-        >>> model =
-        >>> attack = FMN(model, norm=float('inf'), steps=10)
+        >>> attack = torchattacks.FMN(model, norm=float('inf'), steps=10)
         >>> adv_images = attack(images, labels)
 
     """
@@ -253,7 +250,7 @@ class FMN(Attack):
         init_trackers = {
             'worst_norm': _worst_norm.to(self.device),
             'best_norm': _worst_norm.clone().to(self.device),
-            'best_adv': images.clone(),
+            'best_adv': adv_images,
             'adv_found': torch.zeros(batch_size, dtype=torch.bool, device=self.device)
         }
 
