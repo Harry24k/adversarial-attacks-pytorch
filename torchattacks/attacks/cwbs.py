@@ -23,8 +23,6 @@ class CWBS(Attack):
         binary_search_steps (int): The number of times we perform binary search to find the optimal tradeoff-constant between distance and confidence. (Default: 9)
         abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: False)
 
-    .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
-
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
         - labels: :math:`(N)` where each value :math:`y_i` is :math:`0 \leq y_i \leq` `number of labels`.
@@ -33,8 +31,6 @@ class CWBS(Attack):
     Examples::
         >>> attack = torchattacks.CWBS(model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True)
         >>> adv_images = attack(images, labels)
-
-    .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
 
     """
 
