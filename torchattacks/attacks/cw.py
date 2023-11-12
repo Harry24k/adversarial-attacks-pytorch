@@ -138,11 +138,10 @@ class CW(Attack):
     def f(self, outputs, labels):
         one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[labels]
 
-        # find the max logit other than the target class
-        # other = torch.max((1 - one_hot_labels) * outputs, dim=1)[0]
-        other = torch.sum((1 - one_hot_labels) * outputs, dim=1)
         # get the target class's logit
-        real = torch.max(one_hot_labels * outputs, dim=1)[0]
+        real = torch.sum(one_hot_labels * outputs, dim=1)
+        # find the max logit other than the target class
+        other = torch.max((1 - one_hot_labels) * outputs, dim=1)[0]
 
         if self.targeted:
             return torch.clamp((other - real), min=-self.kappa)
