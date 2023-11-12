@@ -128,12 +128,6 @@ pip install -e .
         atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
         atk = torchattacks.MultiAttack([atk1, atk2])
         ```
-    * Binary search for CW
-        ```python
-        atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
-        atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
-        atk = torchattacks.MultiAttack([atk1, atk2])
-        ```
     * Random restarts
         ```python
         atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
@@ -181,7 +175,7 @@ The distance measure in parentheses.
 | **EADEN**<br />(L1, L2) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM (PIM)**<br />(Linf) | Patch-wise Attack for Fooling Deep Neural Network ([Gao, Lianli, et al., 2020](https://arxiv.org/abs/2007.06765))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM++ (PIM++)**<br />(Linf) | Patch-wise++ Perturbation for Adversarial Targeted Attacks ([Gao, Lianli, et al., 2021](https://arxiv.org/abs/2012.15503))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-
+| **CWBS (Binary Search Version)**<br />(L2) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 
 
 ## :bar_chart: Performance Comparison
