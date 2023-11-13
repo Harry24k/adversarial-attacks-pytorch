@@ -20,6 +20,7 @@ class CW(Attack):
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
         steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
+        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: False)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
 
@@ -29,19 +30,20 @@ class CW(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.CW(model, c=1, kappa=0, steps=50, lr=0.01)
+        >>> attack = torchattacks.CW(model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True)
         >>> adv_images = attack(images, labels)
 
-    .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
+    .. note:: The binary search version of the CW algorithm has been implemented as CWBS.
 
     """
 
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01):
+    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=False):
         super().__init__("CW", model)
         self.c = c
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
+        self.abort_early = abort_early
         self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
@@ -103,13 +105,12 @@ class CW(Attack):
             best_L2[mask] = current_L2[mask]
             best_adv_images[mask] = adv_images[mask]
 
-            # Early stop when loss does not converge.
-            # max(.,1) To prevent MODULO BY ZERO error in the next step.
-            if step % max(self.steps // 10, 1) == 0:
-                if cost.item() > prev_cost:
+            # Early stop when loss does not converge
+            if self.abort_early and step % (self.steps // 10) == 0:
+                if cost > prev_cost * 0.9999:
                     break
                 else:
-                    prev_cost = cost.item()
+                    prev_cost = cost
 
         # print(best_L2)
         return best_adv_images
