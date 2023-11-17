@@ -20,7 +20,7 @@ class CW(Attack):
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
         steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
-        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: False)
+        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: True)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
 
@@ -37,7 +37,7 @@ class CW(Attack):
 
     """
 
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=False):
+    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True):
         super().__init__("CW", model)
         self.c = c
         self.kappa = kappa

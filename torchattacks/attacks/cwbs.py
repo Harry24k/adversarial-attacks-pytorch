@@ -21,7 +21,7 @@ class CWBS(Attack):
         steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
         binary_search_steps (int): The number of times we perform binary search to find the optimal tradeoff-constant between distance and confidence. (Default: 9)
-        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: False)
+        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: True)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -34,7 +34,7 @@ class CWBS(Attack):
 
     """
 
-    def __init__(self, model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=False):
+    def __init__(self, model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True):
         super().__init__("CW", model)
         self.init_c = init_c
         self.kappa = kappa
