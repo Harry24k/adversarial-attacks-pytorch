@@ -76,8 +76,8 @@ class CWLinf(Attack):
 
             # Calculate loss
             linf_norm = torch.abs(adv_images - images)
-            linf_max = (1.0 / batch_size) * torch.max(linf_norm).item()
-            current_Lx = torch.full((batch_size, ), linf_max).to(self.device)
+            linf_value = (1.0 / batch_size) * torch.max(linf_norm).item()
+            current_Lx = torch.full((batch_size, ), linf_value).to(self.device)
 
             Lx_loss = current_Lx.sum()
 
