@@ -22,7 +22,6 @@ class CWBS(Attack):
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
         binary_search_steps (int): The number of times we perform binary search to find the optimal tradeoff-constant between distance and confidence. (Default: 9)
         abort_early: if true, allows early aborts if gradient descent gets stuck. (Default: True)
-        loss: L0, L2 and Linf. (Default: L2)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -30,20 +29,19 @@ class CWBS(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.CWBS(model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True)
+        >>> attack = torchattacks.CWBSL2(model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True, loss='L2'):
-        super().__init__("CW", model)
+    def __init__(self, model, init_c=1, kappa=0, steps=50, lr=0.01, binary_search_steps=9, abort_early=True):
+        super().__init__("CWBSL2", model)
         self.init_c = init_c
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
         self.binary_search_steps = binary_search_steps
         self.abort_early = abort_early
-        self.loss = loss
         self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
@@ -90,23 +88,8 @@ class CWBS(Attack):
                 adv_images = self.tanh_space(w)
 
                 # Calculate loss
-                if self.loss == "L2":
-                    current_Lx = MSELoss(Flatten(adv_images),
-                                        Flatten(images)).sum(dim=1)
-                elif self.loss == "L0":
-                    threshold = 1e-6
-                    l0_norm = Flatten(adv_images) - Flatten(images)
-                    l0_norm = torch.abs(l0_norm).sum(dim=1)
-                    l0_condition = (l0_norm <= threshold)
-                    current_Lx = torch.zeros((batch_size, )).to(self.device)
-                    current_Lx[l0_condition] = (1.0 / batch_size) * torch.sum(l0_condition)
-                elif self.loss == "Linf":
-                    linf_norm = torch.abs(adv_images - images)
-                    linf_max = (1.0 / batch_size) * torch.max(linf_norm).item()
-                    current_Lx = torch.full(
-                        (batch_size, ), linf_max).to(self.device)
-                else:
-                    raise ValueError(f"Unsupported loss: {self.loss}.")
+                current_Lx = MSELoss(Flatten(adv_images),
+                                     Flatten(images)).sum(dim=1)
 
                 Lx_loss = current_Lx.sum()
 
