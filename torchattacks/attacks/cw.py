@@ -20,7 +20,8 @@ class CW(Attack):
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
         steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
-        abort_early: If true, allows early aborts if gradient descent gets stuck. (Default: True)
+        abort_early: if true, allows early aborts if gradient descent gets stuck. (Default: True)
+        loss: L0, L2 and Linf. (Default: L2)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
 
@@ -37,13 +38,14 @@ class CW(Attack):
 
     """
 
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True):
+    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True, loss='L2'):
         super().__init__("CW", model)
         self.c = c
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
         self.abort_early = abort_early
+        self.loss = loss
         self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
@@ -65,7 +67,7 @@ class CW(Attack):
 
         best_adv_images = images.clone().detach()
         batch_size = len(images)
-        best_L2 = torch.full((batch_size, ), 1e10).to(self.device)
+        best_Lx = torch.full((batch_size, ), 1e10).to(self.device)
         prev_cost = 1e10
 
         MSELoss = nn.MSELoss(reduction="none")
@@ -78,9 +80,25 @@ class CW(Attack):
             adv_images = self.tanh_space(w)
 
             # Calculate loss
-            current_L2 = MSELoss(Flatten(adv_images),
-                                 Flatten(images)).sum(dim=1)
-            L2_loss = current_L2.sum()
+            if self.loss == "L2":
+                current_Lx = MSELoss(Flatten(adv_images),
+                                     Flatten(images)).sum(dim=1)
+            elif self.loss == "L0":
+                threshold = 1e-6
+                l0_norm = Flatten(adv_images) - Flatten(images)
+                l0_norm = torch.abs(l0_norm).sum(dim=1)
+                l0_condition = (l0_norm <= threshold)
+                current_Lx = torch.zeros((batch_size, )).to(self.device)
+                current_Lx[l0_condition] = (1.0 / batch_size) * torch.sum(l0_condition)
+            elif self.loss == "Linf":
+                linf_norm = torch.abs(adv_images - images)
+                linf_max = (1.0 / batch_size) * torch.max(linf_norm).item()
+                current_Lx = torch.full(
+                    (batch_size, ), linf_max).to(self.device)
+            else:
+                raise ValueError(f"Unsupported loss: {self.loss}.")
+
+            Lx_loss = current_Lx.sum()
 
             outputs = self.get_logits(adv_images)
             if self.targeted:
@@ -88,7 +106,7 @@ class CW(Attack):
             else:
                 f_loss = self.f(outputs, labels)
 
-            cost = L2_loss + torch.sum(self.c * f_loss)
+            cost = Lx_loss + torch.sum(self.c * f_loss)
 
             optimizer.zero_grad()
             cost.backward()
@@ -97,12 +115,12 @@ class CW(Attack):
             # Update adversarial images
             pre = torch.argmax(outputs.detach(), 1)
             condition_1 = self.compare(pre, labels, target_labels)
-            condition_2 = (current_L2 < best_L2)
+            condition_2 = (current_Lx < best_Lx)
 
             # Filter out images that get either correct predictions or non-decreasing loss,
             # i.e., only images that are both misclassified and loss-decreasing are left
             mask = torch.logical_and(condition_1, condition_2)
-            best_L2[mask] = current_L2[mask]
+            best_Lx[mask] = current_Lx[mask]
             best_adv_images[mask] = adv_images[mask]
 
             # Early stop when loss does not converge
@@ -112,7 +130,7 @@ class CW(Attack):
                 else:
                     prev_cost = cost
 
-        # print(best_L2)
+        # print(best_Lx)
         return best_adv_images
 
     def compare(self, predition, labels, target_labels):
