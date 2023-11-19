@@ -63,9 +63,6 @@ class CWBSL0(Attack):
 
         o_best_adv_images = images.clone().detach()
 
-        MSELoss = nn.MSELoss(reduction="none")
-        Flatten = nn.Flatten()
-
         optimizer = optim.Adam([w], lr=self.lr)
 
         batch_size = len(images)
@@ -78,6 +75,8 @@ class CWBSL0(Attack):
             (batch_size, ), -1, dtype=torch.long).to(self.device)
         o_best_Lx = torch.full((batch_size, ), 1e10).to(self.device)
 
+        threshold = 1e-6
+
         for _ in range(self.binary_search_steps):
             best_score = torch.full(
                 (batch_size, ), -1, dtype=torch.long).to(self.device)
@@ -88,12 +87,11 @@ class CWBSL0(Attack):
                 adv_images = self.tanh_space(w)
 
                 # Calculate loss
-                threshold = 1e-6
-                l0_norm = Flatten(adv_images) - Flatten(images)
-                l0_norm = torch.abs(l0_norm).sum(dim=1)
-                l0_condition = (l0_norm <= threshold)
-                current_Lx = torch.zeros((batch_size, )).to(self.device)
-                current_Lx[l0_condition] = (1.0 / batch_size) * torch.sum(l0_condition)  # nopep8
+                l0_norm = torch.abs(adv_images.reshape(-1) - images.reshape(-1))
+                l0_condition = (l0_norm > threshold)
+                # Number of non-zero values
+                l0_value = (1.0 / l0_norm.shape[0]) * torch.sum(l0_condition)
+                current_Lx = torch.full((batch_size, ), l0_value).to(self.device)
 
                 Lx_loss = current_Lx.sum()
 

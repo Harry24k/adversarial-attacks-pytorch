@@ -63,9 +63,6 @@ class CWBSLinf(Attack):
 
         o_best_adv_images = images.clone().detach()
 
-        MSELoss = nn.MSELoss(reduction="none")
-        Flatten = nn.Flatten()
-
         optimizer = optim.Adam([w], lr=self.lr)
 
         batch_size = len(images)
