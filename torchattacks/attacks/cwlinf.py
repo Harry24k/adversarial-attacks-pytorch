@@ -21,7 +21,6 @@ class CWLinf(Attack):
         steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
         abort_early: if true, allows early aborts if gradient descent gets stuck. (Default: True)
-        loss: L0, L2 and Linf. (Default: L2)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
 
