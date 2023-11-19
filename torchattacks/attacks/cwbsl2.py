@@ -5,7 +5,7 @@ import torch.optim as optim
 from ..attack import Attack
 
 
-class CWBS(Attack):
+class CWBSL2(Attack):
     r"""
     CW (binary search version) in the paper 'Towards Evaluating the Robustness of Neural Networks'
     [https://arxiv.org/abs/1608.04644]

@@ -27,8 +27,12 @@ from .attacks.pifgsm import PIFGSM
 from .attacks.pifgsmpp import PIFGSMPP
 
 # L2 attacks
-from .attacks.cwl2 import CW
-from .attacks.cwbsl2 import CWBS
+from .attacks.cwl0 import CWL0
+from .attacks.cwl2 import CWL2
+from .attacks.cwlinf import CWLinf
+from .attacks.cwbsl0 import CWBSL0
+from .attacks.cwbsl2 import CWBSL2
+from .attacks.cwbslinf import CWBSLinf
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
