@@ -87,11 +87,12 @@ class CWBSL0(Attack):
                 adv_images = self.tanh_space(w)
 
                 # Calculate loss
-                l0_norm = torch.abs(adv_images.reshape(-1) - images.reshape(-1))
-                l0_condition = (l0_norm > threshold)
+                l0_abs = torch.abs(adv_images.reshape(-1) - images.reshape(-1))
+                l0_norm = (l0_abs > threshold)
                 # Number of non-zero values
-                l0_value = (1.0 / l0_norm.shape[0]) * torch.sum(l0_condition)
-                current_Lx = torch.full((batch_size, ), l0_value).to(self.device)
+                l0_loss = (1.0 / l0_abs.shape[0]) * torch.sum(l0_norm).item()
+                current_Lx = torch.full(
+                    (batch_size, ), l0_loss).to(self.device)
 
                 Lx_loss = current_Lx.sum()
 

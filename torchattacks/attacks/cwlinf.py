@@ -75,9 +75,9 @@ class CWLinf(Attack):
             adv_images = self.tanh_space(w)
 
             # Calculate loss
-            linf_norm = torch.abs(adv_images - images)
-            linf_value = (1.0 / batch_size) * torch.max(linf_norm).item()
-            current_Lx = torch.full((batch_size, ), linf_value).to(self.device)
+            linf_norm = torch.max(torch.abs(adv_images - images))
+            linf_loss = (1.0 / batch_size) * linf_norm.item()
+            current_Lx = torch.full((batch_size, ), linf_loss).to(self.device)
 
             Lx_loss = current_Lx.sum()
 
