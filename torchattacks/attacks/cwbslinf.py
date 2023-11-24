@@ -181,7 +181,7 @@ class CWBSLinf(Attack):
         # get the target class's logit
         real = torch.sum(one_hot_labels * outputs, dim=1)
         # find the max logit other than the target classs
-        other = torch.max((1 - one_hot_labels) * outputs, dim=1)[0]
+        other = torch.max((1 - one_hot_labels) * outputs - one_hot_labels * 1e12, dim=1)[0]  # nopep8
 
         if self.targeted:
             return torch.clamp((other - real), min=-self.kappa)
