@@ -27,11 +27,11 @@ from .attacks.pifgsm import PIFGSM
 from .attacks.pifgsmpp import PIFGSMPP
 
 # L2 attacks
+from .attacks.cw import CW
 from .attacks.cwl0 import CWL0
-from .attacks.cwl2 import CWL2
 from .attacks.cwlinf import CWLinf
+from .attacks.cwbs import CWBS
 from .attacks.cwbsl0 import CWBSL0
-from .attacks.cwbsl2 import CWBSL2
 from .attacks.cwbslinf import CWBSLinf
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
@@ -85,11 +85,11 @@ __all__ = [
     "EADEN",
     "PIFGSM",
     "PIFGSMPP",
+    "CW",
     "CWL0",
-    "CWL2",
     "CWLinf",
+    "CWBS",
     "CWBSL0",
-    "CWBSL2",
     "CWBSLinf",
     "PGDL2",
     "DeepFool",
