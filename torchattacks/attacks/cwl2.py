@@ -114,7 +114,7 @@ class CWL2(Attack):
                     prev_cost = cost
 
         # print(best_Lx)
-        return best_adv_images
+        return best_adv_images.clone().detach()
 
     def compare(self, predition, labels, target_labels):
         if self.targeted:

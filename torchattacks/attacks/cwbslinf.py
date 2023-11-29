@@ -152,7 +152,7 @@ class CWBSLinf(Attack):
             const[mask_n1_n2_3] *= 10
 
         # print(o_best_Lx)
-        return o_best_adv_images
+        return o_best_adv_images.clone().detach()
 
     def compare(self, predition, labels, target_labels):
         if self.targeted:
