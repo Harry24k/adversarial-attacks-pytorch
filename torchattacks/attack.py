@@ -1,5 +1,5 @@
 import time
-from typing import Optional, Union, List, Dict, Tuple
+from typing import Optional, Union, List, Tuple
 from collections import OrderedDict
 
 import numpy as np
