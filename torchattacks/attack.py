@@ -106,7 +106,7 @@ class Attack(object):
                 self.set_normalization_used(mean, std)
 
     @wrapper_method
-    def set_normalization_used(self, mean: Union[np.array, torch.Tensor, List, Tuple], std: Union[np.array, torch.Tensor, List, Tuple]) -> None:
+    def set_normalization_used(self, mean: Union[np.ndarray, torch.Tensor, List, Tuple], std: Union[np.ndarray, torch.Tensor, List, Tuple]) -> None:
         self.normalization_used = {}
         n_channels = len(mean)
         mean = torch.tensor(mean).reshape(1, n_channels, 1, 1)
