@@ -25,7 +25,7 @@ adv_images = atk(images, labels)
 
 **Additional Recommended Packages**.
 
-* [MAIR](https://github.com/Harry24k/MAIR): *Adversarially Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
+* [MAIR](https://github.com/Harry24k/MAIR): *Adversarial Trainining Framework, [NeurIPS'23 Main Track](https://neurips.cc/virtual/2023/poster/72546).*
 * [RobustBench](https://github.com/RobustBench/robustbench): *Adversarially Trained Models & Benchmarks, [NeurIPS'21 Datasets and Benchmarks Track](https://openreview.net/forum?id=SSKZPJCt7B).*
 
 **Citation.** If you use this package, please cite the following BibTex ([GoogleScholar](https://scholar.google.com/scholar?cluster=10203998516567946917&hl=ko&as_sdt=2005&sciodt=0,5)):
