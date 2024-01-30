@@ -20,7 +20,8 @@ CACHE = {}
 def get_model(device='cpu'):
     # load checkpoint.
     print(os.getcwd())
-    checkpoint = torch.load('./code_coverage/resnet18_eval.pth')
+    checkpoint = torch.load(
+        './code_coverage/resnet18_eval.pth', map_location=torch.device(device))
     net = ResNet18().to(device)
     net.load_state_dict(checkpoint['net'])
     net.eval()
