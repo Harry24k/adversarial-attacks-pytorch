@@ -7,6 +7,7 @@ from .attacks.fgsm import FGSM
 from .attacks.bim import BIM
 from .attacks.rfgsm import RFGSM
 from .attacks.pgd import PGD
+from .attacks.pgdes import PGDES
 from .attacks.eotpgd import EOTPGD
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
@@ -64,6 +65,7 @@ __all__ = [
     "BIM",
     "RFGSM",
     "PGD",
+    "PGDES",
     "EOTPGD",
     "FFGSM",
     "TPGD",
