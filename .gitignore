@@ -1,23 +1,22 @@
 __pycache__
-.ipynb_checkpoints/*
+.ipynb_checkpoints/
 debug.log
 
-build/*
-_build
-dist/*
-torchattacks.egg-info/*
-data/*
-models/*
+build/
+dist/
+torchattacks.egg-info/
+data/
 */.*
 MENIFEST.in
 setup.cfg
 _commit.bat
 
-autoattack/*
+autoattack/
+.pytest_cache/
 
 demo/_*
-demo/data/*
-demo/models/*
+demo/data
+demo/models
 demo/torchdefenses/*
 demo/robustbench/*
 demo/autoattack/*
