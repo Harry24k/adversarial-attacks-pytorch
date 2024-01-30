@@ -4,50 +4,70 @@ import os
 # This line must be preceded by
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # nopep8
 
-from robustbench.utils import load_model  # nopep8
-from robustbench.utils import clean_accuracy  # nopep8
-from robustbench.data import load_cifar10  # nopep8
-import torchattacks  # nopep8
-import torch  # nopep8
-import pytest  # nopep8
-import time  # nopep8
+import torchattacks
+import torch
+import pytest
+import time
+import torch
+from torchvision import datasets, transforms
+
+from resnet import ResNet18
+
 
 CACHE = {}
 
 
-def get_model(model_name='Standard', device='cpu', model_dir='./models'):
-    model = load_model(model_name, model_dir=model_dir, norm='Linf')
-    # fsize = os.path.getsize(filePath)
-    return model.to(device)
+def get_model(device='cpu'):
+    # load checkpoint.
+    checkpoint = torch.load('resnet18_eval.pth')
+    net = ResNet18().to(device)
+    net.load_state_dict(checkpoint['net'])
+    return net.to(device)
 
 
-def get_data(data_name='CIFAR10', device='cpu', n_examples=5, data_dir='./data'):
-    images, labels = load_cifar10(n_examples=n_examples, data_dir=data_dir)
-    return images.to(device), labels.to(device)
+def get_data():
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+    ])
+    testset = datasets.CIFAR10(
+        root='./data', train=False, download=True, transform=transform_test)
+    test_loader = torch.utils.data.DataLoader(
+        testset, batch_size=100, shuffle=False)
+
+    return test_loader
+
+
+def clean_accuracy(model, images, labels):
+    model.eval()
+    total = 0
+    correct = 0
+    pred = torch.argmax(model(images), dim=1)
+    correct += torch.sum(labels == pred)
+    total += images.shape[0]
+    return correct / total
 
 
 @torch.no_grad()
 @pytest.mark.parametrize('atk_class', [atk_class for atk_class in torchattacks.__all__ if atk_class not in torchattacks.__wrapper__])
-def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./models', data_dir='./data'):
+def test_atks_on_cifar10(atk_class, device='cpu'):
     global CACHE
     if CACHE.get('model') is None:
-        model = get_model(device=device, model_dir=model_dir)
+        model = get_model(device=device)
         CACHE['model'] = model
     else:
         model = CACHE['model']
 
-    if CACHE.get('images') is None:
-        images, labels = get_data(
-            device=device, n_examples=n_examples, data_dir=data_dir)
-        CACHE['images'] = images
-        CACHE['labels'] = labels
+    if CACHE.get('testset') is None:
+        test_loader = get_data()
+        CACHE['testset'] = test_loader
     else:
-        images = CACHE['images']
-        labels = CACHE['labels']
+        test_loader = CACHE['testset']
 
     if CACHE.get('clean_acc') is None:
-        clean_acc = clean_accuracy(model, images, labels)
-        CACHE['clean_acc'] = clean_acc
+        for (images, labels) in test_loader:
+            clean_acc = clean_accuracy(model, test_loader)
+            CACHE['clean_acc'] = clean_acc
+            break
     else:
         clean_acc = CACHE['clean_acc']
 
@@ -58,7 +78,10 @@ def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./mod
         atk = eval("torchattacks."+atk_class)(model, **kargs)
         start = time.time()
         with torch.enable_grad():
-            adv_images = atk(images, labels)
+            for (images, labels) in test_loader:
+                adv_images = atk(images, labels)
+                break
+
         end = time.time()
         robust_acc = clean_accuracy(model, adv_images, labels)
         sec = float(end - start)
@@ -68,7 +91,10 @@ def test_atks_on_cifar10(atk_class, device='cpu', n_examples=5, model_dir='./mod
         if 'targeted' in atk.supported_mode:
             atk.set_mode_targeted_random(quiet=True)
             with torch.enable_grad():
-                adv_images = atk(images, labels)
+                for (images, labels) in test_loader:
+                    adv_images = atk(images, labels)
+                    break
+
             robust_acc = clean_accuracy(model, adv_images, labels)
             sec = float(end - start)
             print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
