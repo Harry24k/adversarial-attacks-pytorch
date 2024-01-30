@@ -68,7 +68,7 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
 
     if CACHE.get('clean_acc') is None:
         for (images, labels) in test_loader:
-            clean_acc = clean_accuracy(model, test_loader)
+            clean_acc = clean_accuracy(model, test_loader, labels)
             CACHE['clean_acc'] = clean_acc
             break
     else:
