@@ -16,7 +16,7 @@ class PGDES(Attack):
         eps (float): maximum perturbation. (Default: 8/255)
         alpha (float): step size. (Default: 2/255)
         steps (int): number of steps. (Default: 10)
-        tau (int): the step controlling how early we should stop interations when wrong adv data is found. (Default: 10)
+        tau (int): the step controlling how early we should stop interations when wrong adv data is found. (Default: 3)
         random_start (bool): using random initialization of delta. (Default: True)
 
     Shape:
