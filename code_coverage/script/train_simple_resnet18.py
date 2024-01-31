@@ -7,7 +7,7 @@ from tqdm import tqdm
 import time
 import os
 
-from resnet import ResNet18
+from code_coverage.script.resnet import ResNet18
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 cudnn.benchmark = True
