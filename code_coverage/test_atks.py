@@ -53,7 +53,7 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
     else:
         model = CACHE['model']
 
-    if CACHE.get('testset') is None:
+    if CACHE.get('images') is None or CACHE.get('labels') is None:
         images, labels = get_data()
         CACHE['images'] = images
         CACHE['labels'] = labels
