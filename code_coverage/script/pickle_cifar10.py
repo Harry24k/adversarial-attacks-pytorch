@@ -1,15 +1,13 @@
 import torch
-from torchvision import datasets, transforms, utils
+from torchvision import datasets, transforms
 
 transform_test = transforms.Compose([
     transforms.ToTensor(),
 ])
-
 testset = datasets.CIFAR10(
     root='../data', train=False, download=True, transform=transform_test)
-
 test_loader = torch.utils.data.DataLoader(
-    testset, batch_size=10, shuffle=False, num_workers=32)
+    testset, batch_size=10, shuffle=False)
 
 
 def split(testloader):
