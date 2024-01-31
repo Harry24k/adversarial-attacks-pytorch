@@ -28,18 +28,16 @@ def get_model(device='cpu'):
 
 
 def get_data():
-    images = torch.load('./code_coverage/images.pth') # 100
-    labels = torch.load('./code_coverage/labels.pth') # 100
+    images = torch.load('./code_coverage/images.pth')  # 10
+    labels = torch.load('./code_coverage/labels.pth')  # 10
     return images, labels
 
 
 def clean_accuracy(model, images, labels):
     model.eval()
-    total = 0
-    correct = 0
     pred = torch.argmax(model(images), dim=1)
-    correct += torch.sum(labels == pred)
-    total += images.shape[0]
+    correct = torch.sum(labels == pred)
+    total = images.shape[0]
     return correct / total
 
 
@@ -67,34 +65,36 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
     else:
         clean_acc = CACHE['clean_acc']
 
-    try:
-        kargs = {}
-        if atk_class in ['SPSA']:
-            kargs['max_batch_size'] = 5
-        atk = eval("torchattacks."+atk_class)(model, **kargs)
+    kargs = {}
+    if atk_class in ['SPSA']:
+        kargs['max_batch_size'] = 5
+
+    atk = eval("torchattacks."+atk_class)(model, **kargs)
+    start = time.time()
+    with torch.enable_grad():
+        adv_images = atk(images, labels)
+    end = time.time()
+
+    # non-targeted attack test
+    robust_acc_1 = clean_accuracy(model, adv_images, labels)
+    assert clean_acc >= robust_acc_1
+
+    sec = float(end - start)
+    print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
+        atk_class, clean_acc, robust_acc_1, sec))
+
+    # targeted attack test
+    if 'targeted' in atk.supported_mode:
+        atk.set_mode_targeted_random(quiet=True)
         start = time.time()
         with torch.enable_grad():
             adv_images = atk(images, labels)
-
         end = time.time()
-        robust_acc = clean_accuracy(model, adv_images, labels)
-        sec = float(end - start)
-        print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
-            atk_class, clean_acc, robust_acc, sec))
+        robust_acc_2 = clean_accuracy(model, adv_images, labels)
+    else:
+        robust_acc_2 = 0
+    assert clean_acc >= robust_acc_2
 
-        if 'targeted' in atk.supported_mode:
-            atk.set_mode_targeted_random(quiet=True)
-            with torch.enable_grad():
-                adv_images = atk(images, labels)
-
-            robust_acc = clean_accuracy(model, adv_images, labels)
-            sec = float(end - start)
-            print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
-                "- targeted", clean_acc, robust_acc, sec))
-
-    except Exception as e:
-        robust_acc = clean_acc + 1  # It will cuase assertion.
-        print('{0:<12} test acc Error'.format(atk_class))
-        print(e)
-
-    assert clean_acc >= robust_acc
+    sec = float(end - start)
+    print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
+        "- targeted", clean_acc, robust_acc_2, sec))
