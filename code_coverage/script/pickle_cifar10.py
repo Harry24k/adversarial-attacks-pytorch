@@ -1,0 +1,27 @@
+import torch
+from torchvision import datasets, transforms, utils
+
+transform_test = transforms.Compose([
+    transforms.ToTensor(),
+])
+
+testset = datasets.CIFAR10(
+    root='./data', train=False, download=True, transform=transform_test)
+
+test_loader = torch.utils.data.DataLoader(
+    testset, batch_size=100, shuffle=False, num_workers=32)
+
+
+def split(testloader):
+    for (x, y) in testloader:
+        torch.save(x, 'images.pt')
+        torch.save(y, 'labels.pt')
+        break
+
+
+def main():
+    split(test_loader)
+
+
+if __name__ == '__main__':
+    main()

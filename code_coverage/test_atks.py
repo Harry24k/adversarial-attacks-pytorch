@@ -9,9 +9,8 @@ import torch
 import pytest
 import time
 import torch
-from torchvision import datasets, transforms
 
-from resnet import ResNet18
+from script.resnet import ResNet18
 
 
 CACHE = {}
@@ -29,15 +28,9 @@ def get_model(device='cpu'):
 
 
 def get_data():
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-    ])
-    testset = datasets.CIFAR10(
-        root='./data', train=False, download=True, transform=transform_test)
-    test_loader = torch.utils.data.DataLoader(
-        testset, batch_size=100, shuffle=False)
-
-    return test_loader
+    images = torch.load('./code_coverage/images.pth') # 100
+    labels = torch.load('./code_coverage/labels.pth') # 100
+    return images, labels
 
 
 def clean_accuracy(model, images, labels):
@@ -61,16 +54,16 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
         model = CACHE['model']
 
     if CACHE.get('testset') is None:
-        test_loader = get_data()
-        CACHE['testset'] = test_loader
+        images, labels = get_data()
+        CACHE['images'] = images
+        CACHE['labels'] = labels
     else:
-        test_loader = CACHE['testset']
+        images = CACHE['images']
+        labels = CACHE['labels']
 
     if CACHE.get('clean_acc') is None:
-        for (images, labels) in test_loader:
-            clean_acc = clean_accuracy(model, images, labels)
-            CACHE['clean_acc'] = clean_acc
-            break
+        clean_acc = clean_accuracy(model, images, labels)
+        CACHE['clean_acc'] = clean_acc
     else:
         clean_acc = CACHE['clean_acc']
 
@@ -81,9 +74,7 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
         atk = eval("torchattacks."+atk_class)(model, **kargs)
         start = time.time()
         with torch.enable_grad():
-            for (images, labels) in test_loader:
-                adv_images = atk(images, labels)
-                break
+            adv_images = atk(images, labels)
 
         end = time.time()
         robust_acc = clean_accuracy(model, adv_images, labels)
@@ -94,9 +85,7 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
         if 'targeted' in atk.supported_mode:
             atk.set_mode_targeted_random(quiet=True)
             with torch.enable_grad():
-                for (images, labels) in test_loader:
-                    adv_images = atk(images, labels)
-                    break
+                adv_images = atk(images, labels)
 
             robust_acc = clean_accuracy(model, adv_images, labels)
             sec = float(end - start)
