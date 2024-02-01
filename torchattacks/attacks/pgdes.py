@@ -6,7 +6,7 @@ from ..attack import Attack
 
 class PGDES(Attack):
     r"""
-    early-stopped PGD in the paper 'Attacks Which Do Not Kill Training Make Adversarial Learning Stronger'
+    Early-stopped PGD in the paper 'Attacks Which Do Not Kill Training Make Adversarial Learning Stronger'
     [https://arxiv.org/abs/2002.11242]
 
     Distance Measure : Linf
