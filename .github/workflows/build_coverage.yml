@@ -26,11 +26,17 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         # Bugs: 3.10 will become 3.1 if without quotes -> https://github.com/actions/setup-python/issues/695
         # For ubuntu 22.04: https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
-        pytorch-version: ["1.9.1", "1.10.1", "1.11.0", "1.12.1", "1.13.1", "2.0.1"]
+        pytorch-version: ["1.9.1", "1.10.1", "1.11.0", "1.12.1", "1.13.1", "2.0.1", "2.1.2", "2.2.0"]
           # 1.5.1, 1.4.0 Model load error in robustbench.
           # 1.8.1, 1.7.1, 1.6.0 'padding==same' error in TIFGSM
         exclude:
           # https://github.com/pytorch/vision#installation
+          # pytorch 2.2 support python from 3.8 to 3.11
+          - pytorch-version: "2.2.0"
+            python-version: "3.7"
+          # pytorch 2.1 support python from 3.8 to 3.11
+          - pytorch-version: "2.1.2"
+            python-version: "3.7"
           # pytorch 2.0 support python from 3.8 to 3.11
           - pytorch-version: "2.0.1"
             python-version: "3.7"
