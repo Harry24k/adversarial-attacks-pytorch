@@ -1,8 +1,9 @@
 # Importing the parent directory
 # This line must be preceded by
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import torchattacks
 import pytest
 import time
