@@ -225,7 +225,6 @@ class EADL1(Attack):
         c2 = torch.abs(diff) <= self.beta
         c3 = diff < -self.beta
 
-        new_x_k = x_k.clone().detach().to(self.device)
         new_x_k = (c1.float() * upper) + (c2.float() * images) + (c3.float() * lower)  # nopep8
         y_k.data = new_x_k + (zt * (new_x_k - x_k))
         return new_x_k, y_k
