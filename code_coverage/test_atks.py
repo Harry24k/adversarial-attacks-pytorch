@@ -1,9 +1,8 @@
-import sys
-import os
+# import sys
 # Importing the parent directory
 # This line must be preceded by
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # nopep8
-
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import os
 import torchattacks
 import pytest
 import time
@@ -18,18 +17,17 @@ CACHE = {}
 def get_model(device='cpu'):
     # load checkpoint.
     print(os.getcwd())
-    checkpoint = torch.load(
-        './code_coverage/resnet18_eval.pth', map_location=torch.device(device))
+    checkpoint = torch.load('./resnet18_eval.pth',
+                            map_location=torch.device(device))
     net = ResNet18().to(device)
     net.load_state_dict(checkpoint['net'])
-    net.eval()
     return net.to(device)
 
 
-def get_data():
-    images = torch.load('./code_coverage/images.pth')  # 10
-    labels = torch.load('./code_coverage/labels.pth')  # 10
-    return images, labels
+def get_data(device='cpu'):
+    images = torch.load('./images.pth')  # 10 images
+    labels = torch.load('./labels.pth')  # 10 images
+    return images.to(device), labels.to(device)
 
 
 def clean_accuracy(model, images, labels):
@@ -72,17 +70,18 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
     start = time.time()
     with torch.enable_grad():
         adv_images = atk(images, labels)
-    end = time.time()
 
     # non-targeted attack test
     robust_acc_1 = clean_accuracy(model, adv_images, labels)
     assert clean_acc >= robust_acc_1
+    end = time.time()
 
     sec = float(end - start)
     print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
         atk_class, clean_acc, robust_acc_1, sec))
 
     # targeted attack test
+    start = time.time()
     if 'targeted' in atk.supported_mode:
         atk.set_mode_targeted_random(quiet=True)
         start = time.time()
@@ -93,6 +92,7 @@ def test_atks_on_cifar10(atk_class, device='cpu'):
     else:
         robust_acc_2 = 0
     assert clean_acc >= robust_acc_2
+    end = time.time()
 
     sec = float(end - start)
     print('{0:<12}: clean_acc={1:2.2f} robust_acc={2:2.2f} sec={3:2.2f}'.format(
