@@ -43,7 +43,7 @@ class EADEN(Attack):
         binary_search_steps=9,
         abort_early=True,
     ):
-        super().__init__("EADL1", model)
+        super().__init__("EADEN", model)
         self.init_c = init_c
         self.kappa = kappa
         self.beta = beta
