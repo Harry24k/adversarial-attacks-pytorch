@@ -1,7 +1,7 @@
-# import sys
 # Importing the parent directory
 # This line must be preceded by
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os
 import torchattacks
 import pytest
@@ -17,7 +17,7 @@ CACHE = {}
 def get_model(device='cpu'):
     # load checkpoint.
     print(os.getcwd())
-    checkpoint = torch.load('./resnet18_eval.pth',
+    checkpoint = torch.load('./code_coverage/resnet18_eval.pth',
                             map_location=torch.device(device))
     net = ResNet18().to(device)
     net.load_state_dict(checkpoint['net'])
@@ -25,8 +25,8 @@ def get_model(device='cpu'):
 
 
 def get_data(device='cpu'):
-    images = torch.load('./images.pth')  # 10 images
-    labels = torch.load('./labels.pth')  # 10 images
+    images = torch.load('./code_coverage/images.pth')  # 10 images
+    labels = torch.load('./code_coverage/labels.pth')  # 10 images
     return images.to(device), labels.to(device)
 
 

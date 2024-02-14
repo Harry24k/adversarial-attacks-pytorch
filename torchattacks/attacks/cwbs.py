@@ -53,9 +53,7 @@ class CWBS(Attack):
         labels = labels.clone().detach().to(self.device)
 
         if self.targeted:
-            target_labels = self.get_target_label(images, labels)
-        else:
-            target_labels = labels
+            labels = self.get_target_label(images, labels)
 
         # w = torch.zeros_like(images).detach() # Requires 2x times
         w = self.inverse_tanh_space(images).detach()
@@ -96,7 +94,7 @@ class CWBS(Attack):
                 outputs = self.get_logits(adv_images)
                 if self.targeted:
                     # f_loss = self.f(outputs, target_labels).sum()
-                    f_loss = self.f(outputs, target_labels)
+                    f_loss = self.f(outputs, labels)
                 else:
                     # f_loss = self.f(outputs, labels).sum()
                     f_loss = self.f(outputs, labels)
@@ -109,7 +107,7 @@ class CWBS(Attack):
 
                 # Update adversarial images
                 pre = torch.argmax(outputs.detach(), 1)
-                condition_1 = self.compare(pre, labels, target_labels)
+                condition_1 = self.compare(pre, labels)
                 condition_2 = (current_Lx < best_Lx)
                 # Filter out images that get either correct predictions or non-decreasing loss,
                 # i.e., only images that are both misclassified and loss-decreasing are left
@@ -135,7 +133,7 @@ class CWBS(Attack):
             outputs = self.get_logits(adv_images)
             pre = torch.argmax(outputs, 1)
 
-            condition_1 = self.compare(pre, labels, target_labels)
+            condition_1 = self.compare(pre, labels)
             condition_2 = (best_score != -1)
             condition_3 = upper_bound < 1e9
 
@@ -153,12 +151,12 @@ class CWBS(Attack):
             const[mask_n1_n2_3] *= 10
 
         # print(o_best_Lx)
-        return o_best_adv_images.clone().detach()
+        return o_best_adv_images
 
-    def compare(self, predition, labels, target_labels):
+    def compare(self, predition, labels):
         if self.targeted:
             # We want to let pre == target_labels in a targeted attack
-            ret = (predition == target_labels)
+            ret = (predition == labels)
         else:
             # If the attack is not targeted we simply make these two values unequal
             ret = (predition != labels)

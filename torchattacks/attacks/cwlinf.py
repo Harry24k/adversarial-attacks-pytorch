@@ -55,9 +55,7 @@ class CWLinf(Attack):
         labels = labels.clone().detach().to(self.device)
 
         if self.targeted:
-            target_labels = self.get_target_label(images, labels)
-        else:
-            target_labels = labels
+            labels = self.get_target_label(images, labels)
 
         # w = torch.zeros_like(images).detach() # Requires 2x times
         w = self.inverse_tanh_space(images).detach()
@@ -83,7 +81,7 @@ class CWLinf(Attack):
 
             outputs = self.get_logits(adv_images)
             if self.targeted:
-                f_loss = self.f(outputs, target_labels)
+                f_loss = self.f(outputs, labels)
             else:
                 f_loss = self.f(outputs, labels)
 
@@ -95,7 +93,7 @@ class CWLinf(Attack):
 
             # Update adversarial images
             pre = torch.argmax(outputs.detach(), 1)
-            condition_1 = self.compare(pre, labels, target_labels)
+            condition_1 = self.compare(pre, labels)
             condition_2 = (current_Lx < best_Lx)
 
             # Filter out images that get either correct predictions or non-decreasing loss,
@@ -112,12 +110,12 @@ class CWLinf(Attack):
                     prev_cost = cost
 
         # print(best_Lx)
-        return best_adv_images.clone().detach()
+        return best_adv_images
 
-    def compare(self, predition, labels, target_labels):
+    def compare(self, predition, labels):
         if self.targeted:
             # We want to let pre == target_labels in a targeted attack
-            ret = (predition == target_labels)
+            ret = (predition == labels)
         else:
             # If the attack is not targeted we simply make these two values unequal
             ret = (predition != labels)
