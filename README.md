@@ -180,7 +180,7 @@ The distance measure in parentheses.
 | **CWBSL0 (Binary Search Version)**<br />(L0) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **CWBSL2 (Binary Search Version)**<br />(L2) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **CWBSLinf (Binary Search Version)**<br />(Linf) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-| **PGDES (Early-Stopped PGD Version)**<br />(Linf) | Attacks Which Do Not Kill Training Make Adversarial Learning Stronger ([Zhang, Jingfeng, 2020](https://arxiv.org/abs/2002.11242))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **ESPGD (Early-Stopped PGD Version)**<br />(Linf) | Attacks Which Do Not Kill Training Make Adversarial Learning Stronger ([Zhang, Jingfeng, 2020](https://arxiv.org/abs/2002.11242))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 
 ## :bar_chart: Performance Comparison
 
