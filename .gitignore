@@ -1,28 +1,28 @@
+.vscode/
 __pycache__
-.ipynb_checkpoints/*
+.ipynb_checkpoints/
 debug.log
 
-build/*
-_build
-dist/*
-torchattacks.egg-info/*
-data/*
-models/*
+build/
+dist/
+torchattacks.egg-info/
+data/
 */.*
 MENIFEST.in
 setup.cfg
 _commit.bat
+code_coverage/data/
 
-autoattack/*
+autoattack/
+.pytest_cache/
 
 demo/_*
-demo/data/*
-demo/models/*
-demo/torchdefenses/*
-demo/robustbench/*
-demo/autoattack/*
+demo/data
+demo/models
+demo/torchdefenses
+demo/autoattack
+
 TODO.txt
-.vscode/
 coverage.xml
 .coverage
 black.ipynb

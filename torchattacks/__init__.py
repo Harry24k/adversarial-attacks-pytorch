@@ -7,6 +7,7 @@ from .attacks.fgsm import FGSM
 from .attacks.bim import BIM
 from .attacks.rfgsm import RFGSM
 from .attacks.pgd import PGD
+from .attacks.espgd import ESPGD
 from .attacks.eotpgd import EOTPGD
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
@@ -28,6 +29,11 @@ from .attacks.pifgsmpp import PIFGSMPP
 
 # L2 attacks
 from .attacks.cw import CW
+from .attacks.cwl0 import CWL0
+from .attacks.cwlinf import CWLinf
+from .attacks.cwbs import CWBS
+from .attacks.cwbsl0 import CWBSL0
+from .attacks.cwbslinf import CWBSLinf
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
@@ -59,6 +65,7 @@ __all__ = [
     "BIM",
     "RFGSM",
     "PGD",
+    "ESPGD",
     "EOTPGD",
     "FFGSM",
     "TPGD",
@@ -81,6 +88,11 @@ __all__ = [
     "PIFGSM",
     "PIFGSMPP",
     "CW",
+    "CWL0",
+    "CWLinf",
+    "CWBS",
+    "CWBSL0",
+    "CWBSLinf",
     "PGDL2",
     "DeepFool",
     "PGDRSL2",

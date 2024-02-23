@@ -18,8 +18,9 @@ class CW(Attack):
             :math:`minimize \Vert\frac{1}{2}(tanh(w)+1)-x\Vert^2_2+c\cdot f(\frac{1}{2}(tanh(w)+1))`
         kappa (float): kappa (also written as 'confidence') in the paper. (Default: 0)
             :math:`f(x')=max(max\{Z(x')_i:i\neq t\} -Z(x')_t, - \kappa)`
-        steps (int): number of steps. (Default: 50)
+        steps (int): number of steps (also written as 'max_iterations'). (Default: 50)
         lr (float): learning rate of the Adam optimizer. (Default: 0.01)
+        abort_early: if true, allows early aborts if gradient descent gets stuck. (Default: True)
 
     .. warning:: With default c, you can't easily get adversarial images. Set higher c like 1.
 
@@ -29,19 +30,20 @@ class CW(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.CW(model, c=1, kappa=0, steps=50, lr=0.01)
+        >>> attack = torchattacks.CWL2(model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True)
         >>> adv_images = attack(images, labels)
 
-    .. note:: Binary search for c is NOT IMPLEMENTED methods in the paper due to time consuming.
+    .. note:: The binary search version of the CW algorithm has been implemented as CWBS.
 
     """
 
-    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01):
-        super().__init__("CW", model)
+    def __init__(self, model, c=1, kappa=0, steps=50, lr=0.01, abort_early=True):
+        super().__init__("CWL2", model)
         self.c = c
         self.kappa = kappa
         self.steps = steps
         self.lr = lr
+        self.abort_early = abort_early
         self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
@@ -53,16 +55,16 @@ class CW(Attack):
         labels = labels.clone().detach().to(self.device)
 
         if self.targeted:
-            target_labels = self.get_target_label(images, labels)
+            labels = self.get_target_label(images, labels)
 
         # w = torch.zeros_like(images).detach() # Requires 2x times
         w = self.inverse_tanh_space(images).detach()
         w.requires_grad = True
 
         best_adv_images = images.clone().detach()
-        best_L2 = 1e10 * torch.ones((len(images))).to(self.device)
+        batch_size = len(images)
+        best_Lx = torch.full((batch_size, ), 1e10).to(self.device)
         prev_cost = 1e10
-        dim = len(images.shape)
 
         MSELoss = nn.MSELoss(reduction="none")
         Flatten = nn.Flatten()
@@ -74,16 +76,18 @@ class CW(Attack):
             adv_images = self.tanh_space(w)
 
             # Calculate loss
-            current_L2 = MSELoss(Flatten(adv_images), Flatten(images)).sum(dim=1)
-            L2_loss = current_L2.sum()
+            current_Lx = MSELoss(Flatten(adv_images),
+                                 Flatten(images)).sum(dim=1)
+
+            Lx_loss = current_Lx.sum()
 
             outputs = self.get_logits(adv_images)
             if self.targeted:
-                f_loss = self.f(outputs, target_labels).sum()
+                f_loss = self.f(outputs, labels)
             else:
-                f_loss = self.f(outputs, labels).sum()
+                f_loss = self.f(outputs, labels)
 
-            cost = L2_loss + self.c * f_loss
+            cost = Lx_loss + torch.sum(self.c * f_loss)
 
             optimizer.zero_grad()
             cost.backward()
@@ -91,29 +95,33 @@ class CW(Attack):
 
             # Update adversarial images
             pre = torch.argmax(outputs.detach(), 1)
-            if self.targeted:
-                # We want to let pre == target_labels in a targeted attack
-                condition = (pre == target_labels).float()
-            else:
-                # If the attack is not targeted we simply make these two values unequal
-                condition = (pre != labels).float()
+            condition_1 = self.compare(pre, labels)
+            condition_2 = (current_Lx < best_Lx)
 
             # Filter out images that get either correct predictions or non-decreasing loss,
             # i.e., only images that are both misclassified and loss-decreasing are left
-            mask = condition * (best_L2 > current_L2.detach())
-            best_L2 = mask * current_L2.detach() + (1 - mask) * best_L2
+            mask = torch.logical_and(condition_1, condition_2)
+            best_Lx[mask] = current_Lx[mask]
+            best_adv_images[mask] = adv_images[mask]
 
-            mask = mask.view([-1] + [1] * (dim - 1))
-            best_adv_images = mask * adv_images.detach() + (1 - mask) * best_adv_images
+            # Early stop when loss does not converge
+            if self.abort_early and step % (self.steps // 10) == 0:
+                if cost > prev_cost * 0.9999:
+                    break
+                else:
+                    prev_cost = cost
 
-            # Early stop when loss does not converge.
-            # max(.,1) To prevent MODULO BY ZERO error in the next step.
-            if step % max(self.steps // 10, 1) == 0:
-                if cost.item() > prev_cost:
-                    return best_adv_images
-                prev_cost = cost.item()
-
+        # print(best_Lx)
         return best_adv_images
+
+    def compare(self, predition, labels):
+        if self.targeted:
+            # We want to let pre == target_labels in a targeted attack
+            ret = (predition == labels)
+        else:
+            # If the attack is not targeted we simply make these two values unequal
+            ret = (predition != labels)
+        return ret
 
     def tanh_space(self, x):
         return 1 / 2 * (torch.tanh(x) + 1)
@@ -130,10 +138,10 @@ class CW(Attack):
     def f(self, outputs, labels):
         one_hot_labels = torch.eye(outputs.shape[1]).to(self.device)[labels]
 
-        # find the max logit other than the target class
-        other = torch.max((1 - one_hot_labels) * outputs, dim=1)[0]
         # get the target class's logit
-        real = torch.max(one_hot_labels * outputs, dim=1)[0]
+        real = torch.sum(one_hot_labels * outputs, dim=1)
+        # find the max logit other than the target class
+        other = torch.max((1 - one_hot_labels) * outputs - one_hot_labels * 1e12, dim=1)[0]  # nopep8
 
         if self.targeted:
             return torch.clamp((other - real), min=-self.kappa)
