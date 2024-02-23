@@ -4,7 +4,7 @@ import torch.nn as nn
 from ..attack import Attack
 
 
-class PGDES(Attack):
+class ESPGD(Attack):
     r"""
     Early-stopped PGD in the paper 'Attacks Which Do Not Kill Training Make Adversarial Learning Stronger'
     [https://arxiv.org/abs/2002.11242]
@@ -25,7 +25,7 @@ class PGDES(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.PGDES(model, eps=8/255, alpha=1/255, steps=10, tau=10, random_start=True)
+        >>> attack = torchattacks.ESPGD(model, eps=8/255, alpha=1/255, steps=10, tau=10, random_start=True)
         >>> adv_images = attack(images, labels)
 
     """
