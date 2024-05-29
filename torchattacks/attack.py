@@ -248,10 +248,12 @@ class Attack(object):
         self,
         data_loader,
         save_path=None,
+        save_every_iter=False,
         verbose=True,
         return_verbose=False,
         save_predictions=False,
         save_clean_inputs=False,
+        save_labels=False,
         save_type="float",
     ):
         r"""
@@ -260,6 +262,7 @@ class Attack(object):
         Arguments:
             save_path (str): save_path.
             data_loader (torch.utils.data.DataLoader): data loader.
+            save_every_iter (bool): True for save every results every iter. (Default: False)
             verbose (bool): True for displaying detailed information. (Default: True)
             return_verbose (bool): True for returning detailed information. (Default: False)
             save_predictions (bool): True for saving predicted labels (Default: False)
@@ -268,7 +271,8 @@ class Attack(object):
         """
         if save_path is not None:
             adv_input_list = []
-            label_list = []
+            if save_labels:
+                label_list = []
             if save_predictions:
                 pred_list = []
             if save_clean_inputs:
@@ -276,7 +280,11 @@ class Attack(object):
 
         correct = 0
         total = 0
-        l2_distance = []
+        l0_distance_total = 0
+        l1_distance_total = 0
+        l2_distance_total = 0
+        linf_distance_total = 0
+
 
         total_batch = len(data_loader)
         given_training = self.model.training
@@ -296,16 +304,28 @@ class Attack(object):
                     right_idx = pred == labels.to(self.device)
                     correct += right_idx.sum()
                     rob_acc = 100 * float(correct) / total
-
+                    if self._normalization_applied is True:
+                        inputs_inver = self.inverse_normalize(inputs)
+                        adv_inptus_inver = self.inverse_normalize(adv_inputs)
+                    else:
+                        inputs_inver = inputs
+                        adv_inptus_inver = adv_inputs
                     # Calculate l2 distance
-                    delta = (adv_inputs - inputs.to(self.device)).view(
+                    delta = (adv_inptus_inver - inputs_inver.to(self.device)).view(
                         batch_size, -1
                     )  # nopep8
-                    l2_distance.append(
-                        torch.norm(delta[~right_idx], p=2, dim=1)
-                    )  # nopep8
-                    l2 = torch.cat(l2_distance).mean().item()
-
+                    l0_distance_total +=  torch.count_nonzero(delta).item()
+                    l1_distance_total += torch.sum(torch.abs(delta)).item()
+                    l2_distance_total += torch.norm(
+                        delta[~right_idx], p=2, dim=1
+                    ).sum().item()
+                    linf_distance_total += torch.norm(
+                        delta[~right_idx], p=float("inf"), dim=1
+                    ).sum().item()
+                    l0 = l0_distance_total / (total)
+                    l1 = l1_distance_total / (total)
+                    l2 = l2_distance_total / (total )
+                    linf = linf_distance_total / (total )
                     # Calculate time computation
                     progress = (step + 1) / total_batch * 100
                     end = time.time()
@@ -313,61 +333,51 @@ class Attack(object):
 
                     if verbose:
                         self._save_print(
-                            progress, rob_acc, l2, elapsed_time, end="\r"
+                            type(self).__name__,
+                            progress, rob_acc, l0,l1,l2, linf, elapsed_time, end="\r"
                         )  # nopep8
 
             if save_path is not None:
                 adv_input_list.append(adv_inputs.detach().cpu())
-                label_list.append(labels.detach().cpu())
-
-                adv_input_list_cat = torch.cat(adv_input_list, 0)
-                label_list_cat = torch.cat(label_list, 0)
-
-                save_dict = {
-                    "adv_inputs": adv_input_list_cat,
-                    "labels": label_list_cat,
-                }  # nopep8
-
+                if save_labels:
+                    label_list.append(labels.detach().cpu())
                 if save_predictions:
                     pred_list.append(pred.detach().cpu())
-                    pred_list_cat = torch.cat(pred_list, 0)
-                    save_dict["preds"] = pred_list_cat
-
                 if save_clean_inputs:
                     input_list.append(inputs.detach().cpu())
-                    input_list_cat = torch.cat(input_list, 0)
-                    save_dict["clean_inputs"] = input_list_cat
+                if save_every_iter:
+                    self._save_adv_examples(
+                        save_type,
+                        save_path,
+                        adv_input_list,
+                        label_list if save_labels else None,
+                        save_predictions=save_predictions,
+                        pred_list=pred_list if save_predictions else None,
+                        save_clean_inputs=save_clean_inputs,
+                        input_list=input_list if save_clean_inputs else None,
+                    )
 
-                if self.normalization_used is not None:
-                    save_dict["adv_inputs"] = self.inverse_normalize(
-                        save_dict["adv_inputs"]
-                    )  # nopep8
-                    if save_clean_inputs:
-                        save_dict["clean_inputs"] = self.inverse_normalize(
-                            save_dict["clean_inputs"]
-                        )  # nopep8
-
-                if save_type == "int":
-                    save_dict["adv_inputs"] = self.to_type(
-                        save_dict["adv_inputs"], "int"
-                    )  # nopep8
-                    if save_clean_inputs:
-                        save_dict["clean_inputs"] = self.to_type(
-                            save_dict["clean_inputs"], "int"
-                        )  # nopep8
-
-                save_dict["save_type"] = save_type
-                torch.save(save_dict, save_path)
+        if save_path is not None and not save_every_iter:
+            self._save_adv_examples(
+                save_type,
+                save_path,
+                adv_input_list,
+                label_list if save_labels else None,
+                save_predictions=save_predictions,
+                pred_list=pred_list if save_predictions else None,
+                save_clean_inputs=save_clean_inputs,
+                input_list=input_list if save_clean_inputs else None,
+            )
 
         # To avoid erasing the printed information.
         if verbose:
-            self._save_print(progress, rob_acc, l2, elapsed_time, end="\n")
+            self._save_print(type(self).__name__,progress, rob_acc,l0,l1, l2,linf, elapsed_time, end="\n")
 
         if given_training:
             self.model.train()
 
         if return_verbose:
-            return rob_acc, l2, elapsed_time
+            return rob_acc, l0,l1,l2,linf, elapsed_time
 
     @staticmethod
     def to_type(inputs, type):
@@ -388,11 +398,64 @@ class Attack(object):
             raise ValueError(type + " is not a valid type. [Options: float, int]")
         return inputs
 
+    def _save_adv_examples(
+        self,
+        save_type,
+        save_path,
+        adv_input_list,
+        label_list,
+        save_predictions=False,
+        pred_list=[],
+        save_clean_inputs=False,
+        input_list=[],
+    ):
+        adv_input_list_cat = torch.cat(adv_input_list, 0)
+        save_dict = {
+            "adv_inputs": adv_input_list_cat,
+
+        }
+
+
+        if label_list:
+            label_list_cat = torch.cat(label_list, 0)
+            save_dict["labels"] =  label_list_cat
+
+
+
+        if save_predictions:
+            pred_list_cat = torch.cat(pred_list, 0)
+            save_dict["preds"] = pred_list_cat
+
+        if save_clean_inputs:
+            input_list_cat = torch.cat(input_list, 0)
+            save_dict["clean_inputs"] = input_list_cat
+
+        if self.normalization_used is not None:
+            save_dict["adv_inputs"] = self.inverse_normalize(
+                save_dict["adv_inputs"]
+            )  # nopep8
+            if save_clean_inputs:
+                save_dict["clean_inputs"] = self.inverse_normalize(
+                    save_dict["clean_inputs"]
+                )  # nopep8
+
+        if save_type == "int":
+            save_dict["adv_inputs"] = self.to_type(
+                save_dict["adv_inputs"], "int"
+            )  # nopep8
+            if save_clean_inputs:
+                save_dict["clean_inputs"] = self.to_type(
+                    save_dict["clean_inputs"], "int"
+                )  # nopep8
+
+        save_dict["save_type"] = save_type
+        torch.save(save_dict, save_path)
+
     @staticmethod
-    def _save_print(progress, rob_acc, l2, elapsed_time, end):
+    def _save_print(atk_name,progress, rob_acc,l0,l1, l2, linf, elapsed_time, end):
         print(
-            "- Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L2: %1.5f (%2.3f it/s) \t"
-            % (progress, rob_acc, l2, elapsed_time),
+            "- %s Save progress: %2.2f %% / Robust accuracy: %2.2f %% / L0: %1.5f L1: %1.5f L2: %1.5f Linf: %1.5f (%2.3f it/s) \t"
+            % (atk_name,progress, rob_acc,l0,l1, l2, linf, elapsed_time),
             end=end,
         )
 
