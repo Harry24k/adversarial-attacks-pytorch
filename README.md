@@ -94,10 +94,10 @@ pip install -e .
         ```
     * By label
         ```python
-        atk.set_mode_targeted_by_label(quiet=True)
         # shift all class loops one to the right, 1=>2, 2=>3, .., 9=>0
         target_labels = (labels + 1) % 10
-        adv_images = atk(images, target_labels)
+        atk.set_mode_targeted_by_label(target_labels=target_labels, quiet=True)
+        adv_images = atk(images, labels)
         ```
     * Return to default
         ```python
@@ -128,12 +128,6 @@ pip install -e .
         atk2 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
         atk = torchattacks.MultiAttack([atk1, atk2])
         ```
-    * Binary search for CW
-        ```python
-        atk1 = torchattacks.CW(model, c=0.1, steps=1000, lr=0.01)
-        atk2 = torchattacks.CW(model, c=1, steps=1000, lr=0.01)
-        atk = torchattacks.MultiAttack([atk1, atk2])
-        ```
     * Random restarts
         ```python
         atk1 = torchattacks.PGD(model, eps=8/255, alpha=2/255, iters=40, random_start=True)
@@ -160,7 +154,7 @@ The distance measure in parentheses.
 |     **EOTPGD**<br />(Linf)      | Comment on "Adv-BNN: Improved Adversarial Defense through Robust Bayesian Neural Network" ([Zimmermann, 2019](https://arxiv.org/abs/1907.00895))          | [EOT](https://arxiv.org/abs/1707.07397)+PGD                                                                            |
 |    **APGD**<br />(Linf, L2)     | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) |                                                                                                                        |
 |    **APGDT**<br />(Linf, L2)    | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) | Targeted APGD                                                                                                          |
-|   **FAB**<br />(Linf, L2, L1)   | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044))                    |                                                                                                                        |
+|   **AFAB**<br />(Linf, L1, L2)   | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044))                 |                                                                             |
 |   **Square**<br />(Linf, L2)    | Square Attack: a query-efficient black-box adversarial attack via random search ([Andriushchenko et al., 2019](https://arxiv.org/abs/1912.00049))         |                                                                                                                        |
 | **AutoAttack**<br />(Linf, L2)  | Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks ([Croce et al., 2020](https://arxiv.org/abs/2001.03994)) | APGD+APGDT+FAB+Square                                                                                                  |
 |     **DeepFool**<br />(L2)      | DeepFool: A Simple and Accurate Method to Fool Deep Neural Networks ([Moosavi-Dezfooli et al., 2016](https://arxiv.org/abs/1511.04599))                   |                                                                                                                        |
@@ -181,8 +175,15 @@ The distance measure in parentheses.
 | **EADEN**<br />(L1, L2) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM (PIM)**<br />(Linf) | Patch-wise Attack for Fooling Deep Neural Network ([Gao, Lianli, et al., 2020](https://arxiv.org/abs/2007.06765))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM++ (PIM++)**<br />(Linf) | Patch-wise++ Perturbation for Adversarial Targeted Attacks ([Gao, Lianli, et al., 2021](https://arxiv.org/abs/2012.15503))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-
-
+| **CWL0**<br />(L0) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **CWLinf**<br />(Linf) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **CWBSL0 (Binary Search Version)**<br />(L0) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **CWBSL2 (Binary Search Version)**<br />(L2) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **CWBSLinf (Binary Search Version)**<br />(Linf) | Towards Evaluating the Robustness of Neural Networks ([Carlini N, Wagner D, 2017](https://arxiv.org/abs/1608.046443))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+| **ESPGD (Early-Stopped PGD Version)**<br />(Linf) | Attacks Which Do Not Kill Training Make Adversarial Learning Stronger ([Zhang, Jingfeng, 2020](https://arxiv.org/abs/2002.11242))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
+|   **FAB**<br />(Linf)   | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044))                    | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                       |
+|   **FABL1**<br />(L1)   | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044))                    | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                       |
+|   **FABL2**<br />(L2)   | Minimally distorted Adversarial Examples with a Fast Adaptive Boundary Attack ([Croce et al., 2019](https://arxiv.org/abs/1907.02044))                    | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                       |
 
 ## :bar_chart: Performance Comparison
 

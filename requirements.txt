@@ -6,4 +6,5 @@ scipy>=0.14.0
 tqdm>=4.56.1 
 requests>=2.25.1
 pandas>=1.2.4
-numpy>=1.19.4
+# The last stable 1.x version of numpy
+numpy<=1.26.4

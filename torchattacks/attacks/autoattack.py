@@ -4,7 +4,7 @@ from ..attack import Attack
 from ..wrappers.multiattack import MultiAttack
 from .apgd import APGD
 from .apgdt import APGDT
-from .fab import FAB
+from .afab import AFAB
 from .square import Square
 
 
@@ -76,7 +76,7 @@ class AutoAttack(Attack):
                         n_classes=n_classes,
                         n_restarts=1,
                     ),
-                    FAB(
+                    AFAB(
                         model,
                         eps=eps,
                         norm=norm,
@@ -120,7 +120,7 @@ class AutoAttack(Attack):
                         loss="dlr",
                         n_restarts=5,
                     ),
-                    FAB(
+                    AFAB(
                         model,
                         eps=eps,
                         norm=norm,
@@ -147,7 +147,7 @@ class AutoAttack(Attack):
                         n_classes=n_classes,
                         n_restarts=1,
                     ),
-                    FAB(
+                    AFAB(
                         model,
                         eps=eps,
                         norm=norm,

@@ -7,6 +7,7 @@ from .attacks.fgsm import FGSM
 from .attacks.bim import BIM
 from .attacks.rfgsm import RFGSM
 from .attacks.pgd import PGD
+from .attacks.espgd import ESPGD
 from .attacks.eotpgd import EOTPGD
 from .attacks.ffgsm import FFGSM
 from .attacks.tpgd import TPGD
@@ -25,16 +26,24 @@ from .attacks.vnifgsm import VNIFGSM
 from .attacks.spsa import SPSA
 from .attacks.pifgsm import PIFGSM
 from .attacks.pifgsmpp import PIFGSMPP
+from .attacks.fab import FAB
 
 # L2 attacks
 from .attacks.cw import CW
+from .attacks.cwl0 import CWL0
+from .attacks.cwlinf import CWLinf
+from .attacks.cwbs import CWBS
+from .attacks.cwbsl0 import CWBSL0
+from .attacks.cwbslinf import CWBSLinf
 from .attacks.pgdl2 import PGDL2
 from .attacks.pgdrsl2 import PGDRSL2
 from .attacks.deepfool import DeepFool
 from .attacks.eaden import EADEN
+from .attacks.fabl2 import FABL2
 
 # L1 attacks
 from .attacks.eadl1 import EADL1
+from .attacks.fabl1 import FABL1
 
 # L0 attacks
 from .attacks.sparsefool import SparseFool
@@ -43,9 +52,9 @@ from .attacks.pixle import Pixle
 from .attacks.jsma import JSMA
 
 # Linf, L2 attacks
-from .attacks.fab import FAB
 from .attacks.autoattack import AutoAttack
 from .attacks.square import Square
+from .attacks.afab import AFAB
 
 # Wrapper Class
 from .wrappers.multiattack import MultiAttack
@@ -59,6 +68,7 @@ __all__ = [
     "BIM",
     "RFGSM",
     "PGD",
+    "ESPGD",
     "EOTPGD",
     "FFGSM",
     "TPGD",
@@ -81,6 +91,11 @@ __all__ = [
     "PIFGSM",
     "PIFGSMPP",
     "CW",
+    "CWL0",
+    "CWLinf",
+    "CWBS",
+    "CWBSL0",
+    "CWBSLinf",
     "PGDL2",
     "DeepFool",
     "PGDRSL2",
@@ -88,6 +103,9 @@ __all__ = [
     "OnePixel",
     "Pixle",
     "FAB",
+    "FABL1",
+    "FABL2",
+    "AFAB",
     "AutoAttack",
     "Square",
     "MultiAttack",

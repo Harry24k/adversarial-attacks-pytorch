@@ -13,8 +13,9 @@ class JSMA(Attack):
 
     Arguments:
         model (nn.Module): model to attack.
-        theta (float): perturb length, range is either [theta, 0], [0, theta]. (Default: 1.0)
-        gamma (float): highest percentage of pixels can be modified. (Default: 0.1)
+        theta (float): the change made to pixels. (Default: 1.0)
+        gamma (float): the maximum distortion. (Default: 0.1)
+        increasing (bool): crafting perturbation by increasing or decreasing pixel intensities. (Default: True)
 
     Shape:
         - images: :math:`(N, C, H, W)` where `N = number of batches`, `C = number of channels`,        `H = height` and `W = width`. It must have a range [0, 1].
@@ -22,15 +23,16 @@ class JSMA(Attack):
         - output: :math:`(N, C, H, W)`.
 
     Examples::
-        >>> attack = torchattacks.JSMA(model, theta=1.0, gamma=0.1)
+        >>> attack = torchattacks.JSMA(model, theta=1.0, gamma=0.1, increasing=True)
         >>> adv_images = attack(images, labels)
 
     """
 
-    def __init__(self, model, theta=1.0, gamma=0.1):
+    def __init__(self, model, theta=1.0, gamma=0.1, increasing=True):
         super().__init__("JSMA", model)
         self.theta = theta
         self.gamma = gamma
+        self.increasing = increasing
         self.supported_mode = ["default", "targeted"]
 
     def forward(self, images, labels):
@@ -40,6 +42,8 @@ class JSMA(Attack):
 
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
+        # only predict one image
+        class_num = self.get_logits(torch.unsqueeze(images[0], 0)).shape[1]
 
         if self.targeted:
             target_labels = self.get_target_label(images, labels)
@@ -49,163 +53,115 @@ class JSMA(Attack):
             # (we have no control over the convergence of the attack to a data point that is NOT equal to the original class),
             # so we make the default setting of the target label is right circular shift
             # to make attack work if user didn't set target label.
-            target_labels = (labels + 1) % 10
+            target_labels = (labels + 1) % class_num
 
-        adv_images = None
-        for im, tl in zip(images, target_labels):
-            # Since the attack uses the Jacobian-matrix,
-            # if we input a large number of images directly into it,
-            # the processing will be very complicated,
-            # here, in order to simplify the processing,
-            # we only process one image at a time.
-            # Shape of MNIST is [-1, 1, 28, 28],
-            # and shape of CIFAR10 is [-1, 3, 32, 32].
-            pert_image = self.perturbation_single(
-                torch.unsqueeze(im, 0), torch.unsqueeze(tl, 0)
-            )
-            try:
-                adv_images = torch.cat((adv_images, pert_image), 0)
-            except Exception:
-                adv_images = pert_image
+        adv_images = images
+        dim_x = int(np.prod(images.shape[1:]))
+        max_iter = int(dim_x * self.gamma / 2)
+        search_space = torch.ones(images.shape[0], dim_x).to(self.device)
+        adv_prediction = torch.argmax(self.get_logits(adv_images), 1)
+
+        # Algorithm 2
+        i = 0
+        while torch.sum(adv_prediction != target_labels) != 0 and i < max_iter and torch.sum(search_space != 0) != 0:
+            grads_target, grads_other = self.compute_forward_derivative(
+                adv_images, target_labels, class_num)
+            p1, p2 = self.saliency_map(
+                search_space, grads_target, grads_other, target_labels)
+
+            cond = (adv_prediction != target_labels)
+            self.update_search_space(search_space, p1, p2, cond)
+            adv_images = self.update_adv_images(adv_images, p1, p2, cond)
+            adv_prediction = torch.argmax(self.get_logits(adv_images), 1)
+            i += 1
 
         adv_images = torch.clamp(adv_images, min=0, max=1)
         return adv_images
 
-    def compute_jacobian(self, image):
-        var_image = image.clone().detach()
-        var_image.requires_grad = True
-        output = self.get_logits(var_image)
+    def update_adv_images(self, adv_images, p1, p2, cond):
+        origin_shape = adv_images.shape
+        adv_images = adv_images.view(adv_images.shape[0], -1)
+        for idx in range(adv_images.shape[0]):
+            if cond[idx]:
+                if self.increasing:
+                    # Section IV, A
+                    adv_images[idx, p1[idx]] += self.theta
+                    adv_images[idx, p2[idx]] += self.theta
+                else:
+                    # Section IV, B
+                    adv_images[idx, p1[idx]] -= self.theta
+                    adv_images[idx, p2[idx]] -= self.theta
 
-        num_features = int(np.prod(var_image.shape[1:]))
-        jacobian = torch.zeros([output.shape[1], num_features])
-        for i in range(output.shape[1]):
-            if var_image.grad is not None:
-                var_image.grad.zero_()
-            output[0][i].backward(retain_graph=True)
-            # Copy the derivative to the target place
-            jacobian[i] = (
-                var_image.grad.squeeze().view(-1, num_features).clone()
-            )  # nopep8
+        adv_images = torch.clamp(adv_images, min=0, max=1)
+        adv_images = adv_images.view(origin_shape)
+        return adv_images
 
-        return jacobian.to(self.device)
+    def update_search_space(self, search_space, p1, p2, cond):
+        # Algorithm 2 line 10 and line 11
+        p1_cond = torch.logical_or(p1 == 0, p1 == 1)
+        p2_cond = torch.logical_or(p2 == 0, p2 == 1)
 
-    @torch.no_grad()
-    def saliency_map(
-        self, jacobian, target_label, increasing, search_space, nb_features
-    ):
-        # The search domain
-        domain = torch.eq(search_space, 1).float()
-        # The sum of all features' derivative with respect to each class
-        all_sum = torch.sum(jacobian, dim=0, keepdim=True)
-        # The forward derivative of the target class
-        target_grad = jacobian[target_label]
-        # The sum of forward derivative of other classes
-        others_grad = all_sum - target_grad
+        # Early stop
+        p1_cond = torch.logical_or(p1_cond, cond)
+        p2_cond = torch.logical_or(p2_cond, cond)
 
-        # This list blanks out those that are not in the search domain
-        if increasing:
-            increase_coef = 2 * (torch.eq(domain, 0)).float().to(self.device)
+        for ind in range(search_space.shape[0]):
+            if p1_cond[ind]:
+                search_space[ind, p1[ind]] = False
+            if p2_cond[ind]:
+                search_space[ind, p2[ind]] = False
+
+    def jacobian(self, adv_images, class_num):
+        tmp_images = adv_images.detach().clone()
+        tmp_images.requires_grad = True
+        jacobians = []
+        output = self.get_logits(tmp_images)
+
+        for n in range(class_num):
+            if tmp_images.grad is not None:
+                tmp_images.grad.zero_()
+            torch.sum(output[:, n]).backward(retain_graph=True)
+            grad = tmp_images.grad.detach().clone()
+            jacobians.append(grad)
+
+        jacobians = torch.stack(jacobians, 0)
+        return jacobians
+
+    def compute_forward_derivative(self, adv_images, target_labels, class_num):
+        jacobians = self.jacobian(adv_images, class_num)
+        grads = jacobians.view((jacobians.shape[0], jacobians.shape[1], -1))
+        grads_target = grads[target_labels, range(len(target_labels)), :]
+        grads_other = grads.sum(dim=0) - grads_target
+        return grads_target, grads_other
+
+    def sum_pair(self, grads, dim):
+        # Eq 8 and Eq 9
+        return grads.view(-1, dim, 1) + grads.view(-1, 1, dim)
+
+    def and_pair(self, cond, dim):
+        return cond.view(-1, dim, 1) & cond.view(-1, 1, dim)
+
+    def saliency_map(self, search_space, grads_target, grads_other, y):
+        dim = search_space.shape[1]
+        # alpha in Algorithm 3 line 2
+        gradsum_target = self.sum_pair(grads_target, dim)
+        # beta in Algorithm 3 line 3
+        gradsum_other = self.sum_pair(grads_other, dim)
+
+        # Algorithm 3 line 4
+        if self.increasing:
+            scores_mask = torch.logical_and(
+                gradsum_target > 0, gradsum_other < 0)
         else:
-            increase_coef = -1 * 2 * (torch.eq(domain, 0)).float().to(self.device)
-        increase_coef = increase_coef.view(-1, nb_features)
+            scores_mask = torch.logical_and(
+                gradsum_target < 0, gradsum_other > 0)
 
-        # Calculate sum of target forward derivative of any 2 features.
-        target_tmp = target_grad.clone()
-        target_tmp -= increase_coef * torch.max(torch.abs(target_grad))
-        # PyTorch will automatically extend the dimensions
-        alpha = target_tmp.view(-1, 1, nb_features) + target_tmp.view(
-            -1, nb_features, 1
-        )
-        # Calculate sum of other forward derivative of any 2 features.
-        others_tmp = others_grad.clone()
-        others_tmp += increase_coef * torch.max(torch.abs(others_grad))
-        beta = others_tmp.view(-1, 1, nb_features) + others_tmp.view(-1, nb_features, 1)
+        search_space_mask = self.and_pair(search_space != 0, dim)
+        scores_mask = torch.logical_and(scores_mask, search_space_mask)
+        scores_mask[:, range(dim), range(dim)] = 0
+        scores = scores_mask.float() * (-1 * gradsum_target * gradsum_other)
+        best_indices = torch.argmax(scores.view(-1, dim * dim), 1)
 
-        # Zero out the situation where a feature sums with itself
-        tmp = np.ones((nb_features, nb_features), int)
-        np.fill_diagonal(tmp, 0)
-        zero_diagonal = torch.from_numpy(tmp).byte().to(self.device)
-
-        # According to the definition of saliency map in the paper (formulas 8 and 9),
-        # those elements in the saliency map that doesn't satisfy the requirement will be blanked out.
-        if increasing:
-            mask1 = torch.gt(alpha, 0.0)
-            mask2 = torch.lt(beta, 0.0)
-        else:
-            mask1 = torch.lt(alpha, 0.0)
-            mask2 = torch.gt(beta, 0.0)
-
-        # Apply the mask to the saliency map
-        mask = torch.mul(torch.mul(mask1, mask2), zero_diagonal.view_as(mask1))
-        # Do the multiplication according to formula 10 in the paper
-        saliency_map = torch.mul(torch.mul(alpha, torch.abs(beta)), mask.float())
-        # Get the most significant two pixels
-        max_idx = torch.argmax(saliency_map.view(-1, nb_features * nb_features), dim=1)
-        # p = max_idx // nb_features
-        p = torch.div(max_idx, nb_features, rounding_mode="floor")
-        # q = max_idx % nb_features
-        q = max_idx - p * nb_features
-        return p, q
-
-    def perturbation_single(self, image, target_label):
-        """
-        image: only one element
-        label: only one element
-        """
-        var_image = image
-        var_label = target_label
-        var_image = var_image.to(self.device)
-        var_label = var_label.to(self.device)
-
-        if self.theta > 0:
-            increasing = True
-        else:
-            increasing = False
-
-        num_features = int(np.prod(var_image.shape[1:]))
-        shape = var_image.shape
-
-        # Perturb two pixels in one iteration, thus max_iters is divided by 2
-        max_iters = int(np.ceil(num_features * self.gamma / 2.0))
-
-        # Masked search domain, if the pixel has already reached the top or bottom, we don't bother to modify it
-        if increasing:
-            search_domain = torch.lt(var_image, 0.99)
-        else:
-            search_domain = torch.gt(var_image, 0.01)
-
-        search_domain = search_domain.view(num_features)
-        output = self.get_logits(var_image)
-        current_pred = torch.argmax(output.data, 1)
-
-        iter = 0
-        while (
-            (iter < max_iters)
-            and (current_pred != target_label)
-            and (search_domain.sum() != 0)
-        ):
-            # Calculate Jacobian matrix of forward derivative
-            jacobian = self.compute_jacobian(var_image)
-            # Get the saliency map and calculate the two pixels that have the greatest influence
-            p1, p2 = self.saliency_map(
-                jacobian, var_label, increasing, search_domain, num_features
-            )
-            # Apply modifications
-            # var_sample_flatten = var_image.view(-1, num_features).clone().detach_()
-            var_sample_flatten = var_image.view(-1, num_features)
-            var_sample_flatten[0, p1] += self.theta
-            var_sample_flatten[0, p2] += self.theta
-
-            new_image = torch.clamp(var_sample_flatten, min=0.0, max=1.0)
-            new_image = new_image.view(shape)
-            search_domain[p1] = 0
-            search_domain[p2] = 0
-            # var_image = new_image.clone().detach().to(self.device)
-            var_image = new_image.to(self.device)
-
-            output = self.get_logits(var_image)
-            current_pred = torch.argmax(output.data, 1)
-            iter += 1
-
-        adv_image = var_image
-        return adv_image
+        p1 = torch.remainder(best_indices, dim)
+        p2 = ((best_indices - p1) / dim).to(torch.long)
+        return p1, p2
