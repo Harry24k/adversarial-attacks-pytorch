@@ -46,6 +46,7 @@ from .attacks.jsma import JSMA
 from .attacks.fab import FAB
 from .attacks.autoattack import AutoAttack
 from .attacks.square import Square
+from .attacks.patchfool import PatchFool
 
 # Wrapper Class
 from .wrappers.multiattack import MultiAttack
@@ -92,6 +93,7 @@ __all__ = [
     "Square",
     "MultiAttack",
     "LGV",
+    "PatchFool"
 ]
 __wrapper__ = [
     "LGV",
