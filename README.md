@@ -181,7 +181,7 @@ The distance measure in parentheses.
 | **EADEN**<br />(L1, L2) | EAD: Elastic-Net Attacks to Deep Neural Networks ([Chen, Pin-Yu, et al., 2018](https://arxiv.org/abs/1709.04114))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM (PIM)**<br />(Linf) | Patch-wise Attack for Fooling Deep Neural Network ([Gao, Lianli, et al., 2020](https://arxiv.org/abs/2007.06765))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
 | **PIFGSM++ (PIM++)**<br />(Linf) | Patch-wise++ Perturbation for Adversarial Targeted Attacks ([Gao, Lianli, et al., 2021](https://arxiv.org/abs/2012.15503))                 | :heart_eyes: Contributor [Riko Naka](https://github.com/rikonaka)                               |
-| **PatchFool**<br />(Linf, L2) | Patch-fool: Are Vision Transformers Always Robust Against Adversarial Pertubations? ([Fu, Zhang, Shang Wu, et al., 2025](https://arxiv.org/pdf/2203.08392))                 | :heart_eyes: Contributor [Aliaksandr Haponau](https://github.com/AliaksandrHaponau)
+| **PatchFool**<br />(Linf, L2) | Patch-fool: Are Vision Transformers Always Robust Against Adversarial Pertubations? ([Fu, Zhang, Shang Wu, et al., 2025](https://arxiv.org/pdf/2203.08392))                 | :heart_eyes: Contributor [Aliaksandr Haponau](https://github.com/StalkerShurik)
 
 
 ## :bar_chart: Performance Comparison
